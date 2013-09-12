@@ -64,7 +64,9 @@ public class DynamoDBConfig {
 }
 ```
 
-Create a DynamoDB entity:
+Create a DynamoDB hash-key only table in AWS console, with table name 'User' and with hash key attribute name "id"
+
+Create a DynamoDB entity for this table:
 
 ```java
 @DynamoDBTable(tableName = "User")
@@ -93,7 +95,7 @@ public class User {
 	return lastName;
   }
        
-  // setters
+  // setters, default constructor and firstname/lastname constructor
 }
 ```
 
