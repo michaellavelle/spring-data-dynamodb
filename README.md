@@ -6,7 +6,6 @@ The primary goal of the [Spring Data](http://www.springsource.org/spring-data) p
 
 * Implementation of CRUD methods for DynamoDB Entities
 * Dynamic query generation from query method names  (Only a limited number of keywords and comparison operators currently supported)
-* Implementation domain base classes providing basic properties
 * Possibility to integrate custom repository code
 * Easy Spring annotation based integration
 
