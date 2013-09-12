@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -134,19 +135,19 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 	public String getOverriddenAttributeName(final String propertyName) {
 
 		Method method = ReflectionUtils.findMethod(domainType, toMethodName(propertyName));
-		if (method.getAnnotation(DynamoDBAttribute.class) != null) {
+		if (method.getAnnotation(DynamoDBAttribute.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {
 			return method.getAnnotation(DynamoDBAttribute.class).attributeName();
 		}
-		if (method.getAnnotation(DynamoDBHashKey.class) != null) {
+		if (method.getAnnotation(DynamoDBHashKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {
 			return method.getAnnotation(DynamoDBHashKey.class).attributeName();
 		}
-		if (method.getAnnotation(DynamoDBRangeKey.class) != null) {
+		if (method.getAnnotation(DynamoDBRangeKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
 			return method.getAnnotation(DynamoDBRangeKey.class).attributeName();
 		}
-		if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
+		if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
 			return method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
 		}
-		if (method.getAnnotation(DynamoDBVersionAttribute.class) != null) {
+		if (method.getAnnotation(DynamoDBVersionAttribute.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
 			return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
 		}
 
