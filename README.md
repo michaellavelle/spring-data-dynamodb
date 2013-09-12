@@ -9,6 +9,11 @@ The primary goal of the [Spring Data](http://www.springsource.org/spring-data) p
 * Possibility to integrate custom repository code
 * Easy Spring annotation based integration
 
+## Demo application ##
+
+For a demo of spring-data-dynamodb, using spring-data-rest to showcase DynamoDB repositories exposed with REST,
+please see <a href="https://github.com/michaellavelle/spring-data-dynamodb-demo">spring-data-dynamodb-demo
+
 ## Quick Start ##
 
 Download the jar though Maven:
