@@ -16,6 +16,17 @@
 		<version>1.1.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-data-build/parent/pom.xml</relativePath>
 	</parent>
+	
+        <distributionManagement>
+           	<repository>
+        		<id>repo</id>
+        			<url>https://github.com/OpenSourceAgility/opensourceagility-mvn-repo/raw/master/releases</url>
+        		</repository>
+        		<snapshotRepository>
+        			<id>snapshot-repo</id>
+        			<url>https://github.com/OpenSourceAgility/opensourceagility-mvn-repo/raw/master/snapshots</url>
+        		</snapshotRepository>
+        </distributionManagement>
 
 	<properties>
 		<dist.key>DATADYNAMODB</dist.key>

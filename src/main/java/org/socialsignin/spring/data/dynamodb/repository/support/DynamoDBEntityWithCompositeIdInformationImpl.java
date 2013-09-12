@@ -21,11 +21,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 import org.springframework.util.ReflectionUtils;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+
 /**
  * @author Michael Lavelle
  */
 public class DynamoDBEntityWithCompositeIdInformationImpl<T, ID extends Serializable> extends
-		ReflectionEntityInformation<T, ID> implements DynamoDBEntityInformation<T, ID> {
+		ReflectionEntityInformation<T, ID> implements DynamoDBEntityWithCompositeIdInformation<T,ID> {
 
 	private DynamoDBEntityWithCompositeIdMetadata<T, ID> metadata;
 
@@ -48,7 +50,60 @@ public class DynamoDBEntityWithCompositeIdInformationImpl<T, ID extends Serializ
 	@Override
 	public Object getRangeKey(final Serializable id) {
 		return ReflectionUtils.invokeMethod(metadata.getCompositeIdMetadata(getIdType()).getRangeKeyMethod(), id);
+	}
+
+	
+	@Override
+	public String getOverriddenAttributeName(String attributeName) {
+		return metadata.getOverriddenAttributeName(attributeName);
+	}
+
+
+	@Override
+	public boolean isHashKeyProperty(String propertyName) {
+			return metadata.isHashKeyProperty(propertyName);
+	}
+
+	@Override
+	public boolean isRangeKeyProperty(String propertyName) {
+		return metadata.isRangeKeyProperty(propertyName);
 
 	}
+
+	@Override
+	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
+		return metadata.getHashKeyPropotypeEntityForHashKey(hashKey);
+	}
+	
+
+	@Override
+	public boolean isCompositeIdProperty(String propertyName) {
+		return metadata.isCompositeIdProperty(propertyName);
+	}
+
+	@Override
+	public DynamoDBCompositeIdMetadata<ID> getCompositeIdMetadata(
+			Class<ID> idClass) {
+		return metadata.getCompositeIdMetadata(idClass);
+	}
+
+	@Override
+	public String getRangeKeyPropertyName() {
+		return metadata.getRangeKeyPropertyName();
+	}
+
+	@Override
+	public String getHashKeyPropertyName() {
+		return metadata.getHashKeyPropertyName();
+	}
+
+	@Override
+	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
+		return metadata.getMarshallerForProperty(propertyName);
+	}
+
+	
+	
+	
 
 }

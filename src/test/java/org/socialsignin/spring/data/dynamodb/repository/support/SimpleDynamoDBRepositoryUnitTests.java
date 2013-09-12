@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
@@ -96,14 +97,16 @@ public class SimpleDynamoDBRepositoryUnitTests {
 	}
 
 	@Test
-	public void loadEntityWithSimpleId() {
-		User user = repoForEntityWithSimpleId.load(1l);
+	public void findOneEntityWithSimpleId() {
+		User user = repoForEntityWithSimpleId.findOne(1l);
+		Mockito.verify(dynamoDBMapper).load(User.class,1l);
 		assertEquals(testUser, user);
 	}
+	
 
 	@Test
-	public void loadEntityWithCompositeId() {
-		Playlist playlist = repoForEntityWithCompositeId.load(testPlaylistId);
+	public void findOneEntityWithCompositeId() {
+		Playlist playlist = repoForEntityWithCompositeId.findOne(testPlaylistId);
 		assertEquals(testPlaylist, playlist);
 	}
 

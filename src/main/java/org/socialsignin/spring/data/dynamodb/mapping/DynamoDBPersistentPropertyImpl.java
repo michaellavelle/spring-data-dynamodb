@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Reference;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mapping.Association;
 import org.springframework.data.mapping.PersistentEntity;
@@ -32,6 +33,7 @@ import org.springframework.data.mapping.model.SimpleTypeHolder;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBVersionAttribute;
 
 /**
  * {@link DynamoDBPersistentProperty} implementation
@@ -48,7 +50,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 
 		Set<Class<? extends Annotation>> annotations = new HashSet<Class<? extends Annotation>>();
 
-		// annotations.add(Reference.class); // Reference not yet supported
+		 annotations.add(Reference.class); // Reference not yet supported
 		ASSOCIATION_ANNOTATIONS = Collections.unmodifiableSet(annotations);
 
 		annotations = new HashSet<Class<? extends Annotation>>();
@@ -118,13 +120,13 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 
 	public boolean isEntity() {
 
-		// return isAnnotationPresent(Reference.class) && // Reference not Yet
+		 return isAnnotationPresent(Reference.class);// Reference not Yet
 		// Supported
 		// return propertyDescriptor != null
 		// && propertyDescriptor.getPropertyType().isAnnotationPresent(
 		// DynamoDBTable.class);
 
-		return false;
+		//return false;
 
 	}
 
@@ -142,7 +144,8 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 			if (findAnnotation(annotationType) != null) {
 				// No query lookup yet supported ( see
 				// Repositories.getPersistentEntity(..) )
-				return !information.isCollectionLike();
+				//return !information.isCollectionLike();
+				return true;
 			}
 		}
 
@@ -159,6 +162,14 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	@Override
 	public boolean isTransient() {
 		return isAnnotationPresent(Transient.class) || super.isTransient() || isAnnotationPresent(DynamoDBIgnore.class);
+	}
+	
+	
+	
+
+	@Override
+	public boolean isVersionProperty() {
+		return super.isVersionProperty() || isAnnotationPresent(DynamoDBVersionAttribute.class);
 	}
 
 	/*

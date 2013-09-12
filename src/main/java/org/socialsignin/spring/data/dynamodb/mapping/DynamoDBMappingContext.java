@@ -49,6 +49,9 @@ public class DynamoDBMappingContext extends
 		return new DynamoDBPersistentEntityImpl<T>(typeInformation, null);
 
 	}
+	
+	
+	
 
 	/*
 	 * (non-Javadoc)

@@ -18,6 +18,7 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 import java.io.Serializable;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
 /**
  * @author Michael Lavelle
@@ -25,9 +26,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 public class DynamoDBEntityInformationImpl<T, ID extends Serializable> extends GetterReflectionEntityInformation<T, ID>
 		implements DynamoDBEntityInformation<T, ID> {
 
-	private DynamoDBEntityMetadata<T> metadata;
+	private DynamoDBEntityMetadata<T,ID> metadata;
 
-	public DynamoDBEntityInformationImpl(Class<T> domainClass, DynamoDBEntityMetadata<T> metadata) {
+	public DynamoDBEntityInformationImpl(Class<T> domainClass, DynamoDBEntityMetadata<T,ID> metadata) {
 		super(domainClass, DynamoDBHashKey.class);
 		this.metadata = metadata;
 	}
@@ -37,6 +38,12 @@ public class DynamoDBEntityInformationImpl<T, ID extends Serializable> extends G
 		return metadata.hasCompositeId();
 
 	}
+	
+	@Override
+	public boolean isNew(T entity) {
+		// TODO ML Add version property check if appropriate
+		return super.isNew(entity);
+	}
 
 	@Override
 	public Object getHashKey(final ID id) {
@@ -44,8 +51,41 @@ public class DynamoDBEntityInformationImpl<T, ID extends Serializable> extends G
 	}
 
 	@Override
-	public Object getRangeKey(final Serializable id) {
-		return null;
+	public String getOverriddenAttributeName(String attributeName) {
+		return metadata.getOverriddenAttributeName(attributeName);
 	}
 
+	@Override
+	public boolean isHashKeyProperty(String propertyName) {
+		return metadata.isHashKeyProperty(propertyName);
+	}
+
+	@Override
+	public boolean isRangeKeyProperty(String propertyName) {
+		return false;
+	}
+
+	@Override
+	public  T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
+		return metadata.getHashKeyPropotypeEntityForHashKey(hashKey);
+	}
+
+	@Override
+	public Object getRangeKey(ID id) {
+		return null;
+	}
+	
+	@Override
+	public boolean isCompositeIdProperty(String propertyName) {
+		return metadata.isCompositeIdProperty(propertyName);
+	}
+
+	@Override
+	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
+		return metadata.getMarshallerForProperty(propertyName);
+	}
+
+	
+
+	
 }

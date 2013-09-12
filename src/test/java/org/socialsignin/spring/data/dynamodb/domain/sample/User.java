@@ -15,13 +15,32 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
+import java.util.Date;
+
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 @DynamoDBTable(tableName = "user")
 public class User {
 
 	private String id;
+	
+	private String name;
+	
+	private Integer numberOfPlaylists;
+	
+	private Date joinDate;
+	
+	
+	@DynamoDBMarshalling(marshallerClass=DateStringConverter.class)
+	public Date getJoinDate() {
+		return joinDate;
+	}
+
+	public void setJoinDate(Date joinDate) {
+		this.joinDate = joinDate;
+	}
 
 	@DynamoDBHashKey(attributeName = "Id")
 	public String getId() {
@@ -31,5 +50,26 @@ public class User {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getNumberOfPlaylists() {
+		return numberOfPlaylists;
+	}
+
+	public void setNumberOfPlaylists(Integer numberOfPlaylists) {
+		this.numberOfPlaylists = numberOfPlaylists;
+	}
+
+
+	
+	
+
 
 }

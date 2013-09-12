@@ -20,9 +20,12 @@ import static org.springframework.data.querydsl.QueryDslUtils.QUERY_DSL_PRESENT;
 import java.io.Serializable;
 
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
+import org.socialsignin.spring.data.dynamodb.repository.query.DynamoDBQueryLookupStrategy;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.data.repository.query.QueryLookupStrategy;
+import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 /**
@@ -39,8 +42,15 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	@Override
 	public <T, ID extends Serializable> DynamoDBEntityInformation<T, ID> getEntityInformation(final Class<T> domainClass) {
 
-		DynamoDBEntityMetadataSupport<T> metadata = new DynamoDBEntityMetadataSupport<T>(domainClass);
+		DynamoDBEntityMetadataSupport<T,ID> metadata = new DynamoDBEntityMetadataSupport<T,ID>(domainClass);
 		return metadata.getEntityInformation();
+	}
+	
+	
+
+	@Override
+	protected QueryLookupStrategy getQueryLookupStrategy(Key key) {
+		return DynamoDBQueryLookupStrategy.create(dynamoDBMapper, key);
 	}
 
 	/**

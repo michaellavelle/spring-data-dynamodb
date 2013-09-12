@@ -66,7 +66,7 @@ public class GetterReflectionEntityInformation<T, ID extends Serializable> exten
 	}
 
 	/**
-	 * Creates a new {@link ReflectionEntityInformation} inspecting the given
+	 * Creates a new {@link GetterReflectionEntityInformation} inspecting the given
 	 * domain class for a getter carrying the given annotation.
 	 * 
 	 * @param domainClass

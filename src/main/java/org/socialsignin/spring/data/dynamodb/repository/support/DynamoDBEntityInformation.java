@@ -23,12 +23,16 @@ import org.springframework.data.repository.core.EntityInformation;
  * @author Michael Lavelle
  */
 public interface DynamoDBEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID>,
-		DynamoDBEntityMetadata<T> {
+		DynamoDBEntityMetadata<T,ID> {
 
 	boolean hasCompositeId();
 
 	Object getHashKey(ID id);
 
 	Object getRangeKey(ID id);
+	
+	
+	
+	
 
 }

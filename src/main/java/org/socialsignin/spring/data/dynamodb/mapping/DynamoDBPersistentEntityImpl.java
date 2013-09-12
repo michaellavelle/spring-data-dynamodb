@@ -32,6 +32,8 @@ public class DynamoDBPersistentEntityImpl<T> extends BasicPersistentEntity<T, Dy
 			Comparator<DynamoDBPersistentProperty> comparator) {
 		super(information, comparator);
 	}
+	
+
 
 	/**
 	 * Returns the given property if it is a better candidate for the id

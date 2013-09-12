@@ -16,23 +16,10 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
-
-import org.springframework.data.repository.core.EntityMetadata;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
-
 /**
  * @author Michael Lavelle
  */
-public interface DynamoDBEntityMetadata<T,ID extends Serializable> extends EntityMetadata<T> {
-
-	boolean hasCompositeId();
-	public String getOverriddenAttributeName(String propertyName);
-	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName);
-	public boolean isHashKeyProperty(String propertyName);
-	public boolean isCompositeIdProperty(String propertyName);
-	public boolean isRangeKeyProperty(String propertyName);
-	public T getHashKeyPropotypeEntityForHashKey(Object hashKey);
-
+public interface DynamoDBEntityWithCompositeIdInformation<T,ID extends Serializable> extends
+		DynamoDBEntityWithCompositeIdMetadata<T, ID>,DynamoDBEntityInformation<T,ID> {
 
 }

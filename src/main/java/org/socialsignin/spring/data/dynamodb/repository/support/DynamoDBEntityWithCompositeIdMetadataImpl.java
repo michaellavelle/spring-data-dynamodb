@@ -16,11 +16,13 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
+
+
 /**
  * @author Michael Lavelle
  */
 public class DynamoDBEntityWithCompositeIdMetadataImpl<T, ID extends Serializable> extends
-		DynamoDBEntityMetadataSupport<T> implements DynamoDBEntityWithCompositeIdMetadata<T, ID> {
+		DynamoDBEntityMetadataSupport<T,ID> implements DynamoDBEntityWithCompositeIdMetadata<T, ID> {
 
 	public DynamoDBEntityWithCompositeIdMetadataImpl(Class<T> domainType) {
 		super(domainType);
@@ -30,5 +32,39 @@ public class DynamoDBEntityWithCompositeIdMetadataImpl<T, ID extends Serializabl
 	public DynamoDBCompositeIdMetadata<ID> getCompositeIdMetadata(Class<ID> idClass) {
 		return new DynamoDBCompositeIdMetadataImpl<ID>(idClass);
 	}
+
+	@Override
+	public String getRangeKeyPropertyName() {
+
+		// Obtain hash and range key methods of current entity,
+		// using the same extractor as we use for ids
+		// TODO Rename/refactor DynamoDBCompositeIdMetadata so it is more generic
+		DynamoDBCompositeIdMetadata<T> entityWithCompositeIdMetadata
+		= new DynamoDBCompositeIdMetadataImpl<T>(getJavaType());
+		String rangeKeyMethodName = entityWithCompositeIdMetadata.getRangeKeyMethod().getName();
+		String rangeKeyFieldName = rangeKeyMethodName.substring(3);
+		String firstLetter = rangeKeyFieldName.substring(0,1);
+		String remainder = rangeKeyFieldName.substring(1);
+		String rangeKeyProperty =  firstLetter.toLowerCase() + remainder;
+		return rangeKeyProperty;
+
+	}
+
+	@Override
+	public String getHashKeyPropertyName() {
+
+		// Obtain hash and range key methods of current entity,
+		// using the same extractor as we use for ids
+		// TODO Rename/refactor DynamoDBCompositeIdMetadata so it is more generic
+		DynamoDBCompositeIdMetadata<T> entityWithCompositeIdMetadata
+		= new DynamoDBCompositeIdMetadataImpl<T>(getJavaType());
+		String hashKeyMethodName = entityWithCompositeIdMetadata.getHashKeyMethod().getName();
+		String hashKeyFieldName = hashKeyMethodName.substring(3);
+		String firstLetter = hashKeyFieldName.substring(0,1);
+		String remainder = hashKeyFieldName.substring(1);
+		String hashKeyProperty =  firstLetter.toLowerCase() + remainder;
+		return hashKeyProperty;
+	}
+
 
 }
