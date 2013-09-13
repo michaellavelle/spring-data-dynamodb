@@ -39,13 +39,14 @@ public class DynamoDBCompositeIdMetadataImpl<T> implements DynamoDBCompositeIdMe
 	 * @param domainType
 	 *            must not be {@literal null}.
 	 */
-	public DynamoDBCompositeIdMetadataImpl(Class<T> idType) {
+	public DynamoDBCompositeIdMetadataImpl(final Class<T> idType) {
 
 		Assert.notNull(idType, "Id type must not be null!");
 		this.idType = idType;
 		ReflectionUtils.doWithMethods(idType, new MethodCallback() {
 			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
+					Assert.isNull(hashKeyMethod, "Multiple methods annotated by @DynamoDBHashKey within type " + idType.getName() + "!");	
 					ReflectionUtils.makeAccessible(method);
 					hashKeyMethod = method;
 				}
@@ -54,13 +55,14 @@ public class DynamoDBCompositeIdMetadataImpl<T> implements DynamoDBCompositeIdMe
 		ReflectionUtils.doWithMethods(idType, new MethodCallback() {
 			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBRangeKey.class) != null) {
+					Assert.isNull(rangeKeyMethod, "Multiple methods annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");	
 					ReflectionUtils.makeAccessible(method);
 					rangeKeyMethod = method;
 				}
 			}
 		});
-		Assert.notNull(hashKeyMethod, "Hash key method must not be null!");
-		Assert.notNull(rangeKeyMethod, "Range key method must not be null!");
+		Assert.notNull(hashKeyMethod, "No method annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
+		Assert.notNull(rangeKeyMethod, "No method annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
 
 	}
 
