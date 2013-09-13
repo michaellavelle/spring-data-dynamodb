@@ -37,7 +37,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
  * @author Michael Lavelle
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SimpleDynamoDBRepositoryUnitTests {
+public class SimpleDynamoDBCrudRepositoryUnitTests {
 
 	SimpleDynamoDBCrudRepository<User, Long> repoForEntityWithSimpleId;
 
