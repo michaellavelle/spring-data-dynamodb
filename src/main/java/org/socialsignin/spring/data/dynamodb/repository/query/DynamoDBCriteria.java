@@ -244,7 +244,14 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	private <V> Condition createCondition(ComparisonOperator comparisonOperator, Object o,
 			DynamoDBMarshaller<V> optionalMarshaller) {
 
-		if (o instanceof String) {
+		if (optionalMarshaller != null) {
+			String marshalledString = optionalMarshaller.marshall((V) o);
+			Condition condition = new Condition().withComparisonOperator(comparisonOperator)
+
+			.withAttributeValueList(new AttributeValue().withS(marshalledString));
+			return condition;
+		}
+		else if (o instanceof String) {
 			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
 					new AttributeValue().withS((String) o));
 
@@ -259,12 +266,6 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 			boolean boolValue = ((Boolean) o).booleanValue();
 			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
 					new AttributeValue().withN(boolValue ? "1" : "0"));
-			return condition;
-		} else if (optionalMarshaller != null) {
-			String marshalledString = optionalMarshaller.marshall((V) o);
-			Condition condition = new Condition().withComparisonOperator(comparisonOperator)
-
-			.withAttributeValueList(new AttributeValue().withS(marshalledString));
 			return condition;
 		} else if (o instanceof Date) {
 			Date date = (Date)o;

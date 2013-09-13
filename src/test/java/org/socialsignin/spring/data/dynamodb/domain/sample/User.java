@@ -34,6 +34,8 @@ public class User {
 	
 	private Date joinYear;
 	
+	private String postCode;
+	
 	
 	public Date getJoinDate() {
 		return joinDate;
@@ -50,6 +52,14 @@ public class User {
 
 	public void setJoinYear(Date joinYear) {
 		this.joinYear = joinYear;
+	}
+	
+	public String getPostCode() {
+		return postCode;
+	}
+
+	public void setPostCode(String postCode) {
+		this.postCode = postCode;
 	}
 
 	@DynamoDBHashKey(attributeName = "Id")
