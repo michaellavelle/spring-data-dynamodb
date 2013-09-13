@@ -16,13 +16,15 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBHashAndRangeKey;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityWithCompositeIdInformation;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.util.Assert;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
@@ -45,6 +47,8 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	private Map<String, Condition> attributeConditions;
 	private boolean compositeId;
 	private DynamoDBEntityInformation<T, ID> entityMetadata;
+	private Sort sort = null;
+	
 
 	public DynamoDBCriteria(DynamoDBEntityInformation<T, ID> entityMetadata) {
 		compositeId = entityMetadata.hasCompositeId();
@@ -87,6 +91,19 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		this.rangeKeyPropertyName = rangeKeyPropertyName;
 		this.rangeKeyAttributeName = getDynamoDBAttributeName(rangeKeyPropertyName);
 		
+	}
+	
+	public DynamoDBCriteria<T,ID> withSort(Sort sort)
+	{
+		if (this.sort == null)
+		{
+			this.sort = sort;
+		}
+		else
+		{
+			this.sort.and(sort);
+		}
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -170,6 +187,9 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	}
 
 	public DynamoDBQueryExpression<T> buildQueryExpression() {
+		
+		
+		
 		Map<String, Condition> rangeKeyConditions = new HashMap<String, Condition>();
 		boolean allRangeKeyConditions = true;
 		for (Map.Entry<String, Condition> propertyCondition : attributeConditions.entrySet()) {
@@ -186,7 +206,6 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		}
 
 		DynamoDBQueryExpression<T> queryExpression = new DynamoDBQueryExpression<T>();
-
 		DynamoDBHashAndRangeKey loadKey = buildLoadCriteria();
 		if (loadKey == null) {
 			if (hashKeyEquals != null) {
@@ -207,6 +226,29 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 				queryExpression.withRangeKeyConditions(rangeKeyConditions);
 		
 			}
+					
+			if (sort != null)
+			{
+				if (rangeKeyPropertyName == null)
+				{
+					throw new UnsupportedOperationException("Sort not supported for entities without a range key");
+				}
+				else
+				{
+					for (Order order : sort)
+					{
+						if (!order.getProperty().equals(rangeKeyPropertyName))
+						{
+							throw new UnsupportedOperationException("Sorting only possible on range key properties");
+						}
+						else
+						{
+							queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
+						}
+					}
+				}
+			}
+			
 			return queryExpression;
 		}
 		return null;
@@ -246,6 +288,10 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	}
 
 	public DynamoDBScanExpression buildScanExpression() {
+		
+		
+		
+		
 		DynamoDBHashAndRangeKey loadKey = buildLoadCriteria();
 		if (loadKey == null) {
 			DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
@@ -268,6 +314,10 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 				scanExpression.addFilterCondition(attributeCondition.getKey(), attributeCondition.getValue());
 			}
 
+			if (sort != null)
+			{
+				throw new UnsupportedOperationException("Sort not supported for scan expressions");
+			}
 			return scanExpression;
 		}
 		return null;

@@ -51,6 +51,8 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 		return addCriteria(criteria,part,iterator);
 	}
 	
+
+	
 	protected DynamoDBCriteria<T,ID> addCriteria(DynamoDBCriteria<T,ID> criteria,Part part, Iterator<Object> iterator)
 	{
 		if (part.shouldIgnoreCase().equals(IgnoreCaseType.ALWAYS))
@@ -89,7 +91,7 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 	protected DynamoDBCriteria<T,ID> complete(DynamoDBCriteria<T,ID> criteria, Sort sort) {
 		if (sort != null)
 		{
-			throw new UnsupportedOperationException("Sort not yet supported");
+			return criteria.withSort(sort);
 		}
 		
 		return criteria;

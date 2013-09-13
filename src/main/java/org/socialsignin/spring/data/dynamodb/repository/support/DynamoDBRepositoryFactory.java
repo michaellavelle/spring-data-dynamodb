@@ -67,7 +67,7 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	protected <T, ID extends Serializable> DynamoDBCrudRepository<?, ?> getDynamoDBRepository(
 			RepositoryMetadata metadata) {
 
-		return new SimpleDynamoDBCrudRepository(getEntityInformation(metadata.getDomainType()), dynamoDBMapper);
+		return new SimpleDynamoDBPagingAndSortingRepository(getEntityInformation(metadata.getDomainType()), dynamoDBMapper);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 		if (isQueryDslRepository(metadata.getRepositoryInterface())) {
 			throw new IllegalArgumentException("QueryDsl Support has not been implemented yet.");
 		}
-		return SimpleDynamoDBCrudRepository.class;
+		return SimpleDynamoDBPagingAndSortingRepository.class;
 	}
 
 	private static boolean isQueryDslRepository(Class<?> repositoryInterface) {
