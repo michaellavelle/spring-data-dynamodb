@@ -1342,7 +1342,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 	public void testExecute_WhenFinderMethodIsFindingEntityList_WithSingleStringParameter_WithCustomMarshaller_WhenNotFindingByHashKey()
 			throws ParseException {
 
-		String postcode = "NW1";
+		String postcode = "N1";
 
 		setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
 				"findByPostCode", 1, "id", null);
@@ -1388,7 +1388,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 		// Assert that there the attribute value type for this attribute value
 		// is String,
 		// and its value is the parameter expected
-		assertEquals("nw1", filterCondition.getAttributeValueList().get(0).getS());
+		assertEquals("n1", filterCondition.getAttributeValueList().get(0).getS());
 
 		// Assert that all other attribute value types other than String type
 		// are null
