@@ -32,14 +32,24 @@ public class User {
 	
 	private Date joinDate;
 	
+	private Date joinYear;
 	
-	@DynamoDBMarshalling(marshallerClass=DateStringConverter.class)
+	
 	public Date getJoinDate() {
 		return joinDate;
 	}
 
 	public void setJoinDate(Date joinDate) {
 		this.joinDate = joinDate;
+	}
+	
+	@DynamoDBMarshalling(marshallerClass=DynamoDBYearMarshaller.class)
+	public Date getJoinYear() {
+		return joinYear;
+	}
+
+	public void setJoinYear(Date joinYear) {
+		this.joinYear = joinYear;
 	}
 
 	@DynamoDBHashKey(attributeName = "Id")

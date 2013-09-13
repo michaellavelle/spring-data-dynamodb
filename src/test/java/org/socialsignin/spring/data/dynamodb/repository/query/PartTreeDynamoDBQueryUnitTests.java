@@ -19,10 +19,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.socialsignin.spring.data.dynamodb.domain.sample.DateStringConverter;
+import org.socialsignin.spring.data.dynamodb.domain.sample.DynamoDBYearMarshaller;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
+import org.socialsignin.spring.data.dynamodb.mapping.DefaultDynamoDBDateMarshaller;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityWithCompositeIdInformation;
 import org.springframework.data.repository.query.Parameter;
@@ -1211,17 +1212,14 @@ public class PartTreeDynamoDBQueryUnitTests {
 	@Test
 	public void testExecute_WhenFinderMethodIsFindingEntityList_WithSingleDateParameter_WhenNotFindingByHashKey()
 			throws ParseException {
-		String joinDateString = "2013-09-12";
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String joinDateString = "2013-09-12T14:04:03.123Z";
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		Date joinDate = dateFormat.parse(joinDateString);
 
 		setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
 				"findByJoinDate", 1, "id", null);
 		Mockito.when(mockDynamoDBUserQueryMethod.isCollectionQuery()).thenReturn(true);
-		DynamoDBMarshaller marshaller = new DateStringConverter();
-
-		Mockito.when(mockUserEntityMetadata.getMarshallerForProperty("joinDate")).thenReturn(marshaller);
-
+		
 		// Mock out specific DynamoDBMapper behavior expected by this method
 		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
 		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
@@ -1260,6 +1258,72 @@ public class PartTreeDynamoDBQueryUnitTests {
 		// is String,
 		// and its value is the parameter expected
 		assertEquals(joinDateString, filterCondition.getAttributeValueList().get(0).getS());
+
+		// Assert that all other attribute value types other than String type
+		// are null
+		assertNull(filterCondition.getAttributeValueList().get(0).getSS());
+		assertNull(filterCondition.getAttributeValueList().get(0).getN());
+		assertNull(filterCondition.getAttributeValueList().get(0).getNS());
+		assertNull(filterCondition.getAttributeValueList().get(0).getB());
+		assertNull(filterCondition.getAttributeValueList().get(0).getBS());
+
+		// Verify that the expected DynamoDBMapper method was called
+		Mockito.verify(mockDynamoDBMapper).scan(classCaptor.getValue(), scanCaptor.getValue());
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testExecute_WhenFinderMethodIsFindingEntityList_WithSingleDateParameter_WithCustomMarshaller_WhenNotFindingByHashKey()
+			throws ParseException {
+		String joinYearString = "2013";
+		DateFormat dateFormat = new SimpleDateFormat("yyyy");
+		Date joinYear = dateFormat.parse(joinYearString);
+
+		setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
+				"findByJoinYear", 1, "id", null);
+		Mockito.when(mockDynamoDBUserQueryMethod.isCollectionQuery()).thenReturn(true);
+		DynamoDBMarshaller marshaller = new DynamoDBYearMarshaller();
+
+		Mockito.when(mockUserEntityMetadata.getMarshallerForProperty("joinYear")).thenReturn(marshaller);
+
+		// Mock out specific DynamoDBMapper behavior expected by this method
+		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		Mockito.when(mockUserScanResults.get(0)).thenReturn(mockUser);
+		Mockito.when(mockUserScanResults.size()).thenReturn(1);
+		Mockito.when(mockDynamoDBMapper.scan(classCaptor.capture(), scanCaptor.capture())).thenReturn(
+				mockUserScanResults);
+
+		// Execute the query
+		Object[] parameters = new Object[] { joinYear };
+		Object o = partTreeDynamoDBQuery.execute(parameters);
+
+		// Assert that we obtain the expected list of results
+		assertEquals(o, mockUserScanResults);
+
+		// Assert that the list of results contains the correct elements
+		assertEquals(1, mockUserScanResults.size());
+		assertEquals(mockUser, mockUserScanResults.get(0));
+
+		// Assert that we scanned DynamoDB for the correct class
+		assertEquals(classCaptor.getValue(), User.class);
+
+		// Assert that we have only one filter condition, for the name of the
+		// property
+		Map<String, Condition> filterConditions = scanCaptor.getValue().getScanFilter();
+		assertEquals(1, filterConditions.size());
+		Condition filterCondition = filterConditions.get("joinYear");
+		assertNotNull(filterCondition);
+
+		assertEquals(ComparisonOperator.EQ.name(), filterCondition.getComparisonOperator());
+
+		// Assert we only have one attribute value for this filter condition
+		assertEquals(1, filterCondition.getAttributeValueList().size());
+
+		// Assert that there the attribute value type for this attribute value
+		// is String,
+		// and its value is the parameter expected
+		assertEquals(joinYearString, filterCondition.getAttributeValueList().get(0).getS());
 
 		// Assert that all other attribute value types other than String type
 		// are null

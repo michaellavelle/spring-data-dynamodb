@@ -16,9 +16,11 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.socialsignin.spring.data.dynamodb.mapping.DefaultDynamoDBDateMarshaller;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBHashAndRangeKey;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityWithCompositeIdInformation;
@@ -33,6 +35,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
+
 /**
  * @author Michael Lavelle
  */
@@ -48,17 +51,15 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	private boolean compositeId;
 	private DynamoDBEntityInformation<T, ID> entityMetadata;
 	private Sort sort = null;
-	
 
 	public DynamoDBCriteria(DynamoDBEntityInformation<T, ID> entityMetadata) {
 		compositeId = entityMetadata.hasCompositeId();
 		this.entityMetadata = entityMetadata;
 		this.attributeConditions = new HashMap<String, Condition>();
-		if (compositeId)
-		{
+		if (compositeId) {
 			setupCompositeIdPropertyAttributes((DynamoDBEntityWithCompositeIdInformation<T, ID>) entityMetadata);
 		}
-		
+
 	}
 
 	private boolean isComparisonOperatorDistributive(ComparisonOperator comparisonOperator) {
@@ -69,38 +70,31 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		String overriddenName = entityMetadata.getOverriddenAttributeName(propertyName);
 		return overriddenName != null ? overriddenName : propertyName;
 	}
-	
-	private void setupCompositeIdPropertyAttributes(DynamoDBEntityWithCompositeIdInformation<T, ID> compositeMetadata)
-	{
+
+	private void setupCompositeIdPropertyAttributes(DynamoDBEntityWithCompositeIdInformation<T, ID> compositeMetadata) {
 		this.hashKeyPropertyName = compositeMetadata.getHashKeyPropertyName();
 		this.hashKeyAttributeName = getDynamoDBAttributeName(hashKeyPropertyName);
 		this.rangeKeyPropertyName = compositeMetadata.getRangeKeyPropertyName();
 		this.rangeKeyAttributeName = getDynamoDBAttributeName(rangeKeyPropertyName);
 
 	}
-	
-	private void setupHashKeyPropertyAttributes(String hashKeyPropertyName)
-	{
+
+	private void setupHashKeyPropertyAttributes(String hashKeyPropertyName) {
 		this.hashKeyPropertyName = hashKeyPropertyName;
 		this.hashKeyAttributeName = getDynamoDBAttributeName(hashKeyPropertyName);
-		
+
 	}
-	
-	private void setupRangeKeyPropertyAttributes(String rangeKeyPropertyName)
-	{
+
+	private void setupRangeKeyPropertyAttributes(String rangeKeyPropertyName) {
 		this.rangeKeyPropertyName = rangeKeyPropertyName;
 		this.rangeKeyAttributeName = getDynamoDBAttributeName(rangeKeyPropertyName);
-		
+
 	}
-	
-	public DynamoDBCriteria<T,ID> withSort(Sort sort)
-	{
-		if (this.sort == null)
-		{
+
+	public DynamoDBCriteria<T, ID> withSort(Sort sort) {
+		if (this.sort == null) {
 			this.sort = sort;
-		}
-		else
-		{
+		} else {
 			this.sort.and(sort);
 		}
 		return this;
@@ -112,19 +106,21 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		if (comparisonOperator.equals(ComparisonOperator.EQ)) {
 			return withPropertyEquals(propertyName, value);
 		} else {
-			
+
 			if (!isComparisonOperatorDistributive(comparisonOperator)) {
 				throw new UnsupportedOperationException("Only EQ,NE so far supported for composite id comparison");
 			}
-			
+
 			if (entityMetadata.isCompositeIdProperty(propertyName)) {
-			
+
 				Object hashKeyValue = entityMetadata.getHashKey((ID) value);
 				Object rangeKeyValue = entityMetadata.getRangeKey((ID) value);
-				
-				Condition hashKeyCondition = createCondition(comparisonOperator, hashKeyValue, entityMetadata.getMarshallerForProperty(hashKeyPropertyName));
-				Condition rangeKeyCondition = createCondition(comparisonOperator, rangeKeyValue, entityMetadata.getMarshallerForProperty(rangeKeyPropertyName));
-				
+
+				Condition hashKeyCondition = createCondition(comparisonOperator, hashKeyValue,
+						entityMetadata.getMarshallerForProperty(hashKeyPropertyName));
+				Condition rangeKeyCondition = createCondition(comparisonOperator, rangeKeyValue,
+						entityMetadata.getMarshallerForProperty(rangeKeyPropertyName));
+
 				attributeConditions.put(getDynamoDBAttributeName(hashKeyPropertyName), hashKeyCondition);
 				attributeConditions.put(getDynamoDBAttributeName(rangeKeyPropertyName), rangeKeyCondition);
 
@@ -159,7 +155,6 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 			this.rangeKeyEquals = value;
 			setupRangeKeyPropertyAttributes(propertyName);
 
-
 		} else {
 
 			DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(propertyName);
@@ -187,9 +182,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	}
 
 	public DynamoDBQueryExpression<T> buildQueryExpression() {
-		
-		
-		
+
 		Map<String, Condition> rangeKeyConditions = new HashMap<String, Condition>();
 		boolean allRangeKeyConditions = true;
 		for (Map.Entry<String, Condition> propertyCondition : attributeConditions.entrySet()) {
@@ -201,7 +194,8 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		}
 
 		if (!allRangeKeyConditions) {
-			// Can only build query expression if any conditions specified are range conditions
+			// Can only build query expression if any conditions specified are
+			// range conditions
 			return null;
 		}
 
@@ -224,31 +218,23 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 
 			} else {
 				queryExpression.withRangeKeyConditions(rangeKeyConditions);
-		
+
 			}
-					
-			if (sort != null)
-			{
-				if (rangeKeyPropertyName == null)
-				{
+
+			if (sort != null) {
+				if (rangeKeyPropertyName == null) {
 					throw new UnsupportedOperationException("Sort not supported for entities without a range key");
-				}
-				else
-				{
-					for (Order order : sort)
-					{
-						if (!order.getProperty().equals(rangeKeyPropertyName))
-						{
+				} else {
+					for (Order order : sort) {
+						if (!order.getProperty().equals(rangeKeyPropertyName)) {
 							throw new UnsupportedOperationException("Sorting only possible on range key properties");
-						}
-						else
-						{
+						} else {
 							queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
 						}
 					}
 				}
 			}
-			
+
 			return queryExpression;
 		}
 		return null;
@@ -257,8 +243,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	@SuppressWarnings("unchecked")
 	private <V> Condition createCondition(ComparisonOperator comparisonOperator, Object o,
 			DynamoDBMarshaller<V> optionalMarshaller) {
-		
-		
+
 		if (o instanceof String) {
 			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
 					new AttributeValue().withS((String) o));
@@ -267,19 +252,26 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 
 		} else if (o instanceof Number) {
 
-			Condition condition = new Condition().withComparisonOperator(comparisonOperator)
-					.withAttributeValueList(new AttributeValue().withN(o.toString()));
+			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
+					new AttributeValue().withN(o.toString()));
 			return condition;
 		} else if (o instanceof Boolean) {
 			boolean boolValue = ((Boolean) o).booleanValue();
-			Condition condition = new Condition().withComparisonOperator(comparisonOperator)
-			.withAttributeValueList(new AttributeValue().withN(boolValue ? "1" : "0"));
+			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
+					new AttributeValue().withN(boolValue ? "1" : "0"));
 			return condition;
 		} else if (optionalMarshaller != null) {
 			String marshalledString = optionalMarshaller.marshall((V) o);
 			Condition condition = new Condition().withComparisonOperator(comparisonOperator)
 
 			.withAttributeValueList(new AttributeValue().withS(marshalledString));
+			return condition;
+		} else if (o instanceof Date) {
+			Date date = (Date)o;
+			String marshalledDate = new DefaultDynamoDBDateMarshaller().marshall(date);
+
+			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
+					new AttributeValue().withS(marshalledDate));
 			return condition;
 		} else {
 			throw new RuntimeException("Cannot create condition for type:" + o.getClass()
@@ -288,17 +280,14 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	}
 
 	public DynamoDBScanExpression buildScanExpression() {
-		
-		
-		
-		
+
 		DynamoDBHashAndRangeKey loadKey = buildLoadCriteria();
 		if (loadKey == null) {
 			DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 			if (hashKeyEquals != null) {
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(hashKeyPropertyName);
 
-				Assert.notNull(hashKeyAttributeName,"No hash key attribute name set");
+				Assert.notNull(hashKeyAttributeName, "No hash key attribute name set");
 				Condition condition = createCondition(ComparisonOperator.EQ, hashKeyEquals, marshaller);
 				scanExpression.addFilterCondition(hashKeyAttributeName, condition);
 			}
@@ -314,8 +303,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 				scanExpression.addFilterCondition(attributeCondition.getKey(), attributeCondition.getValue());
 			}
 
-			if (sort != null)
-			{
+			if (sort != null) {
 				throw new UnsupportedOperationException("Sort not supported for scan expressions");
 			}
 			return scanExpression;

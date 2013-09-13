@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.socialsignin.spring.data.dynamodb.repository;
+package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import java.io.Serializable;
+import java.text.SimpleDateFormat;
 
-import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.socialsignin.spring.data.dynamodb.mapping.AbstractDynamoDBDateMarshaller;
 
-/**
- * DynamoDB specific extension of
- * {@link org.springframework.data.repository.Repository}.
- * 
- * @author Michael Lavelle
- */
-@NoRepositoryBean
-public interface DynamoDBPagingAndSortingRepository<T, ID extends Serializable> extends PagingAndSortingRepository<T, ID> {
+public class DynamoDBYearMarshaller extends AbstractDynamoDBDateMarshaller {
 
+	public DynamoDBYearMarshaller() {
+		super(new SimpleDateFormat("yyyy"));
+	}
 }
