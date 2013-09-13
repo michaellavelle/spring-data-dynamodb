@@ -16,6 +16,9 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
+
+import org.springframework.util.Assert;
 
 
 /**
@@ -32,6 +35,26 @@ public class DynamoDBEntityWithCompositeIdMetadataImpl<T, ID extends Serializabl
 	public DynamoDBCompositeIdMetadata<ID> getCompositeIdMetadata(Class<ID> idClass) {
 		return new DynamoDBCompositeIdMetadataImpl<ID>(idClass);
 	}
+	
+	
+	private String getPropertyNameForAccessorMethod(Method method)
+	{
+		String methodName = method.getName();
+		String propertyName = null;
+		if (methodName.startsWith("get"))
+		{
+			propertyName = methodName.substring(3);
+		}
+		else if (methodName.startsWith("is"))
+		{
+			propertyName = methodName.substring(2);
+		}
+		Assert.notNull(propertyName,"Hash or range key annotated accessor methods must start with 'get' or 'is'");
+		
+		String firstLetter = propertyName.substring(0,1);
+		String remainder = propertyName.substring(1);
+		return firstLetter.toLowerCase() + remainder;
+	}
 
 	@Override
 	public String getRangeKeyPropertyName() {
@@ -41,12 +64,7 @@ public class DynamoDBEntityWithCompositeIdMetadataImpl<T, ID extends Serializabl
 		// TODO Rename/refactor DynamoDBCompositeIdMetadata so it is more generic
 		DynamoDBCompositeIdMetadata<T> entityWithCompositeIdMetadata
 		= new DynamoDBCompositeIdMetadataImpl<T>(getJavaType());
-		String rangeKeyMethodName = entityWithCompositeIdMetadata.getRangeKeyMethod().getName();
-		String rangeKeyFieldName = rangeKeyMethodName.substring(3);
-		String firstLetter = rangeKeyFieldName.substring(0,1);
-		String remainder = rangeKeyFieldName.substring(1);
-		String rangeKeyProperty =  firstLetter.toLowerCase() + remainder;
-		return rangeKeyProperty;
+		return getPropertyNameForAccessorMethod(entityWithCompositeIdMetadata.getRangeKeyMethod());
 
 	}
 
@@ -58,12 +76,8 @@ public class DynamoDBEntityWithCompositeIdMetadataImpl<T, ID extends Serializabl
 		// TODO Rename/refactor DynamoDBCompositeIdMetadata so it is more generic
 		DynamoDBCompositeIdMetadata<T> entityWithCompositeIdMetadata
 		= new DynamoDBCompositeIdMetadataImpl<T>(getJavaType());
-		String hashKeyMethodName = entityWithCompositeIdMetadata.getHashKeyMethod().getName();
-		String hashKeyFieldName = hashKeyMethodName.substring(3);
-		String firstLetter = hashKeyFieldName.substring(0,1);
-		String remainder = hashKeyFieldName.substring(1);
-		String hashKeyProperty =  firstLetter.toLowerCase() + remainder;
-		return hashKeyProperty;
+		return getPropertyNameForAccessorMethod(entityWithCompositeIdMetadata.getHashKeyMethod());
+
 	}
 
 

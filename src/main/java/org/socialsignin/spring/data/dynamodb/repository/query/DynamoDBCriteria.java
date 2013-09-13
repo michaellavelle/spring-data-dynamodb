@@ -229,13 +229,9 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 					.withAttributeValueList(new AttributeValue().withN(o.toString()));
 			return condition;
 		} else if (o instanceof Boolean) {
-			ByteBuffer buf = ByteBuffer.allocate(1);
 			boolean boolValue = ((Boolean) o).booleanValue();
-
-			buf.put((byte) (boolValue ? 1 : 0));
 			Condition condition = new Condition().withComparisonOperator(comparisonOperator)
-
-			.withAttributeValueList(new AttributeValue().withB(buf));
+			.withAttributeValueList(new AttributeValue().withN(boolValue ? "1" : "0"));
 			return condition;
 		} else if (optionalMarshaller != null) {
 			String marshalledString = optionalMarshaller.marshall((V) o);

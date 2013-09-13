@@ -105,8 +105,8 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 	private boolean isPropertyAnnotatedWith(final String propertyName, final Class<? extends Annotation> annotation) {
 		
-		Method method = ReflectionUtils.findMethod(domainType, toMethodName(propertyName));
-		return method.getAnnotation(annotation) != null;
+		Method method = findMethod(propertyName);
+		return method != null && method.getAnnotation(annotation) != null;
 	}
 
 	@Override
@@ -123,34 +123,55 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		return result.size() > 0;
 	}
 
-	private String toMethodName(String propertyName) {
+	private String toGetMethodName(String propertyName) {
 		String methodName = propertyName.substring(0, 1).toUpperCase();
 		if (propertyName.length() > 1) {
 			methodName = methodName + propertyName.substring(1);
 		}
 		return "get" + methodName;
 	}
+	
+	private String toIsMethodName(String propertyName) {
+		String methodName = propertyName.substring(0, 1).toUpperCase();
+		if (propertyName.length() > 1) {
+			methodName = methodName + propertyName.substring(1);
+		}
+		return "is" + methodName;
+	}
+	
+	private Method findMethod(String propertyName)
+	{
+		Method method = ReflectionUtils.findMethod(domainType, toGetMethodName(propertyName));
+		if (method == null)
+		{
+			method = ReflectionUtils.findMethod(domainType, toIsMethodName(propertyName));
+		}
+		return method;
+
+	}
 
 	@Override
 	public String getOverriddenAttributeName(final String propertyName) {
 
-		Method method = ReflectionUtils.findMethod(domainType, toMethodName(propertyName));
-		if (method.getAnnotation(DynamoDBAttribute.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {
-			return method.getAnnotation(DynamoDBAttribute.class).attributeName();
+		Method method = findMethod(propertyName);
+		if (method != null)
+		{
+			if (method.getAnnotation(DynamoDBAttribute.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {
+				return method.getAnnotation(DynamoDBAttribute.class).attributeName();
+			}
+			if (method.getAnnotation(DynamoDBHashKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {
+				return method.getAnnotation(DynamoDBHashKey.class).attributeName();
+			}
+			if (method.getAnnotation(DynamoDBRangeKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
+				return method.getAnnotation(DynamoDBRangeKey.class).attributeName();
+			}
+			if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
+				return method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
+			}
+			if (method.getAnnotation(DynamoDBVersionAttribute.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
+				return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
+			}
 		}
-		if (method.getAnnotation(DynamoDBHashKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {
-			return method.getAnnotation(DynamoDBHashKey.class).attributeName();
-		}
-		if (method.getAnnotation(DynamoDBRangeKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
-			return method.getAnnotation(DynamoDBRangeKey.class).attributeName();
-		}
-		if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
-			return method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
-		}
-		if (method.getAnnotation(DynamoDBVersionAttribute.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
-			return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
-		}
-
 		return null;
 
 	}
@@ -180,8 +201,8 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 	@Override
 	public DynamoDBMarshaller<?> getMarshallerForProperty(final String propertyName) {
 		
-		Method method = ReflectionUtils.findMethod(domainType, toMethodName(propertyName));
-		if (method.getAnnotation(DynamoDBMarshalling.class) != null) {
+		Method method = findMethod(propertyName);
+		if (method != null && method.getAnnotation(DynamoDBMarshalling.class) != null) {
 			try {
 				return method.getAnnotation(DynamoDBMarshalling.class).marshallerClass().newInstance();
 			} catch (InstantiationException e) {
