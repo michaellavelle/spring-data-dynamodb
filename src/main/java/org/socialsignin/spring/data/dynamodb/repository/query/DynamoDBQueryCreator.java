@@ -57,7 +57,6 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 	{
 		if (part.shouldIgnoreCase().equals(IgnoreCaseType.ALWAYS))
 			throw new UnsupportedOperationException("Case insensitivity not supported");
-		
 		switch (part.getType()) {
 		case TRUE:
 			return criteria.withPropertyCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ,Boolean.TRUE);

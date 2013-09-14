@@ -42,7 +42,10 @@ import com.amazonaws.services.dynamodbv2.model.Condition;
 public class DynamoDBCriteria<T, ID extends Serializable> {
 
 	private Object hashKeyEquals;
+	private boolean hashKeyEqualsSpecified;
 	private Object rangeKeyEquals;
+	private boolean rangeKeyEqualsSpecified;
+
 	private String hashKeyAttributeName;
 	private String hashKeyPropertyName;
 	private String rangeKeyPropertyName;
@@ -116,19 +119,24 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 				Object hashKeyValue = entityMetadata.getHashKey((ID) value);
 				Object rangeKeyValue = entityMetadata.getRangeKey((ID) value);
 
-				Condition hashKeyCondition = createCondition(comparisonOperator, hashKeyValue,
+				Condition hashKeyCondition = createCondition(hashKeyPropertyName,comparisonOperator, hashKeyValue,
 						entityMetadata.getMarshallerForProperty(hashKeyPropertyName));
-				Condition rangeKeyCondition = createCondition(comparisonOperator, rangeKeyValue,
+				Condition rangeKeyCondition = createCondition(rangeKeyPropertyName,comparisonOperator, rangeKeyValue,
 						entityMetadata.getMarshallerForProperty(rangeKeyPropertyName));
 
-				attributeConditions.put(getDynamoDBAttributeName(hashKeyPropertyName), hashKeyCondition);
-				attributeConditions.put(getDynamoDBAttributeName(rangeKeyPropertyName), rangeKeyCondition);
-
+				if (hashKeyValue != null)
+				{
+					attributeConditions.put(getDynamoDBAttributeName(hashKeyPropertyName), hashKeyCondition);
+				}
+				if (rangeKeyValue != null)
+				{
+					attributeConditions.put(getDynamoDBAttributeName(rangeKeyPropertyName), rangeKeyCondition);
+				}
 			} else {
 
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(propertyName);
 
-				Condition condition = createCondition(comparisonOperator, value, marshaller);
+				Condition condition = createCondition(propertyName,comparisonOperator, value, marshaller);
 				attributeConditions.put(getDynamoDBAttributeName(propertyName), condition);
 			}
 
@@ -142,24 +150,27 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		if (entityMetadata.hasCompositeId() && entityMetadata.isCompositeIdProperty(propertyName)) {
 
 			this.hashKeyEquals = entityMetadata.getHashKey((ID) value);
-
+			this.hashKeyEqualsSpecified = hashKeyEquals != null;
 			this.rangeKeyEquals = entityMetadata.getRangeKey((ID) value);
+			this.rangeKeyEqualsSpecified = rangeKeyEquals != null;
 
 		}
 
 		else if (entityMetadata.isHashKeyProperty(propertyName)) {
 			this.hashKeyEquals = value;
+			this.hashKeyEqualsSpecified =true;
 			setupHashKeyPropertyAttributes(propertyName);
 
 		} else if (entityMetadata.isRangeKeyProperty(propertyName)) {
 			this.rangeKeyEquals = value;
+			this.rangeKeyEqualsSpecified = true;
 			setupRangeKeyPropertyAttributes(propertyName);
 
 		} else {
 
 			DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(propertyName);
 
-			Condition condition = createCondition(ComparisonOperator.EQ, value, marshaller);
+			Condition condition = createCondition(propertyName,ComparisonOperator.EQ, value, marshaller);
 
 			attributeConditions.put(getDynamoDBAttributeName(propertyName), condition);
 		}
@@ -176,7 +187,10 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		return hashAndRangeKey;
 	}
 
-	private T buildHashKeyObjectFromHashKey(Object hashKey) {
+	private T buildHashKeyObjectFromHashKey(Object hashKey,String propertyName) {
+		
+		Assert.notNull(hashKey,"Querying by null hash key not supported, please provide a value for '" + propertyName + "'");
+		
 		T entity = (T) entityMetadata.getHashKeyPropotypeEntityForHashKey(hashKey);
 		return entity;
 	}
@@ -202,16 +216,16 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		DynamoDBQueryExpression<T> queryExpression = new DynamoDBQueryExpression<T>();
 		DynamoDBHashAndRangeKey loadKey = buildLoadCriteria();
 		if (loadKey == null) {
-			if (hashKeyEquals != null) {
-				queryExpression.withHashKeyValues(buildHashKeyObjectFromHashKey(hashKeyEquals));
+			if (hashKeyEqualsSpecified) {
+				queryExpression.withHashKeyValues(buildHashKeyObjectFromHashKey(hashKeyEquals,hashKeyPropertyName));
 			} else {
 				return null;
 			}
 
-			if (rangeKeyEquals != null) {
+			if (rangeKeyEqualsSpecified) {
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(this.rangeKeyPropertyName);
 
-				Condition rangeKeyCondition = createCondition(ComparisonOperator.EQ, rangeKeyEquals, marshaller);
+				Condition rangeKeyCondition = createCondition(rangeKeyPropertyName,ComparisonOperator.EQ, rangeKeyEquals, marshaller);
 				rangeKeyConditions = new HashMap<String, Condition>();
 				rangeKeyConditions.put(rangeKeyAttributeName, rangeKeyCondition);
 				queryExpression.setRangeKeyConditions(rangeKeyConditions);
@@ -241,9 +255,12 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <V> Condition createCondition(ComparisonOperator comparisonOperator, Object o,
+	private <V> Condition createCondition(String propertyName,ComparisonOperator comparisonOperator, Object o,
 			DynamoDBMarshaller<V> optionalMarshaller) {
-
+				
+		Assert.notNull(o,"Creating conditions on null property values not yet supported: please specify a value for '" + propertyName + "'");
+		
+		
 		if (optionalMarshaller != null) {
 			String marshalledString = optionalMarshaller.marshall((V) o);
 			Condition condition = new Condition().withComparisonOperator(comparisonOperator)
@@ -285,18 +302,19 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		DynamoDBHashAndRangeKey loadKey = buildLoadCriteria();
 		if (loadKey == null) {
 			DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
-			if (hashKeyEquals != null) {
+			if (hashKeyEqualsSpecified) {
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(hashKeyPropertyName);
 
 				Assert.notNull(hashKeyAttributeName, "No hash key attribute name set");
-				Condition condition = createCondition(ComparisonOperator.EQ, hashKeyEquals, marshaller);
+				Condition condition = createCondition(hashKeyPropertyName,ComparisonOperator.EQ, hashKeyEquals, marshaller);
 				scanExpression.addFilterCondition(hashKeyAttributeName, condition);
 			}
+			
 
-			if (rangeKeyEquals != null) {
+			if (rangeKeyEqualsSpecified) {
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(rangeKeyPropertyName);
 
-				Condition condition = createCondition(ComparisonOperator.EQ, rangeKeyEquals, marshaller);
+				Condition condition = createCondition(rangeKeyPropertyName,ComparisonOperator.EQ, rangeKeyEquals, marshaller);
 				scanExpression.addFilterCondition(rangeKeyAttributeName, condition);
 			}
 
