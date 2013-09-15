@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * @author Michael Lavelle
@@ -25,6 +26,7 @@ public interface DynamoDBEntityWithCompositeIdMetadata<T, ID extends Serializabl
 	public DynamoDBCompositeIdMetadata<ID> getCompositeIdMetadata(Class<ID> idClass);
 	public String getRangeKeyPropertyName();
 	public String getHashKeyPropertyName();
+	public Set<String> getIndexRangeKeyPropertyNames();
 
 
 }

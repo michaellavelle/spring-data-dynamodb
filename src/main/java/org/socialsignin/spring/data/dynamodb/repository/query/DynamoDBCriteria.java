@@ -18,7 +18,11 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.socialsignin.spring.data.dynamodb.mapping.DefaultDynamoDBDateMarshaller;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBHashAndRangeKey;
@@ -28,6 +32,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
@@ -50,7 +56,9 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	private String hashKeyPropertyName;
 	private String rangeKeyPropertyName;
 	private String rangeKeyAttributeName;
-	private Map<String, Condition> attributeConditions;
+	private Set<String> indexRangeKeyPropertyNames;
+	private Set<String> indexRangeKeyAttributeNames;
+	private MultiValueMap<String, Condition> attributeConditions;
 	private boolean compositeId;
 	private DynamoDBEntityInformation<T, ID> entityMetadata;
 	private Sort sort = null;
@@ -58,7 +66,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	public DynamoDBCriteria(DynamoDBEntityInformation<T, ID> entityMetadata) {
 		compositeId = entityMetadata.hasCompositeId();
 		this.entityMetadata = entityMetadata;
-		this.attributeConditions = new HashMap<String, Condition>();
+		this.attributeConditions = new LinkedMultiValueMap<String, Condition>();
 		if (compositeId) {
 			setupCompositeIdPropertyAttributes((DynamoDBEntityWithCompositeIdInformation<T, ID>) entityMetadata);
 		}
@@ -79,6 +87,12 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 		this.hashKeyAttributeName = getDynamoDBAttributeName(hashKeyPropertyName);
 		this.rangeKeyPropertyName = compositeMetadata.getRangeKeyPropertyName();
 		this.rangeKeyAttributeName = getDynamoDBAttributeName(rangeKeyPropertyName);
+		this.indexRangeKeyPropertyNames = compositeMetadata.getIndexRangeKeyPropertyNames();
+		this.indexRangeKeyAttributeNames = new HashSet<String>();
+		for (String propertyName : indexRangeKeyPropertyNames)
+		{
+			indexRangeKeyAttributeNames.add(getDynamoDBAttributeName(propertyName));
+		}
 
 	}
 
@@ -126,18 +140,18 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 
 				if (hashKeyValue != null)
 				{
-					attributeConditions.put(getDynamoDBAttributeName(hashKeyPropertyName), hashKeyCondition);
+					attributeConditions.add(getDynamoDBAttributeName(hashKeyPropertyName), hashKeyCondition);
 				}
 				if (rangeKeyValue != null)
 				{
-					attributeConditions.put(getDynamoDBAttributeName(rangeKeyPropertyName), rangeKeyCondition);
+					attributeConditions.add(getDynamoDBAttributeName(rangeKeyPropertyName), rangeKeyCondition);
 				}
 			} else {
 
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(propertyName);
 
 				Condition condition = createCondition(propertyName,comparisonOperator, value, marshaller);
-				attributeConditions.put(getDynamoDBAttributeName(propertyName), condition);
+				attributeConditions.add(getDynamoDBAttributeName(propertyName), condition);
 			}
 
 		}
@@ -172,7 +186,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 
 			Condition condition = createCondition(propertyName,ComparisonOperator.EQ, value, marshaller);
 
-			attributeConditions.put(getDynamoDBAttributeName(propertyName), condition);
+			attributeConditions.add(getDynamoDBAttributeName(propertyName), condition);
 		}
 
 		return this;
@@ -197,27 +211,40 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 
 	public DynamoDBQueryExpression<T> buildQueryExpression() {
 
-		Map<String, Condition> rangeKeyConditions = new HashMap<String, Condition>();
-		boolean allRangeKeyConditions = true;
-		for (Map.Entry<String, Condition> propertyCondition : attributeConditions.entrySet()) {
-			if (propertyCondition.getKey().equals(rangeKeyAttributeName)) {
-				rangeKeyConditions.put(propertyCondition.getKey(), propertyCondition.getValue());
-			} else {
-				allRangeKeyConditions = false;
-			}
-		}
-
-		if (!allRangeKeyConditions) {
-			// Can only build query expression if any conditions specified are
-			// range conditions
-			return null;
-		}
-
+		
+		
+	
 		DynamoDBQueryExpression<T> queryExpression = new DynamoDBQueryExpression<T>();
 		DynamoDBHashAndRangeKey loadKey = buildLoadCriteria();
 		if (loadKey == null) {
+			
+			// Can only build query expression if we have conditions on at most one non-hash-key property
+			if (attributeConditions.size() > 1)
+			{
+				return null;
+			}
+			else if (attributeConditions.size() > 0 && rangeKeyEqualsSpecified && !attributeConditions.containsKey(rangeKeyAttributeName))
+			{
+				// Cannot query by range key equals and another property condition - must use scan instead
+				return null;
+			}
+			
+		
+			if (attributeConditions.size() > 0)
+			{
+				Map.Entry<String, List<Condition>> propertyConditions = attributeConditions.entrySet().iterator().next();
+				if (!propertyConditions.getKey().equals(rangeKeyAttributeName) && (indexRangeKeyAttributeNames == null || !indexRangeKeyAttributeNames.contains(propertyConditions.getKey())))
+				{
+					// Can only build query expression if the condition is on a range key or an index range key
+					return null;
+				}
+			}
+			
+			
+			
 			if (hashKeyEqualsSpecified) {
 				queryExpression.withHashKeyValues(buildHashKeyObjectFromHashKey(hashKeyEquals,hashKeyPropertyName));
+				queryExpression.withRangeKeyConditions(new HashMap<String,Condition>());
 			} else {
 				return null;
 			}
@@ -226,12 +253,28 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(this.rangeKeyPropertyName);
 
 				Condition rangeKeyCondition = createCondition(rangeKeyPropertyName,ComparisonOperator.EQ, rangeKeyEquals, marshaller);
-				rangeKeyConditions = new HashMap<String, Condition>();
+				Map<String,Condition> rangeKeyConditions = new HashMap<String, Condition>();
 				rangeKeyConditions.put(rangeKeyAttributeName, rangeKeyCondition);
 				queryExpression.setRangeKeyConditions(rangeKeyConditions);
+				// TODO Apply other range conditions here - amazon db will not accept range conditions on more than one field
+				// but how will this behave if another range condition on same field?
+				// This may not be needed
+				for (Entry<String, List<Condition>> entry :  attributeConditions.entrySet())
+				{
+					for (Condition condition : entry.getValue())
+					{
+						queryExpression.withRangeKeyCondition(entry.getKey(), condition);
+					}
+				}
 
 			} else {
-				queryExpression.withRangeKeyConditions(rangeKeyConditions);
+				for (Entry<String, List<Condition>> entry :  attributeConditions.entrySet())
+				{
+					for (Condition condition : entry.getValue())
+					{
+						queryExpression.withRangeKeyCondition(entry.getKey(), condition);
+					}
+				}
 
 			}
 
@@ -239,13 +282,30 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 				if (rangeKeyPropertyName == null) {
 					throw new UnsupportedOperationException("Sort not supported for entities without a range key");
 				} else {
+					
+					Order specifiedOrder = null;
 					for (Order order : sort) {
-						if (!order.getProperty().equals(rangeKeyPropertyName)) {
-							throw new UnsupportedOperationException("Sorting only possible on range key properties");
+						if (specifiedOrder != null && !specifiedOrder.getProperty().equals(order.getProperty()))
+						{
+							throw new UnsupportedOperationException("Sorting only possible by a single property");
+						}
+						if (!order.getProperty().equals(rangeKeyPropertyName) && (indexRangeKeyPropertyNames == null || !indexRangeKeyPropertyNames.contains(order.getProperty()))) {
+							throw new UnsupportedOperationException("Sorting only possible on range key or index range key properties");
 						} else {
-							queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
+							if (rangeKeyEqualsSpecified && (order.getProperty().equals(rangeKeyPropertyName)) || ((!rangeKeyEqualsSpecified && order.getProperty().equals(rangeKeyPropertyName) && queryExpression.getRangeKeyConditions().size() == 0) || queryExpression.getRangeKeyConditions().containsKey(getDynamoDBAttributeName(order.getProperty()))))
+							{
+								queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
+								specifiedOrder = order;
+							}
+							else
+							{
+								throw new UnsupportedOperationException("Sorting only possible if the sort property is part of the range key criteria for this query");
+							}
 						}
 					}
+					
+					
+					
 				}
 			}
 
@@ -318,8 +378,11 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 				scanExpression.addFilterCondition(rangeKeyAttributeName, condition);
 			}
 
-			for (Map.Entry<String, Condition> attributeCondition : attributeConditions.entrySet()) {
-				scanExpression.addFilterCondition(attributeCondition.getKey(), attributeCondition.getValue());
+			for (Map.Entry<String, List<Condition>> attributeCondition : attributeConditions.entrySet()) {
+				for (Condition condition : attributeCondition.getValue())
+				{
+					scanExpression.addFilterCondition(attributeCondition.getKey(), condition);
+				}
 			}
 
 			if (sort != null) {

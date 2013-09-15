@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
@@ -101,6 +102,12 @@ public class DynamoDBEntityWithCompositeIdInformationImpl<T, ID extends Serializ
 	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
 		return metadata.getMarshallerForProperty(propertyName);
 	}
+
+	@Override
+	public Set<String> getIndexRangeKeyPropertyNames() {
+		return metadata.getIndexRangeKeyPropertyNames();
+	}
+
 
 	
 	

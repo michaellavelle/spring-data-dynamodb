@@ -17,8 +17,14 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.MethodCallback;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
 
 
 /**
@@ -78,6 +84,19 @@ public class DynamoDBEntityWithCompositeIdMetadataImpl<T, ID extends Serializabl
 		= new DynamoDBCompositeIdMetadataImpl<T>(getJavaType());
 		return getPropertyNameForAccessorMethod(entityWithCompositeIdMetadata.getHashKeyMethod());
 
+	}
+
+	@Override
+	public Set<String> getIndexRangeKeyPropertyNames() {
+		final Set<String> propertyNames = new HashSet<String>();
+		ReflectionUtils.doWithMethods(getJavaType(), new MethodCallback() {
+			public void doWith(Method method) {
+				if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
+					propertyNames.add(getPropertyNameForAccessorMethod(method));
+				}
+			}
+		});
+		return propertyNames;
 	}
 
 

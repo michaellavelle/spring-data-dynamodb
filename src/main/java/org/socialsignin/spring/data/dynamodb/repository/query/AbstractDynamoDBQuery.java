@@ -200,8 +200,8 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			}
 
 			DynamoDBQueryExpression<T> queryExpression = criteria.buildQueryExpression();
-			if (queryExpression != null) {
-
+			if (queryExpression != null) {				
+				
 				// Query to the end of the page after the requested page
 				int resultsLimit = pageable.getOffset() +  (2 * pageable.getPageSize());
 				queryExpression.setLimit(resultsLimit);
