@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
@@ -58,6 +59,13 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 		if (part.shouldIgnoreCase().equals(IgnoreCaseType.ALWAYS))
 			throw new UnsupportedOperationException("Case insensitivity not supported");
 		switch (part.getType()) {
+		
+		case AFTER:
+			// TODO Do we want to check that value is a DynamoDB date here - ie. a Date object or a String?
+			return criteria.withPropertyCriteria(part.getProperty().getSegment(), ComparisonOperator.GT,iterator.next());
+		case BEFORE:
+			// TODO Do we want to check that value is a DynamoDB date here - ie. a Date object or a String?
+			return criteria.withPropertyCriteria(part.getProperty().getSegment(), ComparisonOperator.LT,iterator.next());
 		case TRUE:
 			return criteria.withPropertyCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ,Boolean.TRUE);
 		case FALSE:

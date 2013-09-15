@@ -122,14 +122,15 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 			Object value) {
 		if (comparisonOperator.equals(ComparisonOperator.EQ)) {
 			return withPropertyEquals(propertyName, value);
-		} else {
-
-			if (!isComparisonOperatorDistributive(comparisonOperator)) {
-				throw new UnsupportedOperationException("Only EQ,NE so far supported for composite id comparison");
-			}
+		} else {	
 
 			if (entityMetadata.isCompositeIdProperty(propertyName)) {
 
+				if (!isComparisonOperatorDistributive(comparisonOperator)) {
+					throw new UnsupportedOperationException("Only EQ,NE so far supported for composite id comparison");
+				}
+				
+				
 				Object hashKeyValue = entityMetadata.getHashKey((ID) value);
 				Object rangeKeyValue = entityMetadata.getRangeKey((ID) value);
 
