@@ -118,7 +118,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public DynamoDBCriteria<T, ID> withPropertyCriteria(String propertyName, ComparisonOperator comparisonOperator,
+	public DynamoDBCriteria<T, ID> withSingleValueCriteria(String propertyName, ComparisonOperator comparisonOperator,
 			Object value) {
 		if (comparisonOperator.equals(ComparisonOperator.EQ)) {
 			return withPropertyEquals(propertyName, value);
@@ -134,9 +134,9 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 				Object hashKeyValue = entityMetadata.getHashKey((ID) value);
 				Object rangeKeyValue = entityMetadata.getRangeKey((ID) value);
 
-				Condition hashKeyCondition = createCondition(hashKeyPropertyName,comparisonOperator, hashKeyValue,
+				Condition hashKeyCondition = createSingleValueCondition(hashKeyPropertyName,comparisonOperator, hashKeyValue,
 						entityMetadata.getMarshallerForProperty(hashKeyPropertyName));
-				Condition rangeKeyCondition = createCondition(rangeKeyPropertyName,comparisonOperator, rangeKeyValue,
+				Condition rangeKeyCondition = createSingleValueCondition(rangeKeyPropertyName,comparisonOperator, rangeKeyValue,
 						entityMetadata.getMarshallerForProperty(rangeKeyPropertyName));
 
 				if (hashKeyValue != null)
@@ -151,11 +151,42 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(propertyName);
 
-				Condition condition = createCondition(propertyName,comparisonOperator, value, marshaller);
+				Condition condition = createSingleValueCondition(propertyName,comparisonOperator, value, marshaller);
 				attributeConditions.add(getDynamoDBAttributeName(propertyName), condition);
 			}
 
 		}
+
+		return this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public DynamoDBCriteria<T, ID> withNoValuedCriteria(String propertyName, ComparisonOperator comparisonOperator) {
+		
+			if (entityMetadata.isCompositeIdProperty(propertyName)) {
+
+				if (!isComparisonOperatorDistributive(comparisonOperator)) {
+					throw new UnsupportedOperationException("Only EQ,NE so far supported for composite id comparison");
+				}
+				
+				
+
+				Condition hashKeyCondition = createNoValueCondition(hashKeyPropertyName,comparisonOperator);
+				Condition rangeKeyCondition = createNoValueCondition(rangeKeyPropertyName,comparisonOperator);
+
+
+
+				attributeConditions.add(getDynamoDBAttributeName(hashKeyPropertyName), hashKeyCondition);
+
+				attributeConditions.add(getDynamoDBAttributeName(rangeKeyPropertyName), rangeKeyCondition);
+
+			} else {
+
+				Condition condition = createNoValueCondition(propertyName,comparisonOperator);
+				attributeConditions.add(getDynamoDBAttributeName(propertyName), condition);
+			}
+
+		
 
 		return this;
 	}
@@ -185,7 +216,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 
 			DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(propertyName);
 
-			Condition condition = createCondition(propertyName,ComparisonOperator.EQ, value, marshaller);
+			Condition condition = createSingleValueCondition(propertyName,ComparisonOperator.EQ, value, marshaller);
 
 			attributeConditions.add(getDynamoDBAttributeName(propertyName), condition);
 		}
@@ -253,7 +284,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 			if (rangeKeyEqualsSpecified) {
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(this.rangeKeyPropertyName);
 
-				Condition rangeKeyCondition = createCondition(rangeKeyPropertyName,ComparisonOperator.EQ, rangeKeyEquals, marshaller);
+				Condition rangeKeyCondition = createSingleValueCondition(rangeKeyPropertyName,ComparisonOperator.EQ, rangeKeyEquals, marshaller);
 				Map<String,Condition> rangeKeyConditions = new HashMap<String, Condition>();
 				rangeKeyConditions.put(rangeKeyAttributeName, rangeKeyCondition);
 				queryExpression.setRangeKeyConditions(rangeKeyConditions);
@@ -316,7 +347,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <V> Condition createCondition(String propertyName,ComparisonOperator comparisonOperator, Object o,
+	private <V> Condition createSingleValueCondition(String propertyName,ComparisonOperator comparisonOperator, Object o,
 			DynamoDBMarshaller<V> optionalMarshaller) {
 				
 		Assert.notNull(o,"Creating conditions on null property values not yet supported: please specify a value for '" + propertyName + "'");
@@ -357,6 +388,14 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 					+ " property conditions must be String,Number or Boolean, or have a DynamoDBMarshaller configured");
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	private <V> Condition createNoValueCondition(String propertyName,ComparisonOperator comparisonOperator) {
+				
+		Condition condition = new Condition().withComparisonOperator(comparisonOperator);
+
+		return condition;
+	}
 
 	public DynamoDBScanExpression buildScanExpression() {
 
@@ -367,7 +406,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(hashKeyPropertyName);
 
 				Assert.notNull(hashKeyAttributeName, "No hash key attribute name set");
-				Condition condition = createCondition(hashKeyPropertyName,ComparisonOperator.EQ, hashKeyEquals, marshaller);
+				Condition condition = createSingleValueCondition(hashKeyPropertyName,ComparisonOperator.EQ, hashKeyEquals, marshaller);
 				scanExpression.addFilterCondition(hashKeyAttributeName, condition);
 			}
 			
@@ -375,7 +414,7 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 			if (rangeKeyEqualsSpecified) {
 				DynamoDBMarshaller<?> marshaller = entityMetadata.getMarshallerForProperty(rangeKeyPropertyName);
 
-				Condition condition = createCondition(rangeKeyPropertyName,ComparisonOperator.EQ, rangeKeyEquals, marshaller);
+				Condition condition = createSingleValueCondition(rangeKeyPropertyName,ComparisonOperator.EQ, rangeKeyEquals, marshaller);
 				scanExpression.addFilterCondition(rangeKeyAttributeName, condition);
 			}
 

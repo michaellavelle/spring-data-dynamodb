@@ -1485,9 +1485,9 @@ public class PartTreeDynamoDBQueryUnitTests {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test(expected = IllegalArgumentException.class)
 	// Not yet supported
-	public void testExecute_WhenFinderMethodIsFindingEntityList_WithSingleStringParameter_WithLessThan_WhenNotFindingByHashKey() {
+	public void testExecute_WhenFinderMethodIsFindingEntityList_WithSingleStringParameter_WithIn_WhenNotFindingByHashKey() {
 		setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
-				"findByNameLessThan", 1, "id", null);
+				"findByNameIn", 1, "id", null);
 		Mockito.when(mockDynamoDBUserQueryMethod.isCollectionQuery()).thenReturn(true);
 
 		// Mock out specific DynamoDBMapper behavior expected by this method
