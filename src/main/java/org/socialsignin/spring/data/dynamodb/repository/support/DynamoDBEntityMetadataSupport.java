@@ -43,7 +43,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 	private final Class<T> domainType;
 
-	private Method getHashKeySetterMethod() {
+	private Method getHashKeySetterMethod(final Class<?> hashKeyClass) {
 		final List<Method> hashKeySetterMethodList = new ArrayList<Method>();
 
 		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
@@ -52,7 +52,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 					String getterMethodName = method.getName();
 					String setterMethodName = getterMethodName.replaceAll("get", "set");
-					Method setterMethod = ReflectionUtils.findMethod(domainType, setterMethodName, String.class);
+					Method setterMethod = ReflectionUtils.findMethod(domainType, setterMethodName, hashKeyClass);
 					hashKeySetterMethodList.add(setterMethod);
 					return;
 				}
@@ -191,7 +191,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 	@Override
 	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
 
-		Method hashKeySetterMethod = getHashKeySetterMethod();
+		Method hashKeySetterMethod = getHashKeySetterMethod(hashKey.getClass());
 
 		try {
 			T entity = getJavaType().newInstance();
