@@ -17,6 +17,7 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +109,12 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		Method method = findMethod(propertyName);
 		return method != null && method.getAnnotation(annotation) != null;
 	}
+	
+	private boolean isFieldAnnotatedWith(final String propertyName, final Class<? extends Annotation> annotation) {
+		
+		Field field = findField(propertyName);
+		return field != null && field.getAnnotation(annotation) != null;
+	}
 
 	@Override
 	public boolean hasCompositeId() {
@@ -148,6 +155,11 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		}
 		return method;
 
+	}
+	
+	private Field findField(String propertyName)
+	{
+		return ReflectionUtils.findField(domainType, propertyName);
 	}
 
 	@Override
@@ -195,7 +207,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 	@Override
 	public boolean isCompositeIdProperty(String propertyName) {
-		return isPropertyAnnotatedWith(propertyName, Id.class);
+		return isPropertyAnnotatedWith(propertyName, Id.class) || isFieldAnnotatedWith(propertyName,Id.class);
 	}
 
 	@Override

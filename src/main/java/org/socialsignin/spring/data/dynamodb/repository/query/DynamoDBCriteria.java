@@ -193,13 +193,13 @@ public class DynamoDBCriteria<T, ID extends Serializable> {
 
 	@SuppressWarnings("unchecked")
 	public DynamoDBCriteria<T, ID> withPropertyEquals(String propertyName, Object value) {
+		
 		if (entityMetadata.hasCompositeId() && entityMetadata.isCompositeIdProperty(propertyName)) {
 
 			this.hashKeyEquals = entityMetadata.getHashKey((ID) value);
 			this.hashKeyEqualsSpecified = hashKeyEquals != null;
 			this.rangeKeyEquals = entityMetadata.getRangeKey((ID) value);
 			this.rangeKeyEqualsSpecified = rangeKeyEquals != null;
-
 		}
 
 		else if (entityMetadata.isHashKeyProperty(propertyName)) {
