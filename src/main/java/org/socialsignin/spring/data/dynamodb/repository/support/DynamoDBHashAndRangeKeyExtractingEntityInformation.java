@@ -16,17 +16,10 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
-import java.util.Set;
-
 /**
  * @author Michael Lavelle
  */
-public interface DynamoDBEntityWithCompositeIdMetadata<T, ID extends Serializable> extends DynamoDBEntityMetadata<T,ID> {
-
-	public DynamoDBCompositeIdMetadata<ID> getCompositeIdMetadata(Class<ID> idClass);
-	public String getRangeKeyPropertyName();
-	public String getHashKeyPropertyName();
-	public Set<String> getIndexRangeKeyPropertyNames();
-
+public interface DynamoDBHashAndRangeKeyExtractingEntityInformation<T,ID extends Serializable> extends
+		DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID>,DynamoDBEntityInformation<T,ID> {
 
 }

@@ -39,9 +39,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleDynamoDBCrudRepositoryUnitTests {
 
-	SimpleDynamoDBCrudRepository<User, Long> repoForEntityWithSimpleId;
+	SimpleDynamoDBCrudRepository<User, Long> repoForEntityWithOnlyHashKey;
 
-	SimpleDynamoDBCrudRepository<Playlist, PlaylistId> repoForEntityWithCompositeId;
+	SimpleDynamoDBCrudRepository<Playlist, PlaylistId> repoForEntityWithHashAndRangeKey;
 
 	@Mock
 	DynamoDBMapper dynamoDBMapper;
@@ -75,11 +75,11 @@ public class SimpleDynamoDBCrudRepositoryUnitTests {
 		when(entityWithCompositeIdInformation.getJavaType()).thenReturn(Playlist.class);
 		when(entityWithCompositeIdInformation.getHashKey(testPlaylistId)).thenReturn("michael");
 		when(entityWithCompositeIdInformation.getRangeKey(testPlaylistId)).thenReturn("playlist1");
-		when(entityWithCompositeIdInformation.hasCompositeId()).thenReturn(true);
+		when(entityWithCompositeIdInformation.isRangeKeyAware()).thenReturn(true);
 
-		repoForEntityWithSimpleId = new SimpleDynamoDBCrudRepository<User, Long>(entityWithSimpleIdInformation,
+		repoForEntityWithOnlyHashKey = new SimpleDynamoDBCrudRepository<User, Long>(entityWithSimpleIdInformation,
 				dynamoDBMapper);
-		repoForEntityWithCompositeId = new SimpleDynamoDBCrudRepository<Playlist, PlaylistId>(
+		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBCrudRepository<Playlist, PlaylistId>(
 				entityWithCompositeIdInformation, dynamoDBMapper);
 
 		when(dynamoDBMapper.load(User.class, 1l)).thenReturn(testUser);
@@ -91,22 +91,22 @@ public class SimpleDynamoDBCrudRepositoryUnitTests {
 	 * @see DATAJPA-177
 	 */
 	@Test(expected = EmptyResultDataAccessException.class)
-	public void throwsExceptionIfEntityWithSimpleIdToDeleteDoesNotExist() {
+	public void throwsExceptionIfEntityOnlyHashKeyToDeleteDoesNotExist() {
 
-		repoForEntityWithSimpleId.delete(4711L);
+		repoForEntityWithOnlyHashKey.delete(4711L);
 	}
 
 	@Test
-	public void findOneEntityWithSimpleId() {
-		User user = repoForEntityWithSimpleId.findOne(1l);
+	public void findOneEntityWithOnlyHashKey() {
+		User user = repoForEntityWithOnlyHashKey.findOne(1l);
 		Mockito.verify(dynamoDBMapper).load(User.class,1l);
 		assertEquals(testUser, user);
 	}
 	
 
 	@Test
-	public void findOneEntityWithCompositeId() {
-		Playlist playlist = repoForEntityWithCompositeId.findOne(testPlaylistId);
+	public void findOneEntityWithHashAndRangeKey() {
+		Playlist playlist = repoForEntityWithHashAndRangeKey.findOne(testPlaylistId);
 		assertEquals(testPlaylist, playlist);
 	}
 
@@ -114,12 +114,12 @@ public class SimpleDynamoDBCrudRepositoryUnitTests {
 	 * @see DATAJPA-177
 	 */
 	@Test(expected = EmptyResultDataAccessException.class)
-	public void throwsExceptionIfEntityWithCompositeIdToDeleteDoesNotExist() {
+	public void throwsExceptionIfEntityWithHashAndRangeKeyToDeleteDoesNotExist() {
 
 		PlaylistId playlistId = new PlaylistId();
 		playlistId.setUserName("someUser");
 		playlistId.setPlaylistName("somePlaylistName");
 
-		repoForEntityWithCompositeId.delete(playlistId);
+		repoForEntityWithHashAndRangeKey.delete(playlistId);
 	}
 }

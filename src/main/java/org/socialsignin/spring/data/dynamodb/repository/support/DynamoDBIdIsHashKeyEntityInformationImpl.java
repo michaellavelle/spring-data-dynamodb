@@ -1,0 +1,99 @@
+/*
+ * Copyright 2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.socialsignin.spring.data.dynamodb.repository.support;
+
+import java.io.Serializable;
+
+import org.springframework.util.Assert;
+
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+
+/**
+ * Encapsulates minimal information needed to load DynamoDB entities. 
+ * 
+ * This default implementation is NOT range-key aware - getRangeKey(ID id) will always return null
+ * 
+ * Delegates to wrapped DynamoDBHashKeyExtractingEntityMetadata component for many operations - it is the responsibility of calling clients to ensure
+ * they pass in a valid DynamoDBHashKeyExtractingEntityMetadata implementation for this entity.
+ * 
+ * Entities of type T must have a public getter method of return type ID annotated with @DynamoDBHashKey to ensure correct behavior
+ * 
+ * @author Michael Lavelle
+ */
+public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable> extends GetterReflectionEntityInformation<T, ID>
+		implements DynamoDBEntityInformation<T,ID> {
+
+	private DynamoDBHashKeyExtractingEntityMetadata<T> metadata;
+	private HashKeyExtractor<ID,ID> hashKeyExtractor;
+	
+
+	public DynamoDBIdIsHashKeyEntityInformationImpl(Class<T> domainClass, DynamoDBHashKeyExtractingEntityMetadata<T> metadata) {
+		super(domainClass, DynamoDBHashKey.class);
+		this.metadata = metadata;
+		this.hashKeyExtractor = new HashKeyIsIdHashKeyExtractor<ID>(getIdType());
+	}
+
+	
+	@Override
+	public Object getHashKey(final ID id) {
+		Assert.isAssignable(getIdType(), id.getClass(),"Expected ID type to be the same as the return type of the hash key method ( " + getIdType() + " ) : ");
+		return hashKeyExtractor.getHashKey(id);
+	}
+	
+	//  The following methods simply delegate to metadata, or always return constants
+	
+	@Override
+	public boolean isRangeKeyAware() {
+		return false;
+	}
+	
+	@Override
+	public String getOverriddenAttributeName(String attributeName) {
+		return metadata.getOverriddenAttributeName(attributeName);
+	}
+
+	@Override
+	public boolean isHashKeyProperty(String propertyName) {
+		return metadata.isHashKeyProperty(propertyName);
+	}
+
+	@Override
+	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
+		return metadata.getHashKeyPropotypeEntityForHashKey(hashKey);
+	}
+	
+	@Override
+	public boolean isCompositeHashAndRangeKeyProperty(String propertyName) {
+		return false;
+	}
+
+	@Override
+	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
+		return metadata.getMarshallerForProperty(propertyName);
+	}
+
+	@Override
+	public String getHashKeyPropertyName() {
+		return metadata.getHashKeyPropertyName();
+	}
+	
+	@Override
+	public Object getRangeKey(ID id) {
+		return null;
+	}
+	
+}

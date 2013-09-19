@@ -52,7 +52,7 @@ public class GetterReflectionEntityInformation<T, ID extends Serializable> exten
 
 	private static final Class<Id> DEFAULT_ID_ANNOTATION = Id.class;
 
-	private Method method;
+	protected Method method;
 
 	/**
 	 * Creates a new {@link ReflectionEntityInformation} inspecting the given

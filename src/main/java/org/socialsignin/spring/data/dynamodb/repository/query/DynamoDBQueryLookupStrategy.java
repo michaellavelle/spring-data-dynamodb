@@ -17,7 +17,7 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-
+ 
 
 
 import org.springframework.data.repository.core.NamedQueries;

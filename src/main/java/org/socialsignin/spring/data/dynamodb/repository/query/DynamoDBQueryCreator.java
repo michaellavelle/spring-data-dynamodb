@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
+import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBHashAndRangeKeyExtractingEntityInformation;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
@@ -47,7 +48,8 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 	@Override
 	protected DynamoDBCriteria<T,ID> create(Part part, Iterator<Object> iterator) {
 		
-		DynamoDBCriteria<T,ID> criteria = new DynamoDBCriteria<T,ID>(entityMetadata);
+		DynamoDBCriteria<T,ID> criteria = entityMetadata.isRangeKeyAware() ? new DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID>((DynamoDBHashAndRangeKeyExtractingEntityInformation<T,ID>)entityMetadata) : 
+			new DynamoDBEntityWithHashKeyOnlyCriteria<T,ID>(entityMetadata);
 		return addCriteria(criteria,part,iterator);
 	}
 	

@@ -15,11 +15,17 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
+import java.lang.reflect.Method;
+
+import org.springframework.data.repository.core.EntityMetadata;
+
 /**
  * @author Michael Lavelle
  */
-public interface DynamoDBEntityWithCompositeIdInformation<T,ID extends Serializable> extends
-		DynamoDBEntityWithCompositeIdMetadata<T, ID>,DynamoDBEntityInformation<T,ID> {
+public interface DynamoDBHashAndRangeKeyMethodExtractor<ID> extends EntityMetadata<ID> {
+
+	Method getHashKeyMethod();
+
+	Method getRangeKeyMethod();
 
 }

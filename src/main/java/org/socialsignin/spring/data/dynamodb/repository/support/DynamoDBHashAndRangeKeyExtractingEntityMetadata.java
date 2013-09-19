@@ -15,17 +15,20 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.lang.reflect.Method;
-
-import org.springframework.data.repository.core.EntityMetadata;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
+ * Obtains basic hash-and-range-key-related metadata about a DynamoDBEntity
+ * 
  * @author Michael Lavelle
  */
-public interface DynamoDBCompositeIdMetadata<ID> extends EntityMetadata<ID> {
+public interface DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID extends Serializable> extends DynamoDBHashKeyExtractingEntityMetadata<T> {
 
-	Method getHashKeyMethod();
+	public <H> HashAndRangeKeyExtractor<ID,H> getHashAndRangeKeyExtractor(Class<ID> idClass);
+	public String getRangeKeyPropertyName();
+	public Set<String> getIndexRangeKeyPropertyNames();
+	boolean isCompositeHashAndRangeKeyProperty(String propertyName);
 
-	Method getRangeKeyMethod();
 
 }

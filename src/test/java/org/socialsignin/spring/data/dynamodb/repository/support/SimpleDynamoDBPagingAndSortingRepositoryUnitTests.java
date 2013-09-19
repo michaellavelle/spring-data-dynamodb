@@ -39,9 +39,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 
-	SimpleDynamoDBPagingAndSortingRepository<User, Long> repoForEntityWithSimpleId;
+	SimpleDynamoDBPagingAndSortingRepository<User, Long> repoForEntityWithOnlyHashKey;
 
-	SimpleDynamoDBPagingAndSortingRepository<Playlist, PlaylistId> repoForEntityWithCompositeId;
+	SimpleDynamoDBPagingAndSortingRepository<Playlist, PlaylistId> repoForEntityWithHashAndRangeKey;
 
 	@Mock
 	DynamoDBMapper dynamoDBMapper;
@@ -53,10 +53,10 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 	private PlaylistId testPlaylistId;
 
 	@Mock
-	DynamoDBEntityInformation<User, Long> entityWithSimpleIdInformation;
+	DynamoDBEntityInformation<User, Long> entityWithOnlyHashKeyInformation;
 
 	@Mock
-	DynamoDBEntityInformation<Playlist, PlaylistId> entityWithCompositeIdInformation;
+	DynamoDBEntityInformation<Playlist, PlaylistId> entityWithHashAndRangeKeyInformation;
 
 	@Before
 	public void setUp() {
@@ -69,18 +69,18 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 
 		testPlaylist = new Playlist(testPlaylistId);
 
-		when(entityWithSimpleIdInformation.getJavaType()).thenReturn(User.class);
-		when(entityWithSimpleIdInformation.getHashKey(1l)).thenReturn(1l);
+		when(entityWithOnlyHashKeyInformation.getJavaType()).thenReturn(User.class);
+		when(entityWithOnlyHashKeyInformation.getHashKey(1l)).thenReturn(1l);
 
-		when(entityWithCompositeIdInformation.getJavaType()).thenReturn(Playlist.class);
-		when(entityWithCompositeIdInformation.getHashKey(testPlaylistId)).thenReturn("michael");
-		when(entityWithCompositeIdInformation.getRangeKey(testPlaylistId)).thenReturn("playlist1");
-		when(entityWithCompositeIdInformation.hasCompositeId()).thenReturn(true);
+		when(entityWithHashAndRangeKeyInformation.getJavaType()).thenReturn(Playlist.class);
+		when(entityWithHashAndRangeKeyInformation.getHashKey(testPlaylistId)).thenReturn("michael");
+		when(entityWithHashAndRangeKeyInformation.getRangeKey(testPlaylistId)).thenReturn("playlist1");
+		when(entityWithHashAndRangeKeyInformation.isRangeKeyAware()).thenReturn(true);
 
-		repoForEntityWithSimpleId = new SimpleDynamoDBPagingAndSortingRepository<User, Long>(entityWithSimpleIdInformation,
+		repoForEntityWithOnlyHashKey = new SimpleDynamoDBPagingAndSortingRepository<User, Long>(entityWithOnlyHashKeyInformation,
 				dynamoDBMapper);
-		repoForEntityWithCompositeId = new SimpleDynamoDBPagingAndSortingRepository<Playlist, PlaylistId>(
-				entityWithCompositeIdInformation, dynamoDBMapper);
+		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBPagingAndSortingRepository<Playlist, PlaylistId>(
+				entityWithHashAndRangeKeyInformation, dynamoDBMapper);
 
 		when(dynamoDBMapper.load(User.class, 1l)).thenReturn(testUser);
 		when(dynamoDBMapper.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);
@@ -91,22 +91,22 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 	 * @see DATAJPA-177
 	 */
 	@Test(expected = EmptyResultDataAccessException.class)
-	public void throwsExceptionIfEntityWithSimpleIdToDeleteDoesNotExist() {
+	public void throwsExceptionIfEntityWithOnlyHashKeyToDeleteDoesNotExist() {
 
-		repoForEntityWithSimpleId.delete(4711L);
+		repoForEntityWithOnlyHashKey.delete(4711L);
 	}
 
 	@Test
-	public void findOneEntityWithSimpleId() {
-		User user = repoForEntityWithSimpleId.findOne(1l);
+	public void findOneEntityWithOnlyHashKey() {
+		User user = repoForEntityWithOnlyHashKey.findOne(1l);
 		Mockito.verify(dynamoDBMapper).load(User.class,1l);
 		assertEquals(testUser, user);
 	}
 	
 
 	@Test
-	public void findOneEntityWithCompositeId() {
-		Playlist playlist = repoForEntityWithCompositeId.findOne(testPlaylistId);
+	public void findOneEntityWithHashAndRangeKey() {
+		Playlist playlist = repoForEntityWithHashAndRangeKey.findOne(testPlaylistId);
 		assertEquals(testPlaylist, playlist);
 	}
 
@@ -114,12 +114,12 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 	 * @see DATAJPA-177
 	 */
 	@Test(expected = EmptyResultDataAccessException.class)
-	public void throwsExceptionIfEntityWithCompositeIdToDeleteDoesNotExist() {
+	public void throwsExceptionIfEntityWithHashAndRangeKeyToDeleteDoesNotExist() {
 
 		PlaylistId playlistId = new PlaylistId();
 		playlistId.setUserName("someUser");
 		playlistId.setPlaylistName("somePlaylistName");
 
-		repoForEntityWithCompositeId.delete(playlistId);
+		repoForEntityWithHashAndRangeKey.delete(playlistId);
 	}
 }

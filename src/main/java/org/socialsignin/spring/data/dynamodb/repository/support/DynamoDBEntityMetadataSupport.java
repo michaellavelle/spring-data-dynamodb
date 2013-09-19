@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.annotation.Id;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
@@ -39,9 +38,11 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBVersionAttribute;
 /**
  * @author Michael Lavelle
  */
-public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implements DynamoDBEntityMetadata<T, ID> {
+public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implements DynamoDBHashKeyExtractingEntityMetadata<T> {
 
-	private final Class<T> domainType;
+	private final Class<T> domainType; 
+	private String hashKeyPropertyName;
+	private boolean hasRangeKey;
 
 	private Method getHashKeySetterMethod(final Class<?> hashKeyClass) {
 		final List<Method> hashKeySetterMethodList = new ArrayList<Method>();
@@ -49,13 +50,17 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
 			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
-
+					hashKeyPropertyName = getPropertyNameForAccessorMethod(method);
 					String getterMethodName = method.getName();
 					String setterMethodName = getterMethodName.replaceAll("get", "set");
 					Method setterMethod = ReflectionUtils.findMethod(domainType, setterMethodName, hashKeyClass);
 					hashKeySetterMethodList.add(setterMethod);
-					return;
 				}
+				if (method.getAnnotation(DynamoDBRangeKey.class) != null)
+				{
+					hasRangeKey = true;
+				}
+				return;
 			}
 		});
 		return hashKeySetterMethodList.size() == 0 ? null : hashKeySetterMethodList.get(0);
@@ -74,16 +79,19 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 	}
 
+	
 	public DynamoDBEntityInformation<T, ID> getEntityInformation() {
 
-		if (hasCompositeId()) {
-			DynamoDBEntityWithCompositeIdMetadataImpl<T, ID> metadata = new DynamoDBEntityWithCompositeIdMetadataImpl<T, ID>(
+		if (hasRangeKey) {
+			DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> metadata = new DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID>(
 					domainType);
-			return new DynamoDBEntityWithCompositeIdInformationImpl<T, ID>(domainType, metadata);
+			return new DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T,ID>(domainType, metadata);
 		} else {
-			return new DynamoDBEntityInformationImpl<T, ID>(domainType, this);
+			return new DynamoDBIdIsHashKeyEntityInformationImpl<T, ID>(domainType, this);
 		}
 	}
+	
+	
 
 	/*
 	 * (non-Javadoc)
@@ -110,25 +118,13 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		return method != null && method.getAnnotation(annotation) != null;
 	}
 	
-	private boolean isFieldAnnotatedWith(final String propertyName, final Class<? extends Annotation> annotation) {
+	protected boolean isFieldAnnotatedWith(final String propertyName, final Class<? extends Annotation> annotation) {
 		
 		Field field = findField(propertyName);
 		return field != null && field.getAnnotation(annotation) != null;
 	}
 
-	@Override
-	public boolean hasCompositeId() {
-		final List<Boolean> result = new ArrayList<Boolean>();
-		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
-			public void doWith(Method method) {
-				if (method.getAnnotation(DynamoDBRangeKey.class) != null) {
-					result.add(Boolean.TRUE);
-					return;
-				}
-			}
-		});
-		return result.size() > 0;
-	}
+	
 
 	private String toGetMethodName(String propertyName) {
 		String methodName = propertyName.substring(0, 1).toUpperCase();
@@ -162,6 +158,33 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		return ReflectionUtils.findField(domainType, propertyName);
 	}
 
+	
+	public String getOverriddenAttributeName(Method method) {
+
+		if (method != null)
+		{
+			if (method.getAnnotation(DynamoDBAttribute.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {
+				return method.getAnnotation(DynamoDBAttribute.class).attributeName();
+			}
+			if (method.getAnnotation(DynamoDBHashKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {
+				return method.getAnnotation(DynamoDBHashKey.class).attributeName();
+			}
+			if (method.getAnnotation(DynamoDBRangeKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
+				return method.getAnnotation(DynamoDBRangeKey.class).attributeName();
+			}
+			if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
+				return method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
+			}
+			if (method.getAnnotation(DynamoDBVersionAttribute.class) != null && StringUtils.isNotEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
+				return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
+			}
+		}
+		return null;
+
+	}
+
+	
+	
 	@Override
 	public String getOverriddenAttributeName(final String propertyName) {
 
@@ -205,10 +228,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		}
 	}
 
-	@Override
-	public boolean isCompositeIdProperty(String propertyName) {
-		return isPropertyAnnotatedWith(propertyName, Id.class) || isFieldAnnotatedWith(propertyName,Id.class);
-	}
+	
 
 	@Override
 	public DynamoDBMarshaller<?> getMarshallerForProperty(final String propertyName) {
@@ -226,6 +246,30 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		}
 		
 		return null;
+	}
+	
+	protected String getPropertyNameForAccessorMethod(Method method)
+	{
+		String methodName = method.getName();
+		String propertyName = null;
+		if (methodName.startsWith("get"))
+		{
+			propertyName = methodName.substring(3);
+		}
+		else if (methodName.startsWith("is"))
+		{
+			propertyName = methodName.substring(2);
+		}
+		Assert.notNull(propertyName,"Hash or range key annotated accessor methods must start with 'get' or 'is'");
+		
+		String firstLetter = propertyName.substring(0,1);
+		String remainder = propertyName.substring(1);
+		return firstLetter.toLowerCase() + remainder;
+	}
+
+	@Override
+	public String getHashKeyPropertyName() {
+		return hashKeyPropertyName;
 	}
 
 }

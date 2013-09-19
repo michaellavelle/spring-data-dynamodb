@@ -20,37 +20,44 @@ import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
-import org.springframework.util.ReflectionUtils;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
 /**
+ * Encapsulates minimal information needed to load DynamoDB entities that have both hash and range key,
+ * and have a composite id attribute annotated with @Id. 
+ * 
+ * Delegates to metadata and hashKeyExtractor components for all operations.
+ * 
  * @author Michael Lavelle
  */
-public class DynamoDBEntityWithCompositeIdInformationImpl<T, ID extends Serializable> extends
-		ReflectionEntityInformation<T, ID> implements DynamoDBEntityWithCompositeIdInformation<T,ID> {
+public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Serializable> extends
+		ReflectionEntityInformation<T, ID> implements DynamoDBHashAndRangeKeyExtractingEntityInformation<T,ID> {
 
-	private DynamoDBEntityWithCompositeIdMetadata<T, ID> metadata;
+	private DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata;
+	private HashAndRangeKeyExtractor<ID,?> hashAndRangeKeyExtractor;
 
-	public DynamoDBEntityWithCompositeIdInformationImpl(Class<T> domainClass,
-			DynamoDBEntityWithCompositeIdMetadata<T, ID> metadata) {
+	public DynamoDBIdIsHashAndRangeKeyEntityInformationImpl(Class<T> domainClass,
+			DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata) {
 		super(domainClass, Id.class);
 		this.metadata = metadata;
+		this.hashAndRangeKeyExtractor = metadata.getHashAndRangeKeyExtractor(getIdType());
 	}
 
 	@Override
-	public boolean hasCompositeId() {
-		return metadata.hasCompositeId();
+	public boolean isRangeKeyAware()
+	{
+		return true;
 	}
 
 	@Override
 	public Object getHashKey(final ID id) {
-		return ReflectionUtils.invokeMethod(metadata.getCompositeIdMetadata(getIdType()).getHashKeyMethod(), id);
+		return hashAndRangeKeyExtractor.getHashKey(id);
 	}
 
 	@Override
-	public Object getRangeKey(final Serializable id) {
-		return ReflectionUtils.invokeMethod(metadata.getCompositeIdMetadata(getIdType()).getRangeKeyMethod(), id);
+	public Object getRangeKey(final ID id) {
+		return hashAndRangeKeyExtractor.getRangeKey(id);
 	}
 
 	
@@ -65,11 +72,6 @@ public class DynamoDBEntityWithCompositeIdInformationImpl<T, ID extends Serializ
 			return metadata.isHashKeyProperty(propertyName);
 	}
 
-	@Override
-	public boolean isRangeKeyProperty(String propertyName) {
-		return metadata.isRangeKeyProperty(propertyName);
-
-	}
 
 	@Override
 	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
@@ -78,24 +80,15 @@ public class DynamoDBEntityWithCompositeIdInformationImpl<T, ID extends Serializ
 	
 
 	@Override
-	public boolean isCompositeIdProperty(String propertyName) {
-		return metadata.isCompositeIdProperty(propertyName);
+	public boolean isCompositeHashAndRangeKeyProperty(String propertyName) {
+		return metadata.isCompositeHashAndRangeKeyProperty(propertyName);
 	}
 
-	@Override
-	public DynamoDBCompositeIdMetadata<ID> getCompositeIdMetadata(
-			Class<ID> idClass) {
-		return metadata.getCompositeIdMetadata(idClass);
-	}
+	
 
 	@Override
 	public String getRangeKeyPropertyName() {
 		return metadata.getRangeKeyPropertyName();
-	}
-
-	@Override
-	public String getHashKeyPropertyName() {
-		return metadata.getHashKeyPropertyName();
 	}
 
 	@Override
@@ -108,6 +101,15 @@ public class DynamoDBEntityWithCompositeIdInformationImpl<T, ID extends Serializ
 		return metadata.getIndexRangeKeyPropertyNames();
 	}
 
+	@Override
+	public String getHashKeyPropertyName() {
+		return metadata.getHashKeyPropertyName();
+	}
+
+	@Override
+	public <H> HashAndRangeKeyExtractor<ID,H> getHashAndRangeKeyExtractor(Class<ID> idClass) {
+		return metadata.getHashAndRangeKeyExtractor(idClass);
+	}
 
 	
 	

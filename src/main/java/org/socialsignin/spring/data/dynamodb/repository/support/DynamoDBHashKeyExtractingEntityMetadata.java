@@ -15,24 +15,25 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-
 import org.springframework.data.repository.core.EntityMetadata;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
 /**
+ * Obtains basic hash key-related metadata about a DynamoDBEntity, such as whether properties have overridden attribute names or
+ * have custom marshallers assigned, whether a property is a hash key property or a composite id property, 
+ * and generates a hash key prototype entity given a hash key.
+ * 
  * @author Michael Lavelle
  */
-public interface DynamoDBEntityMetadata<T,ID extends Serializable> extends EntityMetadata<T> {
+public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetadata<T> {
 
-	boolean hasCompositeId();
 	public String getOverriddenAttributeName(String propertyName);
 	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName);
 	public boolean isHashKeyProperty(String propertyName);
-	public boolean isCompositeIdProperty(String propertyName);
-	public boolean isRangeKeyProperty(String propertyName);
-	public T getHashKeyPropotypeEntityForHashKey(Object hashKey);
+	public String getHashKeyPropertyName();
+	//public boolean isCompositeIdProperty(String propertyName);
+	public <H> T getHashKeyPropotypeEntityForHashKey(H hashKey);
 
-
+	
 }

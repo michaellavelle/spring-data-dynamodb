@@ -27,7 +27,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 /**
  * @author Michael Lavelle
  */
-public class DynamoDBCompositeIdMetadataImpl<T> implements DynamoDBCompositeIdMetadata<T> {
+public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHashAndRangeKeyMethodExtractor<T> {
 
 	private final Class<T> idType;
 	private Method hashKeyMethod;
@@ -39,7 +39,7 @@ public class DynamoDBCompositeIdMetadataImpl<T> implements DynamoDBCompositeIdMe
 	 * @param domainType
 	 *            must not be {@literal null}.
 	 */
-	public DynamoDBCompositeIdMetadataImpl(final Class<T> idType) {
+	public DynamoDBHashAndRangeKeyMethodExtractorImpl(final Class<T> idType) {
 
 		Assert.notNull(idType, "Id type must not be null!");
 		this.idType = idType;

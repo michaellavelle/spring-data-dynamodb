@@ -59,7 +59,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 
 	@Override
 	public T findOne(ID id) {
-		if (entityInformation.hasCompositeId()) {
+		if (entityInformation.isRangeKeyAware()) {
 			return dynamoDBMapper.load(domainType, entityInformation.getHashKey(id), entityInformation.getRangeKey(id));
 		} else {
 			return dynamoDBMapper.load(domainType, entityInformation.getHashKey(id));
@@ -71,7 +71,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 		Map<Class<?>, List<KeyPair>> keyPairsMap = new HashMap<Class<?>, List<KeyPair>>();
 		List<KeyPair> keyPairs = new ArrayList<KeyPair>();
 		for (ID id : ids) {
-			if (entityInformation.hasCompositeId()) {
+			if (entityInformation.isRangeKeyAware()) {
 				keyPairs.add(new KeyPair().withHashKey(entityInformation.getHashKey(id)).withRangeKey(
 						entityInformation.getRangeKey(id)));
 			} else {
@@ -83,7 +83,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 	}
 
 	protected T load(ID id) {
-		if (entityInformation.hasCompositeId()) {
+		if (entityInformation.isRangeKeyAware()) {
 			return dynamoDBMapper.load(domainType, entityInformation.getHashKey(id), entityInformation.getRangeKey(id));
 		} else {
 			return dynamoDBMapper.load(domainType, entityInformation.getHashKey(id));
@@ -95,7 +95,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 		Map<Class<?>, List<KeyPair>> keyPairsMap = new HashMap<Class<?>, List<KeyPair>>();
 		List<KeyPair> keyPairs = new ArrayList<KeyPair>();
 		for (ID id : ids) {
-			if (entityInformation.hasCompositeId()) {
+			if (entityInformation.isRangeKeyAware()) {
 				keyPairs.add(new KeyPair().withHashKey(entityInformation.getHashKey(id)).withRangeKey(
 						entityInformation.getRangeKey(id)));
 			} else {
