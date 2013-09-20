@@ -17,6 +17,7 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
 
+import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.RepositoryQuery;
@@ -50,12 +51,12 @@ public class PartTreeDynamoDBQuery<T,ID extends Serializable> extends AbstractDy
 			ParametersParameterAccessor accessor) {
 
 		return new DynamoDBQueryCreator<T,ID>(tree, accessor,
-				queryMethod.getEntityInformation());
+				queryMethod.getEntityInformation(),dynamoDBMapper);
 	}
 
 	@Override
-	public DynamoDBCriteria<T,ID> doCreateDynamoDBCriteria(Object[] values) {
-
+	public Query<T> doCreateQuery(Object[] values) {
+		
 		ParametersParameterAccessor accessor = new ParametersParameterAccessor(
 				parameters, values);
 		DynamoDBQueryCreator<T,ID> queryCreator = createCreator(accessor);

@@ -19,7 +19,7 @@ import java.io.Serializable;
 /**
  * @author Michael Lavelle
  */
-public interface DynamoDBHashAndRangeKeyExtractingEntityInformation<T,ID extends Serializable> extends
+public interface DynamoDBIdIsHashAndRangeKeyEntityInformation<T,ID extends Serializable> extends
 		DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID>,DynamoDBEntityInformation<T,ID> {
 
 }

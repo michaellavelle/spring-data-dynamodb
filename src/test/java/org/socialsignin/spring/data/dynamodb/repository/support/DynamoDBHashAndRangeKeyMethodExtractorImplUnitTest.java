@@ -13,7 +13,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unused")
-public class DynamoDBCompositeIdMetadataImplUnitTest {
+public class DynamoDBHashAndRangeKeyMethodExtractorImplUnitTest {
 	
 	private DynamoDBHashAndRangeKeyMethodExtractor<PlaylistId> playlistIdMetadata;	
 	private DynamoDBHashAndRangeKeyMethodExtractor<IdClassWithNoAnnotatedMethods> idClassWithNoHashOrRangeKeyMethodMetadata;

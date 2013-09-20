@@ -19,8 +19,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
@@ -41,30 +40,11 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBVersionAttribute;
 public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implements DynamoDBHashKeyExtractingEntityMetadata<T> {
 
 	private final Class<T> domainType; 
-	private String hashKeyPropertyName;
 	private boolean hasRangeKey;
+	private Method hashKeySetterMethod;
+	private String hashKeyPropertyName;
 
-	private Method getHashKeySetterMethod(final Class<?> hashKeyClass) {
-		final List<Method> hashKeySetterMethodList = new ArrayList<Method>();
-
-		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
-			public void doWith(Method method) {
-				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
-					hashKeyPropertyName = getPropertyNameForAccessorMethod(method);
-					String getterMethodName = method.getName();
-					String setterMethodName = getterMethodName.replaceAll("get", "set");
-					Method setterMethod = ReflectionUtils.findMethod(domainType, setterMethodName, hashKeyClass);
-					hashKeySetterMethodList.add(setterMethod);
-				}
-				if (method.getAnnotation(DynamoDBRangeKey.class) != null)
-				{
-					hasRangeKey = true;
-				}
-				return;
-			}
-		});
-		return hashKeySetterMethodList.size() == 0 ? null : hashKeySetterMethodList.get(0);
-	}
+	
 
 	/**
 	 * Creates a new {@link DefaultJpaEntityMetadata} for the given domain type.
@@ -76,6 +56,19 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 		Assert.notNull(domainType, "Domain type must not be null!");
 		this.domainType = domainType;
+		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
+			public void doWith(Method method) {
+				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
+					String getterMethodName = method.getName();
+					hashKeyPropertyName = getPropertyNameForAccessorMethod(method);
+					String setterMethodName = getterMethodName.replaceAll("get", "set");
+					hashKeySetterMethod = ReflectionUtils.findMethod(domainType, setterMethodName,method.getReturnType());
+				}
+				if (method.getAnnotation(DynamoDBRangeKey.class) != null)
+				{
+					hasRangeKey = true;
+				}
+			}});
 
 	}
 
@@ -214,9 +207,9 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 	@Override
 	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
 
-		Method hashKeySetterMethod = getHashKeySetterMethod(hashKey.getClass());
 
 		try {
+			System.out.println(hashKey.getClass());
 			T entity = getJavaType().newInstance();
 			ReflectionUtils.invokeMethod(hashKeySetterMethod, entity, hashKey);
 
@@ -271,5 +264,8 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 	public String getHashKeyPropertyName() {
 		return hashKeyPropertyName;
 	}
+
+
+	
 
 }

@@ -18,8 +18,9 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
-import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBHashAndRangeKeyExtractingEntityInformation;
+import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
@@ -27,35 +28,40 @@ import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
 import org.springframework.data.repository.query.parser.PartTree;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 /**
  * @author Michael Lavelle
  */
-public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQueryCreator<DynamoDBCriteria<T,ID>, DynamoDBCriteria<T,ID>> {
+public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQueryCreator<Query<T>, DynamoDBQueryCriteria<T,ID>> {
 
 	private DynamoDBEntityInformation<T,ID> entityMetadata;
+	private DynamoDBMapper dynamoDBMapper;
 	
-	public DynamoDBQueryCreator(PartTree tree,DynamoDBEntityInformation<T,ID> entityMetadata) {
+	public DynamoDBQueryCreator(PartTree tree,DynamoDBEntityInformation<T,ID> entityMetadata,DynamoDBMapper dynamoDBMapper) {
 		super(tree);
 		this.entityMetadata = entityMetadata;
+		this.dynamoDBMapper = dynamoDBMapper;
 	}
 	
-	public DynamoDBQueryCreator(PartTree tree,ParameterAccessor parameterAccessor,DynamoDBEntityInformation<T,ID> entityMetadata) {
+	public DynamoDBQueryCreator(PartTree tree,ParameterAccessor parameterAccessor,DynamoDBEntityInformation<T,ID> entityMetadata,DynamoDBMapper dynamoDBMapper) {
 		super(tree,parameterAccessor);
 		this.entityMetadata = entityMetadata;
+		this.dynamoDBMapper = dynamoDBMapper;
+
 	}
 	
 	@Override
-	protected DynamoDBCriteria<T,ID> create(Part part, Iterator<Object> iterator) {
+	protected DynamoDBQueryCriteria<T,ID> create(Part part, Iterator<Object> iterator) {
 		
-		DynamoDBCriteria<T,ID> criteria = entityMetadata.isRangeKeyAware() ? new DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID>((DynamoDBHashAndRangeKeyExtractingEntityInformation<T,ID>)entityMetadata) : 
+		DynamoDBQueryCriteria<T,ID> criteria = entityMetadata.isRangeKeyAware() ? new DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID>((DynamoDBIdIsHashAndRangeKeyEntityInformation<T,ID>)entityMetadata) : 
 			new DynamoDBEntityWithHashKeyOnlyCriteria<T,ID>(entityMetadata);
 		return addCriteria(criteria,part,iterator);
 	}
 	
 
 	
-	protected DynamoDBCriteria<T,ID> addCriteria(DynamoDBCriteria<T,ID> criteria,Part part, Iterator<Object> iterator)
+	protected DynamoDBQueryCriteria<T,ID> addCriteria(DynamoDBQueryCriteria<T,ID> criteria,Part part, Iterator<Object> iterator)
 	{
 		if (part.shouldIgnoreCase().equals(IgnoreCaseType.ALWAYS))
 			throw new UnsupportedOperationException("Case insensitivity not supported");
@@ -94,26 +100,27 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 	}
 	
 	@Override
-	protected DynamoDBCriteria<T,ID> and(Part part, DynamoDBCriteria<T,ID> base,
+	protected DynamoDBQueryCriteria<T,ID> and(Part part, DynamoDBQueryCriteria<T,ID> base,
 			Iterator<Object> iterator) {		
 		return addCriteria(base,part,iterator);
 		
 	}
 
 	@Override
-	protected DynamoDBCriteria<T,ID> or(DynamoDBCriteria<T,ID> base,
-			DynamoDBCriteria<T,ID> criteria) {
+	protected DynamoDBQueryCriteria<T,ID> or(DynamoDBQueryCriteria<T,ID> base,
+			DynamoDBQueryCriteria<T,ID> criteria) {
 		throw new UnsupportedOperationException("Or queries not yet supported");
 	}
 
 	@Override
-	protected DynamoDBCriteria<T,ID> complete(DynamoDBCriteria<T,ID> criteria, Sort sort) {
+	protected Query<T> complete(DynamoDBQueryCriteria<T,ID> criteria, Sort sort) {
 		if (sort != null)
 		{
-			return criteria.withSort(sort);
+			criteria.withSort(sort);
 		}
 		
-		return criteria;
+		return criteria.buildQuery(dynamoDBMapper);
+		
 	}
 
 

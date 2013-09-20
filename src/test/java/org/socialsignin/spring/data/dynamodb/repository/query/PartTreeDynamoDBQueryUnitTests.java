@@ -26,7 +26,7 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
-import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBHashAndRangeKeyExtractingEntityInformation;
+import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.RepositoryQuery;
@@ -58,7 +58,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 	private DynamoDBQueryMethod<Playlist, PlaylistId> mockDynamoDBPlaylistQueryMethod;
 
 	@Mock
-	private DynamoDBHashAndRangeKeyExtractingEntityInformation<Playlist,PlaylistId> mockPlaylistEntityMetadata;
+	private DynamoDBIdIsHashAndRangeKeyEntityInformation<Playlist,PlaylistId> mockPlaylistEntityMetadata;
 
 	@Mock
 	@SuppressWarnings("rawtypes")
@@ -84,7 +84,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 	
 	@SuppressWarnings("rawtypes")
 	@Mock
-	private DynamoDBCriteria mockCriteria;
+	private DynamoDBQueryCriteria mockCriteria;
 	
 
 	@SuppressWarnings("unchecked")
@@ -93,6 +93,8 @@ public class PartTreeDynamoDBQueryUnitTests {
 
 		Mockito.when(mockPlaylistEntityMetadata.isCompositeHashAndRangeKeyProperty("playlistId")).thenReturn(true);
 		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropertyName()).thenReturn("userName");
+		Mockito.when(mockPlaylistEntityMetadata.isHashKeyProperty("userName")).thenReturn(true);
+		Mockito.when(mockPlaylistEntityMetadata.getJavaType()).thenReturn(Playlist.class);
 		Mockito.when(mockPlaylistEntityMetadata.getRangeKeyPropertyName()).thenReturn("playlistName");
 		Mockito.when(mockPlaylistEntityMetadata.getIndexRangeKeyPropertyNames()).thenReturn(new HashSet<String>());
 		Mockito.when(mockDynamoDBUserQueryMethod.getEntityInformation()).thenReturn(mockUserEntityMetadata);
@@ -100,6 +102,9 @@ public class PartTreeDynamoDBQueryUnitTests {
 		Mockito.when(mockDynamoDBPlaylistQueryMethod.getEntityInformation()).thenReturn(mockPlaylistEntityMetadata);
 		Mockito.when(mockDynamoDBPlaylistQueryMethod.getParameters()).thenReturn(mockParameters);
 		Mockito.when(mockUserEntityMetadata.getHashKeyPropertyName()).thenReturn("id");
+		Mockito.when(mockUserEntityMetadata.isHashKeyProperty("id")).thenReturn(true);
+		Mockito.when(mockUserEntityMetadata.getJavaType()).thenReturn(User.class);
+
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
