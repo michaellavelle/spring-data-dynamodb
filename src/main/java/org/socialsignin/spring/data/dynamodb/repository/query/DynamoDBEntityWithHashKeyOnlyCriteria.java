@@ -53,7 +53,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T,ID extends Serializable> ex
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		if (isHashKeySpecified())
 		{
-			scanExpression.addFilterCondition(getHashKeyAttributeName(), createSingleValueCondition(getHashKeyPropertyName(), ComparisonOperator.EQ, getHashKeyAttributeValue()));
+			scanExpression.addFilterCondition(getHashKeyAttributeName(), createSingleValueCondition(getHashKeyPropertyName(), ComparisonOperator.EQ, getHashKeyAttributeValue(),getHashKeyAttributeValue().getClass(),true));
 		}
 
 		for (Map.Entry<String,List<Condition>> conditionEntry : attributeConditions.entrySet())
@@ -69,14 +69,14 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T,ID extends Serializable> ex
 	
 	
 	@Override
-	public DynamoDBQueryCriteria<T, ID> withPropertyEquals(String propertyName, Object value) {
+	public DynamoDBQueryCriteria<T, ID> withPropertyEquals(String propertyName, Object value,Class<?> propertyType) {
 			if (isHashKeyProperty(propertyName))
 			{
 				return withHashKeyEquals(value);
 			}
 			else
 			{
-				Condition condition = createSingleValueCondition(propertyName, ComparisonOperator.EQ, value);
+				Condition condition = createSingleValueCondition(propertyName, ComparisonOperator.EQ, value,propertyType,false);
 				return withCondition(propertyName,condition);	
 			}
 		}

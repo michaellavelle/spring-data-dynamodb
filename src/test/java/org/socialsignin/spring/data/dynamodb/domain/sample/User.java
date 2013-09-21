@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import java.util.Date;
+import java.util.Set;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
@@ -36,6 +37,16 @@ public class User {
 	
 	private String postCode;
 	
+	private Set<String> testSet;
+
+	public Set<String> getTestSet() {
+		return testSet;
+	}
+
+	public void setTestSet(Set<String> testSet) {
+		this.testSet = testSet;
+	}
+
 	
 	public Date getJoinDate() {
 		return joinDate;

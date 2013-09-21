@@ -52,7 +52,6 @@ public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
 
 		Mockito.when(mockUserEntityMetadata.getHashKeyPropertyName()).thenReturn("userHashKeyPropertyName");
 		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropertyName()).thenReturn("playlistHashKeyPropertyName");
-		Mockito.when(mockUserEntityMetadata.getHashKeyPropotypeEntityForHashKey("someUserHashKey")).thenReturn(mockUserPrototype);
 		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropotypeEntityForHashKey("somePlaylistHashKey")).thenReturn(mockPlaylistPrototype);
 		Mockito.when(mockUserEntityMetadata.getMarshallerForProperty("marshalledProperty")).thenReturn(mockPropertyMarshaller);
 		Mockito.when(mockPlaylistEntityMetadata.getMarshallerForProperty("marshalledProperty")).thenReturn(mockPropertyMarshaller);
@@ -156,45 +155,12 @@ public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
 	
 	
 	@Test
-	public void testGetPrototypeEntityForHashKey_DelegatesToDynamoDBEntityMetadata_IrrespectiveOfEntityInformationSetup()
-	{
-		Playlist playlistPrototypeEntity = new Playlist();
-		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropotypeEntityForHashKey("someHashKey")).thenReturn(playlistPrototypeEntity);
-		
-		Object returnedPlaylistEntity = dynamoDBPlaylistEntityInformation.getHashKeyPropotypeEntityForHashKey("someHashKey");
-		
-		Assert.assertEquals(playlistPrototypeEntity, returnedPlaylistEntity);
-		Mockito.verify(mockPlaylistEntityMetadata).getHashKeyPropotypeEntityForHashKey("someHashKey");
-		
-		User userPrototypeEntity = new User();
-		Mockito.when(mockUserEntityMetadata.getHashKeyPropotypeEntityForHashKey("someHashKey")).thenReturn(userPrototypeEntity);
-		
-		Object returnedUserEntity = dynamoDBUserEntityInformation.getHashKeyPropotypeEntityForHashKey("someHashKey");
-		
-		Assert.assertEquals(userPrototypeEntity, returnedUserEntity);
-		Mockito.verify(mockUserEntityMetadata).getHashKeyPropotypeEntityForHashKey("someHashKey");
-
-	}
-
-	
-	@Test
 	public void testGetHashKeyPropertyName_DelegatesToEntityMetadata_IrrespectiveOfEntityInformationSetup()
 	{
 		Assert.assertEquals("userHashKeyPropertyName", dynamoDBUserEntityInformation.getHashKeyPropertyName());
 		Assert.assertEquals("playlistHashKeyPropertyName", dynamoDBPlaylistEntityInformation.getHashKeyPropertyName());
 
 	}
-	
-	@Test
-	public void testGetHashKeyPrototypeEntityForHashKey_DelegatesToEntityMetadata_IrrespectiveOfEntityInformationSetup()
-	{
-		Object hashKeyPrototype1 =  dynamoDBUserEntityInformation.getHashKeyPropotypeEntityForHashKey("someUserHashKey");
-		Assert.assertEquals(mockUserPrototype, hashKeyPrototype1);
-		
-		Object hashKeyPrototype2 =  dynamoDBPlaylistEntityInformation.getHashKeyPropotypeEntityForHashKey("somePlaylistHashKey");
-		Assert.assertEquals(mockPlaylistPrototype, hashKeyPrototype2);
-	}
-	
 
 	@Test
 	public void testGetMarshallerForProperty_DelegatesToEntityMetadata_IrrespectiveOfEntityInformationSetup()

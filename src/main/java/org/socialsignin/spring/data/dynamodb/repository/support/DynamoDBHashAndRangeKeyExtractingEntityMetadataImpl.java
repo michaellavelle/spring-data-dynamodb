@@ -21,9 +21,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
 
 
@@ -35,9 +37,23 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID extends S
 
 	private DynamoDBHashAndRangeKeyMethodExtractor<T> hashAndRangeKeyMethodExtractor;
 	
-	public DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl(Class<T> domainType) {
+	private Method hashKeySetterMethod;
+
+	
+	public DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl(final Class<T> domainType) {
 		super(domainType);
 		this.hashAndRangeKeyMethodExtractor = new DynamoDBHashAndRangeKeyMethodExtractorImpl<T>(getJavaType());
+		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
+			public void doWith(Method method) {
+				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
+					String setterMethodName = toSetterMethodNameFromAccessorMethod(method);
+					if (setterMethodName != null)
+					{
+						hashKeySetterMethod = ReflectionUtils.findMethod(domainType, setterMethodName,method.getReturnType());
+					}
+				}
+			}});
+		Assert.notNull(hashKeySetterMethod, "Unable to find hash key setter method on " + domainType + "!");
 	}
 
 	@Override
@@ -62,10 +78,28 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID extends S
 		});
 		return propertyNames;
 	}
+	
+	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
+
+
+		try {
+			T entity = getJavaType().newInstance();
+			ReflectionUtils.invokeMethod(hashKeySetterMethod, entity, hashKey);
+
+			return entity;
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Override
 	public boolean isCompositeHashAndRangeKeyProperty(String propertyName) {
 		return isFieldAnnotatedWith(propertyName,Id.class);
 	}
+
+
+	
 
 }

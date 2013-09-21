@@ -1,8 +1,10 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.socialsignin.spring.data.dynamodb.mapping.DefaultDynamoDBDateMarshaller;
@@ -10,6 +12,7 @@ import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -99,17 +102,23 @@ public abstract class AbstractDynamoDBQueryCriteria<T,ID extends Serializable> i
 	}
 	
 	
+	@Override
+	public DynamoDBQueryCriteria<T, ID> withPropertyIn(String propertyName, Iterable<?> value,Class<?> propertyType) {
+			
+			Condition condition = createCollectionCondition(propertyName, ComparisonOperator.IN, value,propertyType);
+			return withCondition(propertyName,condition);	
+		}
 
 	@Override
 	public DynamoDBQueryCriteria<T, ID> withSingleValueCriteria(String propertyName, ComparisonOperator comparisonOperator,
-			Object value) {
+			Object value,Class<?> propertyType) {
 		if (comparisonOperator.equals(ComparisonOperator.EQ))
 		{
-			return withPropertyEquals(propertyName,value);
+			return withPropertyEquals(propertyName,value,propertyType);
 		}
 		else
 		{
-			Condition condition = createSingleValueCondition(propertyName, comparisonOperator, value);
+			Condition condition = createSingleValueCondition(propertyName, comparisonOperator, value,propertyType,false);
 			return withCondition(propertyName,condition);
 		}
 	}
@@ -170,40 +179,178 @@ public abstract class AbstractDynamoDBQueryCriteria<T,ID extends Serializable> i
 
 		return condition;
 	}
-
-	protected Condition createSingleValueCondition(String propertyName,ComparisonOperator comparisonOperator, Object o) {
-				
-		Assert.notNull(o,"Creating conditions on null property values not yet supported: please specify a value for '" + propertyName + "'");
-		
-		Object attributeValue = getPropertyAttributeValue(propertyName,o);
 	
-		if (attributeValue instanceof String) {
-			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
-					new AttributeValue().withS((String)attributeValue ));
-
-			return condition;
-
-		} else if (attributeValue instanceof Number) {
-
-			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
-					new AttributeValue().withN(attributeValue.toString()));
-			return condition;
-		} else if (attributeValue instanceof Boolean) {
-			boolean boolValue = ((Boolean) attributeValue).booleanValue();
-			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
-					new AttributeValue().withN(boolValue ? "1" : "0"));
-			return condition;
-		} else if (attributeValue instanceof Date) {
-			Date date = (Date)attributeValue;
-			String marshalledDate = new DefaultDynamoDBDateMarshaller().marshall(date);
-
-			Condition condition = new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(
-					new AttributeValue().withS(marshalledDate));
-			return condition;
+	
+	private List<String> getNumberListAsStringList(List<Number> numberList)
+	{
+		List<String> list = new ArrayList<String>();
+		for (Number number : numberList)
+		{
+			if (number != null)
+			{
+				list.add(number.toString());
+			}
+			else
+			{
+				list.add(null);
+			}
+		}
+		return list;
+	}
+	
+	private List<String> getDateListAsStringList(List<Date> dateList)
+	{
+		DynamoDBMarshaller<Date> marshaller = new DefaultDynamoDBDateMarshaller();
+		List<String> list = new ArrayList<String>();
+		for (Date date : dateList)
+		{
+			if (date != null)
+			{
+				list.add(marshaller.marshall(date));
+			}
+			else
+			{
+				list.add(null);
+			}
+		}
+		return list;
+	}
+	
+	private List<String> getBooleanListAsStringList(List<Boolean> booleanList)
+	{
+		List<String> list = new ArrayList<String>();
+		for (Boolean booleanValue : booleanList)
+		{
+			if (booleanValue != null)
+			{
+				list.add(booleanValue.booleanValue() ? "1" : "0");
+			}
+			else
+			{
+				list.add(null);
+			}
+		}
+		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <P> List<P> getAttributeValueAsList(Object attributeValue)
+	{
+		boolean isIterable = ClassUtils.isAssignable(Iterable.class, attributeValue.getClass());
+		List<P> attributeValueAsList = null;
+		if (isIterable)
+		{
+			attributeValueAsList = new ArrayList<P>();
+			Iterable<P> iterable = (Iterable<P>)attributeValue;
+			for (P attributeValueElement : iterable)
+			{
+				attributeValueAsList.add(attributeValueElement);
+			}
+			return attributeValueAsList;
+		}
+		return null;
+	}
+	
+	
+	
+	
+	protected <P> List<AttributeValue> addAttributeValue(List<AttributeValue> attributeValueList,Object attributeValue,String propertyName,Class<P> propertyType,boolean expandCollectionValues)
+	{
+		AttributeValue attributeValueObject = new AttributeValue();
+		
+		if (ClassUtils.isAssignable(String.class, propertyType)) {
+			List<String> attributeValueAsList = getAttributeValueAsList(attributeValue);
+			if (expandCollectionValues && attributeValueAsList != null)
+			{
+				attributeValueObject.withSS(attributeValueAsList);
+			}
+			else
+			{
+				attributeValueObject.withS((String)attributeValue );
+			}
+		} else if (ClassUtils.isAssignable(Number.class, propertyType)) {
+			
+			List<Number> attributeValueAsList = getAttributeValueAsList(attributeValue);
+			if (expandCollectionValues && attributeValueAsList != null)
+			{
+				List<String> attributeValueAsStringList = getNumberListAsStringList(attributeValueAsList);
+				attributeValueObject.withNS(attributeValueAsStringList);
+			}
+			else
+			{
+				attributeValueObject.withN(attributeValue.toString());
+			}
+		} else if (ClassUtils.isAssignable(Boolean.class, propertyType)) {
+			List<Boolean> attributeValueAsList = getAttributeValueAsList(attributeValue);
+			if (expandCollectionValues && attributeValueAsList != null)
+			{
+				List<String> attributeValueAsStringList = getBooleanListAsStringList(attributeValueAsList);
+				attributeValueObject.withNS(attributeValueAsStringList);
+			}
+			else
+			{
+				boolean boolValue = ((Boolean) attributeValue).booleanValue();
+				attributeValueObject.withN(boolValue ? "1" : "0");
+			}
+		} else if (ClassUtils.isAssignable(Date.class, propertyType)) {
+			List<Date> attributeValueAsList = getAttributeValueAsList(attributeValue);
+			if (expandCollectionValues && attributeValueAsList != null)
+			{
+				List<String> attributeValueAsStringList = getDateListAsStringList(attributeValueAsList);
+				attributeValueObject.withNS(attributeValueAsStringList);
+			}
+			else
+			{
+				Date date = (Date)attributeValue;
+				String marshalledDate = new DefaultDynamoDBDateMarshaller().marshall(date);
+				attributeValueObject.withS(marshalledDate);
+			}
 		} else {
 			throw new RuntimeException("Cannot create condition for type:" + attributeValue.getClass()
 					+ " property conditions must be String,Number or Boolean, or have a DynamoDBMarshaller configured");
 		}
+		attributeValueList.add(attributeValueObject);
+		
+		return attributeValueList;
+	}
+	
+
+	protected Condition createSingleValueCondition(String propertyName,ComparisonOperator comparisonOperator, Object o,Class<?> propertyType,boolean alreadyMarshalledIfRequired) {
+				
+		Assert.notNull(o,"Creating conditions on null property values not yet supported: please specify a value for '" + propertyName + "'");
+		
+		Object attributeValue = !alreadyMarshalledIfRequired ? getPropertyAttributeValue(propertyName,o) : o;
+		
+		boolean marshalled = !alreadyMarshalledIfRequired && attributeValue != o && !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);
+		
+		Class<?> targetPropertyType = marshalled ? String.class : propertyType;
+		List<AttributeValue> attributeValueList = new ArrayList<AttributeValue>();
+		attributeValueList = addAttributeValue(attributeValueList,attributeValue,propertyName,targetPropertyType,true);
+		return new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(attributeValueList);
+		
+	}
+	
+	protected Condition createCollectionCondition(String propertyName,ComparisonOperator comparisonOperator, Iterable<?> o,Class<?> propertyType) {
+		
+		Assert.notNull(o,"Creating conditions on null property values not yet supported: please specify a value for '" + propertyName + "'");
+		List<AttributeValue> attributeValueList = new ArrayList<AttributeValue>();
+		boolean marshalled = false;
+		for (Object object : o)
+		{
+			Object attributeValue = getPropertyAttributeValue(propertyName,object);
+			if (attributeValue != null)
+			{
+				marshalled = attributeValue != object && !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);
+			}
+			Class<?> targetPropertyType = marshalled ? String.class : propertyType;
+			attributeValueList = addAttributeValue(attributeValueList,attributeValue,propertyName,targetPropertyType,false);
+
+		}
+
+		
+
+		return new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(attributeValueList);
+		
 	}
 
 	

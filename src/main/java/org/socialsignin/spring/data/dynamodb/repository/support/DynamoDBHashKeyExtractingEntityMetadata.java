@@ -32,7 +32,6 @@ public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetada
 	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName);
 	public boolean isHashKeyProperty(String propertyName);
 	public String getHashKeyPropertyName();
-	public <H> T getHashKeyPropotypeEntityForHashKey(H hashKey);
 
 	
 }

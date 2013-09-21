@@ -72,11 +72,6 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable
 	}
 
 	@Override
-	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
-		return metadata.getHashKeyPropotypeEntityForHashKey(hashKey);
-	}
-	
-	@Override
 	public boolean isCompositeHashAndRangeKeyProperty(String propertyName) {
 		return false;
 	}
@@ -86,14 +81,16 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable
 		return metadata.getMarshallerForProperty(propertyName);
 	}
 
-	@Override
-	public String getHashKeyPropertyName() {
-		return metadata.getHashKeyPropertyName();
-	}
-	
+
 	@Override
 	public Object getRangeKey(ID id) {
 		return null;
+	}
+
+
+	@Override
+	public String getHashKeyPropertyName() {
+		return metadata.getHashKeyPropertyName();
 	}
 	
 }

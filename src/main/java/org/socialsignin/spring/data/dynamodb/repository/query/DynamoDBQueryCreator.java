@@ -16,8 +16,10 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
@@ -27,6 +29,8 @@ import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
 import org.springframework.data.repository.query.parser.PartTree;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
@@ -65,34 +69,45 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 	{
 		if (part.shouldIgnoreCase().equals(IgnoreCaseType.ALWAYS))
 			throw new UnsupportedOperationException("Case insensitivity not supported");
+		
+		Class<?> propertyType = part.getProperty().getType();
+		
 		switch (part.getType()) {
+		case IN:
+		Object in = iterator.next();
+
+		boolean isIterable = ClassUtils.isAssignable(in.getClass(), Iterable.class);
+		boolean isArray = ObjectUtils.isArray(in);
+		Assert.isTrue(isIterable || isArray,"In criteria can only operate with Iterable or Array parameters");
+			Iterable<?> iterable = isIterable ? ((Iterable<?>)in) : Arrays.asList(ObjectUtils.toObjectArray(in));
+			return criteria.withPropertyIn(part.getProperty().getSegment(), iterable,propertyType);
 		case AFTER:
 			// TODO Do we want to check that value is a DynamoDB date here - ie. a Date object or a String?
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GT,iterator.next());
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GT,iterator.next(),propertyType);
 		case BEFORE:
 			// TODO Do we want to check that value is a DynamoDB date here - ie. a Date object or a String?
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LT,iterator.next());
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LT,iterator.next(),propertyType);
 		case GREATER_THAN:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GT,iterator.next());
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GT,iterator.next(),propertyType);
 		case LESS_THAN:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LT,iterator.next());
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LT,iterator.next(),propertyType);
 		case GREATER_THAN_EQUAL:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GE,iterator.next());
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GE,iterator.next(),propertyType);
 		case LESS_THAN_EQUAL:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LE,iterator.next());
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LE,iterator.next(),propertyType);
 		case IS_NULL:
 			return criteria.withNoValuedCriteria(part.getProperty().getSegment(), ComparisonOperator.NULL);
 		case IS_NOT_NULL:
 			return criteria.withNoValuedCriteria(part.getProperty().getSegment(), ComparisonOperator.NOT_NULL);
 		case TRUE:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ,Boolean.TRUE);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ,Boolean.TRUE,propertyType);
 		case FALSE:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ,Boolean.FALSE);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ,Boolean.FALSE,propertyType);
 		case SIMPLE_PROPERTY:
-			return criteria.withPropertyEquals(part.getProperty().getSegment(), iterator.next());	
+			return criteria.withPropertyEquals(part.getProperty().getSegment(), iterator.next(),propertyType);	
 		case NEGATING_SIMPLE_PROPERTY:
 			//return builder.notEqual(upperIfIgnoreCase(path), upperIfIgnoreCase(provider.next(part).getExpression()));
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.NE,iterator.next());
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.NE,iterator.next(),propertyType);
 		default:
 			throw new IllegalArgumentException("Unsupported keyword " + part.getType());
 		}

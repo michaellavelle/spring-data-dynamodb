@@ -11,12 +11,15 @@ import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 public interface DynamoDBQueryCriteria<T,ID extends Serializable> {
 	
 	public DynamoDBQueryCriteria<T, ID> withSingleValueCriteria(String propertyName, ComparisonOperator comparisonOperator,
-			Object value);
+			Object value,Class<?> type);
 
 	public DynamoDBQueryCriteria<T, ID> withNoValuedCriteria(String segment, ComparisonOperator null1);
 
-	public DynamoDBQueryCriteria<T, ID> withPropertyEquals(String segment, Object next);
+	public DynamoDBQueryCriteria<T, ID> withPropertyEquals(String segment, Object next,Class<?> type);
 
+	public DynamoDBQueryCriteria<T, ID> withPropertyIn(String segment, Iterable<?> o,Class<?> type);
+
+	
 	public DynamoDBQueryCriteria<T, ID> withSort(Sort sort);	
 	
 	public Query<T> buildQuery(DynamoDBMapper dynamoDBMapper);

@@ -41,7 +41,6 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 	private final Class<T> domainType; 
 	private boolean hasRangeKey;
-	private Method hashKeySetterMethod;
 	private String hashKeyPropertyName;
 
 	
@@ -59,17 +58,13 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
 			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
-					String getterMethodName = method.getName();
 					hashKeyPropertyName = getPropertyNameForAccessorMethod(method);
-					String setterMethodName = getterMethodName.replaceAll("get", "set");
-					hashKeySetterMethod = ReflectionUtils.findMethod(domainType, setterMethodName,method.getReturnType());
 				}
-				if (method.getAnnotation(DynamoDBRangeKey.class) != null)
-				{
+				if (method.getAnnotation(DynamoDBRangeKey.class) != null) {
 					hasRangeKey = true;
 				}
 			}});
-
+		Assert.notNull(hashKeyPropertyName, "Unable to find hash key getter method on " + domainType + "!");
 	}
 
 	
@@ -98,18 +93,9 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 	}
 
 	public boolean isHashKeyProperty(String propertyName) {
-		return isPropertyAnnotatedWith(propertyName, DynamoDBHashKey.class);
+		return hashKeyPropertyName.equals(propertyName);
 	}
 
-	public boolean isRangeKeyProperty(String propertyName) {
-		return isPropertyAnnotatedWith(propertyName, DynamoDBRangeKey.class);
-	}
-
-	private boolean isPropertyAnnotatedWith(final String propertyName, final Class<? extends Annotation> annotation) {
-		
-		Method method = findMethod(propertyName);
-		return method != null && method.getAnnotation(annotation) != null;
-	}
 	
 	protected boolean isFieldAnnotatedWith(final String propertyName, final Class<? extends Annotation> annotation) {
 		
@@ -117,14 +103,25 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		return field != null && field.getAnnotation(annotation) != null;
 	}
 
-	
-
 	private String toGetMethodName(String propertyName) {
 		String methodName = propertyName.substring(0, 1).toUpperCase();
 		if (propertyName.length() > 1) {
 			methodName = methodName + propertyName.substring(1);
 		}
 		return "get" + methodName;
+	}
+	
+	protected String toSetterMethodNameFromAccessorMethod(Method method) {
+		String accessorMethodName = method.getName();
+		if (accessorMethodName.startsWith("get"))
+		{
+			return "set" + accessorMethodName.substring(3);
+		}
+		else if (accessorMethodName.startsWith("is"))
+		{
+			return "is" + accessorMethodName.substring(2);
+		}
+		return null;
 	}
 	
 	private String toIsMethodName(String propertyName) {
@@ -204,22 +201,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 	}
 
-	@Override
-	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
-
-
-		try {
-			System.out.println(hashKey.getClass());
-			T entity = getJavaType().newInstance();
-			ReflectionUtils.invokeMethod(hashKeySetterMethod, entity, hashKey);
-
-			return entity;
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	
 
 	
 
@@ -260,11 +242,13 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		return firstLetter.toLowerCase() + remainder;
 	}
 
+
 	@Override
 	public String getHashKeyPropertyName() {
 		return hashKeyPropertyName;
 	}
 
+	
 
 	
 

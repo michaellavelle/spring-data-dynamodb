@@ -1,6 +1,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -87,8 +88,9 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 	@SuppressWarnings("unchecked")
 	@Override
 	public DynamoDBQueryCriteria<T, ID> withSingleValueCriteria(String propertyName, ComparisonOperator comparisonOperator,
-			Object value) {
+			Object value,Class<?> propertyType) {
 
+		
 		if (entityInformation.isCompositeHashAndRangeKeyProperty(propertyName) && !comparisonOperator.equals(ComparisonOperator.EQ))
 		{
 			if (!isComparisonOperatorDistributive(comparisonOperator)) {
@@ -98,17 +100,17 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 			Object rangeKey = entityInformation.getRangeKey((ID)value);
 			if (hashKey != null)
 			{
-				withSingleValueCriteria(getHashKeyPropertyName(),comparisonOperator,hashKey);
+				withSingleValueCriteria(getHashKeyPropertyName(),comparisonOperator,hashKey,hashKey.getClass());
 			}
 			if (rangeKey != null)
 			{
-				withSingleValueCriteria(getRangeKeyPropertyName(),comparisonOperator,rangeKey);
+				withSingleValueCriteria(getRangeKeyPropertyName(),comparisonOperator,rangeKey,rangeKey.getClass());
 			}
 			return this;
 		}
 		else
 		{
-			return super.withSingleValueCriteria(propertyName, comparisonOperator, value);
+			return super.withSingleValueCriteria(propertyName, comparisonOperator, value,propertyType);
 		}
 	}
 
@@ -123,42 +125,45 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 		
 		if (isRangeKeySpecified())
 		{
-			Condition rangeKeyCondition = this.createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ, getRangeKeyAttributeValue());
+			Condition rangeKeyCondition = createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ, getRangeKeyAttributeValue(),getRangeKeyAttributeValue().getClass(),true);
 			queryExpression.withRangeKeyCondition(getRangeKeyAttributeName(), rangeKeyCondition);
-			applySortIfSpecified(queryExpression,getRangeKeyPropertyName());		
+			applySortIfSpecified(queryExpression,getRangeKeyAttributeName());		
 		}
 		else if (isOnlyASingleAttributeConditionAndItIsOnEitherRangeOrIndexRangeKey())
 		{
+			
 			Entry<String, List<Condition>> singleConditions = attributeConditions.entrySet().iterator().next();
+
 			for (Condition condition : singleConditions.getValue())
 			{
+				
 				queryExpression.withRangeKeyCondition(singleConditions.getKey(), condition);
 			}
-	
+			// TODO ML
 			applySortIfSpecified(queryExpression,singleConditions.getKey());
 		}
 		else
 		{
-			applySortIfSpecified(queryExpression,getRangeKeyPropertyName());
+			applySortIfSpecified(queryExpression,getRangeKeyAttributeName());
 		}
 	
 		
 		return queryExpression;
 	}
 	
-	protected void applySortIfSpecified(DynamoDBQueryExpression<T> queryExpression,String permittedPropertyName)
+	protected void applySortIfSpecified(DynamoDBQueryExpression<T> queryExpression,String permittedAttributeName)
 	{
 		if (sort != null)
 		{
 			for (Order order : sort)
 			{
-				if (order.getProperty().equals(permittedPropertyName))
+				if (permittedAttributeName.equals(getAttributeName(order.getProperty())))
 				{
 					queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
 				}
 				else
 				{
-					throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyName + " for the criteria specified");
+					throw new UnsupportedOperationException("Sorting only possible by " + permittedAttributeName + " for the criteria specified");
 				}
 			}
 		}
@@ -196,9 +201,25 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 	
 	public boolean isApplicableForQuery() {
 		
+		// Can't query if any conditions are "IN" conditions - TODO ML Generalise this
+		for (Collection<Condition> conditions : attributeConditions.values())
+		{
+			for (Condition condition : conditions)
+			{
+				if (condition.getComparisonOperator().equals(ComparisonOperator.IN.name()))
+				{
+					return false;
+				}
+			}
+		}
+		
+		
 		// Can query on hash key only, or by hash key and one other condition on an range or indexrange key
 		return isOnlyHashKeySpecified()  || 
 			(isHashKeySpecified() && isOnlyASingleAttributeConditionAndItIsOnEitherRangeOrIndexRangeKey());
+		
+		
+		
 	}
 	
 	public DynamoDBScanExpression buildScanExpression() {
@@ -210,11 +231,11 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		if (isHashKeySpecified())
 		{
-			scanExpression.addFilterCondition(getHashKeyAttributeName(), createSingleValueCondition(getHashKeyPropertyName(), ComparisonOperator.EQ, getHashKeyAttributeValue()));
+			scanExpression.addFilterCondition(getHashKeyAttributeName(), createSingleValueCondition(getHashKeyPropertyName(), ComparisonOperator.EQ, getHashKeyAttributeValue(),getHashKeyAttributeValue().getClass(),true));
 		}
 		if (isRangeKeySpecified())
 		{
-			scanExpression.addFilterCondition(getRangeKeyAttributeName(), createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ, getRangeKeyAttributeValue()));
+			scanExpression.addFilterCondition(getRangeKeyAttributeName(), createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ, getRangeKeyAttributeValue(),getRangeKeyAttributeValue().getClass(),true));
 		}
 		for (Map.Entry<String,List<Condition>> conditionEntry : attributeConditions.entrySet())
 		{
@@ -236,7 +257,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public DynamoDBQueryCriteria<T, ID> withPropertyEquals(String propertyName, Object value) {
+	public DynamoDBQueryCriteria<T, ID> withPropertyEquals(String propertyName, Object value,Class<?> propertyType) {
 			if (isHashKeyProperty(propertyName))
 			{
 				return withHashKeyEquals(value);
@@ -251,17 +272,17 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 				Object rangeKey = entityInformation.getRangeKey((ID)value);
 				if (hashKey != null)
 				{
-					withPropertyEquals(getHashKeyPropertyName(),hashKey);
+					withPropertyEquals(getHashKeyPropertyName(),hashKey,propertyType);
 				}
 				if (rangeKey != null)
 				{
-					withPropertyEquals(getRangeKeyPropertyName(),rangeKey);
+					withPropertyEquals(getRangeKeyPropertyName(),rangeKey,propertyType);
 				}
 				return this;
 			}
 			else
 			{
-				Condition condition = createSingleValueCondition(propertyName, ComparisonOperator.EQ, value);
+				Condition condition = createSingleValueCondition(propertyName, ComparisonOperator.EQ, value,propertyType,false);
 				return withCondition(propertyName,condition);		
 			}
 		

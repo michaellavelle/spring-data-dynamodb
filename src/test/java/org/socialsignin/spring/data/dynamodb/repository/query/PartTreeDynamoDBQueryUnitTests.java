@@ -9,8 +9,10 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +32,7 @@ import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHash
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.util.ClassUtils;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
@@ -1320,6 +1323,76 @@ public class PartTreeDynamoDBQueryUnitTests {
 	}
 	
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void testExecute_WhenFinderMethodIsFindingSingleEntity_WithMultipleStringParameters_WhenFindingByHashKeyAndACollectionProperty() {
+		setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
+				"findByTestSet", 1, "id", null);
+
+		Set<String> testSet = new HashSet<String>();
+		testSet.add("testData");
+		
+		// Mock out specific DynamoDBMapper behavior expected by this method
+		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		Mockito.when(mockUserScanResults.get(0)).thenReturn(mockUser);
+		Mockito.when(mockUserScanResults.size()).thenReturn(1);
+		Mockito.when(mockDynamoDBMapper.scan(classCaptor.capture(), scanCaptor.capture())).thenReturn(
+				mockUserScanResults);
+
+		// Execute the query
+		Object[] parameters = new Object[] { testSet };
+		Object o = partTreeDynamoDBQuery.execute(parameters);
+
+		// Assert that we obtain the expected single result
+		assertEquals(o, mockUser);
+
+		// Assert that we scanned DynamoDB for the correct class
+		assertEquals(classCaptor.getValue(), User.class);
+
+		// Assert that we have one filter condition
+		Map<String, Condition> filterConditions = scanCaptor.getValue().getScanFilter();
+		assertEquals(1, filterConditions.size());
+		Condition testSetFilterCondition = filterConditions.get("testSet");
+		assertNotNull(testSetFilterCondition);
+		
+
+		assertEquals(ComparisonOperator.EQ.name(), testSetFilterCondition.getComparisonOperator());
+
+		// Assert we only have one attribute value for each filter condition
+		assertEquals(1, testSetFilterCondition.getAttributeValueList().size());
+
+		// Assert that there the attribute value type for this attribute value
+		// is String,
+		// and its value is the parameter expected
+		assertNotNull(testSetFilterCondition.getAttributeValueList().get(0).getSS());
+
+		
+		assertTrue(ClassUtils.isAssignable(Iterable.class, testSetFilterCondition.getAttributeValueList().get(0).getSS().getClass()));
+		
+		Iterable iterable = (Iterable)testSetFilterCondition.getAttributeValueList().get(0).getSS();
+		List<Object> returnObjects = new ArrayList<Object>();
+		for (Object object : iterable)
+		{
+			returnObjects.add(object);
+		}
+		assertEquals(1,returnObjects.size());
+		assertEquals("testData",returnObjects.get(0));
+		
+		
+		// Assert that all other attribute value types other than String type
+		// are null
+		assertNull(testSetFilterCondition.getAttributeValueList().get(0).getS());
+		assertNull(testSetFilterCondition.getAttributeValueList().get(0).getN());
+		assertNull(testSetFilterCondition.getAttributeValueList().get(0).getNS());
+		assertNull(testSetFilterCondition.getAttributeValueList().get(0).getB());
+		assertNull(testSetFilterCondition.getAttributeValueList().get(0).getBS());
+		
+
+		// Verify that the expected DynamoDBMapper method was called
+		Mockito.verify(mockDynamoDBMapper).scan(classCaptor.getValue(), scanCaptor.getValue());
+	}
+	
 	
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1490,13 +1563,16 @@ public class PartTreeDynamoDBQueryUnitTests {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test(expected = IllegalArgumentException.class)
+	//@Test(expected = IllegalArgumentException.class)
 	// Not yet supported
+	@Test
 	public void testExecute_WhenFinderMethodIsFindingEntityList_WithSingleStringParameter_WithIn_WhenNotFindingByHashKey() {
 		setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
 				"findByNameIn", 1, "id", null);
 		Mockito.when(mockDynamoDBUserQueryMethod.isCollectionQuery()).thenReturn(true);
 
+		String[] names = new String[]{"someName","someOtherName"}; 
+		
 		// Mock out specific DynamoDBMapper behavior expected by this method
 		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
 		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
@@ -1506,7 +1582,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 				mockUserScanResults);
 
 		// Execute the query
-		Object[] parameters = new Object[] { "someName" };
+		Object[] parameters = new Object[] { names};
 		partTreeDynamoDBQuery.execute(parameters);
 
 	}

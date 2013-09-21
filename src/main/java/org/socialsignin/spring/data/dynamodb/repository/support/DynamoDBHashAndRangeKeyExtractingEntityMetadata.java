@@ -29,6 +29,9 @@ public interface DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID extends S
 	public String getRangeKeyPropertyName();
 	public Set<String> getIndexRangeKeyPropertyNames();
 	boolean isCompositeHashAndRangeKeyProperty(String propertyName);
+	public <H> T getHashKeyPropotypeEntityForHashKey(H hashKey);
+
+
 
 
 }

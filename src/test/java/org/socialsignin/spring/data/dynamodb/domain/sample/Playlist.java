@@ -50,7 +50,8 @@ public class Playlist {
 	public String getUserName() {
 		return playlistId != null ? playlistId.getUserName() : null;
 	}
-
+	
+	
 	public void setUserName(String userName) {
 		if (playlistId == null) {
 			playlistId = new PlaylistId();
