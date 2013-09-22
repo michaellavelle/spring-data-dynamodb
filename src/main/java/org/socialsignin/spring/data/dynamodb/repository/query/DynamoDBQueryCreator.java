@@ -72,6 +72,7 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 		
 		Class<?> propertyType = part.getProperty().getType();
 
+		
 		switch (part.getType()) {
 		case IN:
 			Object in = iterator.next();

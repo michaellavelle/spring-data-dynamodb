@@ -18,13 +18,24 @@ package org.socialsignin.spring.data.dynamodb.repository.config;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBRepositoryFactoryBean;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.data.config.ParsingUtils;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport;
+import org.springframework.data.repository.config.XmlRepositoryConfigurationSource;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
 
 public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
 
 	private static final String DEFAULT_AMAZON_DYNAMO_DB_BEAN_NAME = "amazonDynamoDB";
+	
+	private static final String DYNAMO_DB_MAPPER_CONFIG_REF = "dynamoDBMapperConfig";
+
+	
+	
+	
+	private static final String AMAZON_DYNAMODB_REF = "amazon-dynamodb-ref";
+	
 
 	@Override
 	public String getRepositoryFactoryClassName() {
@@ -38,12 +49,27 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 		postProcess(builder, attributes.getString("amazonDynamoDBRef"), attributes.getString("dynamoDBMapperConfigRef"));
 
 	}
+	
+	/* 
+	 * (non-Javadoc)
+	 * @see org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#postProcess(org.springframework.beans.factory.support.BeanDefinitionBuilder, org.springframework.data.repository.config.XmlRepositoryConfigurationSource)
+	 */
+	@Override
+	public void postProcess(BeanDefinitionBuilder builder, XmlRepositoryConfigurationSource config) {
+
+		Element element = config.getElement();
+
+		ParsingUtils.setPropertyReference(builder, element, AMAZON_DYNAMODB_REF, "amazonDynamoDB");
+		ParsingUtils.setPropertyReference(builder, element, DYNAMO_DB_MAPPER_CONFIG_REF, "dynamoDBMapperConfig");
+
+	}
 
 	private void postProcess(BeanDefinitionBuilder builder, String amazonDynamoDBRef, String dynamoDBMapperConfigRef) {
 
 		amazonDynamoDBRef = StringUtils.hasText(amazonDynamoDBRef) ? amazonDynamoDBRef
 				: DEFAULT_AMAZON_DYNAMO_DB_BEAN_NAME;
-		builder.addConstructorArgReference(amazonDynamoDBRef);
+		
+		builder.addPropertyReference("amazonDynamoDB", amazonDynamoDBRef);
 
 		if (StringUtils.hasText(dynamoDBMapperConfigRef)) {
 			builder.addPropertyReference("dynamoDBMapperConfig", dynamoDBMapperConfigRef);

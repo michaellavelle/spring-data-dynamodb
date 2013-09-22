@@ -55,11 +55,10 @@ public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 
 	private DynamoDBMapperConfig dynamoDBMapperConfig;
 
-	private AmazonDynamoDB amazonDynamoDB;;
+	private AmazonDynamoDB amazonDynamoDB;
 
-	public DynamoDBRepositoryFactoryBean(AmazonDynamoDB db) {
-		super();
-		this.amazonDynamoDB = db;
+	public void setAmazonDynamoDB(AmazonDynamoDB amazonDynamoDB) {
+		this.amazonDynamoDB = amazonDynamoDB;
 		setMappingContext(new DynamoDBMappingContext());
 
 	}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns="http://socialsignin.org/schema/data/dynamodb"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:tool="http://www.springframework.org/schema/tool"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:repository="http://www.springframework.org/schema/data/repository"
+	targetNamespace="http://socialsignin.org/schema/data/dynamodb"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/tool" />
+	<xsd:import namespace="http://www.springframework.org/schema/context" />
+	<xsd:import namespace="http://www.springframework.org/schema/data/repository"
+		schemaLocation="http://www.springframework.org/schema/data/repository/spring-repository.xsd" />
+
+	<xsd:element name="repositories">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="repository:repositories">
+					<xsd:attribute name="amazon-dynamodb-ref" type="amazonDynamoDBRef" use="required" />
+					<xsd:attribute name="dynamodb-mapper-config-ref" type="dynamoDBMapperConfigRef" use="optional"/>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+
+	<xsd:simpleType name="amazonDynamoDBRef">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<tool:annotation kind="ref">
+					<tool:assignable-to type="com.amazonaws.services.dynamodbv2.AmazonDynamoDB" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:union memberTypes="xsd:string" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="dynamoDBMapperConfigRef">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<tool:annotation kind="ref">
+					<tool:assignable-to type="com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:union memberTypes="xsd:string" />
+	</xsd:simpleType>
+	
+
+
+</xsd:schema>

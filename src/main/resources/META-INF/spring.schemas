@@ -1,0 +1,2 @@
+http\://socialsignin.org/schema/data/dynamodb/spring-dynamodb-1.0.xsd=org/socialsignin/spring/data/dynamodb/repository/config/spring-dynamodb-1.0.xsd
+http\://socialsignin.org/schema/data/dynamodb/spring-dynamodb.xsd=org/socialsignin/spring/data/dynamodb/repository/config/spring-dynamodb-1.0.xsd
