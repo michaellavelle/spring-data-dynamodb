@@ -81,6 +81,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T,ID extends Serializable> ex
 			}
 		}
 
+
 	
 
 	}

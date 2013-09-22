@@ -1,6 +1,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,6 +17,7 @@ import org.socialsignin.spring.data.dynamodb.query.SingleEntityLoadByHashAndRang
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.util.Assert;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
@@ -81,8 +83,12 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 		return new SingleEntityLoadByHashAndRangeKeyQuery<T>(dynamoDBMapper,entityInformation.getJavaType(),getHashKeyAttributeValue(),getRangeKeyAttributeValue());
 	}
 	
-	private boolean isComparisonOperatorDistributive(ComparisonOperator comparisonOperator) {
-		return comparisonOperator.equals(ComparisonOperator.NE) || comparisonOperator.equals(ComparisonOperator.EQ);
+	private void checkComparisonOperatorPermittedForCompositeHashAndRangeKey(ComparisonOperator comparisonOperator) {
+
+		if (ComparisonOperator.EQ.equals(comparisonOperator) || ComparisonOperator.CONTAINS.equals(comparisonOperator) || ComparisonOperator.BEGINS_WITH.equals(comparisonOperator) ) {
+			throw new UnsupportedOperationException("Only EQ,CONTAINS,BEGINS_WITH supported for composite id comparison");
+		}
+	
 	}
 	 
 	@SuppressWarnings("unchecked")
@@ -91,11 +97,9 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 			Object value,Class<?> propertyType) {
 
 		
-		if (entityInformation.isCompositeHashAndRangeKeyProperty(propertyName) && !comparisonOperator.equals(ComparisonOperator.EQ))
+		if (entityInformation.isCompositeHashAndRangeKeyProperty(propertyName))
 		{
-			if (!isComparisonOperatorDistributive(comparisonOperator)) {
-				throw new UnsupportedOperationException("Only EQ,NE so far supported for composite id comparison");
-			}
+			checkComparisonOperatorPermittedForCompositeHashAndRangeKey(comparisonOperator);
 			Object hashKey = entityInformation.getHashKey((ID)value);
 			Object rangeKey = entityInformation.getRangeKey((ID)value);
 			if (hashKey != null)
@@ -139,7 +143,6 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 				
 				queryExpression.withRangeKeyCondition(singleConditions.getKey(), condition);
 			}
-			// TODO ML
 			applySortIfSpecified(queryExpression,singleConditions.getKey());
 		}
 		else
@@ -201,12 +204,16 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 	
 	public boolean isApplicableForQuery() {
 		
-		// Can't query if any conditions are "IN" conditions - TODO ML Generalise this
+		List<ComparisonOperator> comparisonOperatorsPermittedForQuery = Arrays.asList(
+				new ComparisonOperator[] {ComparisonOperator.EQ,ComparisonOperator.LE,ComparisonOperator.LT,ComparisonOperator.GE,
+				ComparisonOperator.GT,ComparisonOperator.BEGINS_WITH, ComparisonOperator.BETWEEN});
+	
+		// Can only query on subset of Conditions
 		for (Collection<Condition> conditions : attributeConditions.values())
 		{
 			for (Condition condition : conditions)
 			{
-				if (condition.getComparisonOperator().equals(ComparisonOperator.IN.name()))
+				if (!comparisonOperatorsPermittedForQuery.contains(ComparisonOperator.fromValue(condition.getComparisonOperator())))
 				{
 					return false;
 				}
@@ -249,6 +256,8 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 	
 	public DynamoDBQueryCriteria<T, ID> withRangeKeyEquals(Object value)
 	{
+		Assert.notNull(value,"Creating conditions on null range keys not supported: please specify a value for '" + getRangeKeyPropertyName() + "'");
+
 		rangeKeyAttributeValue = getPropertyAttributeValue(getRangeKeyPropertyName(),value);
 		return this;
 	}
@@ -272,11 +281,11 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 				Object rangeKey = entityInformation.getRangeKey((ID)value);
 				if (hashKey != null)
 				{
-					withPropertyEquals(getHashKeyPropertyName(),hashKey,propertyType);
+					withHashKeyEquals(hashKey);
 				}
 				if (rangeKey != null)
 				{
-					withPropertyEquals(getRangeKeyPropertyName(),rangeKey,propertyType);
+					withRangeKeyEquals(rangeKey);
 				}
 				return this;
 			}

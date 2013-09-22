@@ -2,6 +2,7 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +67,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T,ID extends Serializable> i
 	
 	public DynamoDBQueryCriteria<T, ID> withHashKeyEquals(Object value)
 	{
+		Assert.notNull(value,"Creating conditions on null hash keys not supported: please specify a value for '" + getHashKeyPropertyName() + "'");
+		
 		hashKeyAttributeValue = getPropertyAttributeValue(getHashKeyPropertyName(),value);
 		hashKeyPropertyValue = value;
 		return this;
@@ -103,11 +106,19 @@ public abstract class AbstractDynamoDBQueryCriteria<T,ID extends Serializable> i
 	
 	
 	@Override
+	public DynamoDBQueryCriteria<T, ID> withPropertyBetween(String propertyName, Object value1, Object value2, Class<?> type) {
+		Condition condition = createCollectionCondition(propertyName, ComparisonOperator.BETWEEN, Arrays.asList(value1,value2),type);
+		return withCondition(propertyName,condition);	
+	}
+	
+	@Override
 	public DynamoDBQueryCriteria<T, ID> withPropertyIn(String propertyName, Iterable<?> value,Class<?> propertyType) {
 			
 			Condition condition = createCollectionCondition(propertyName, ComparisonOperator.IN, value,propertyType);
 			return withCondition(propertyName,condition);	
 		}
+	
+	
 
 	@Override
 	public DynamoDBQueryCriteria<T, ID> withSingleValueCriteria(String propertyName, ComparisonOperator comparisonOperator,
@@ -317,7 +328,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T,ID extends Serializable> i
 
 	protected Condition createSingleValueCondition(String propertyName,ComparisonOperator comparisonOperator, Object o,Class<?> propertyType,boolean alreadyMarshalledIfRequired) {
 				
-		Assert.notNull(o,"Creating conditions on null property values not yet supported: please specify a value for '" + propertyName + "'");
+		Assert.notNull(o,"Creating conditions on null property values not supported: please specify a value for '" + propertyName + "'");
 		
 		Object attributeValue = !alreadyMarshalledIfRequired ? getPropertyAttributeValue(propertyName,o) : o;
 		
@@ -332,7 +343,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T,ID extends Serializable> i
 	
 	protected Condition createCollectionCondition(String propertyName,ComparisonOperator comparisonOperator, Iterable<?> o,Class<?> propertyType) {
 		
-		Assert.notNull(o,"Creating conditions on null property values not yet supported: please specify a value for '" + propertyName + "'");
+		Assert.notNull(o,"Creating conditions on null property values not supported: please specify a value for '" + propertyName + "'");
 		List<AttributeValue> attributeValueList = new ArrayList<AttributeValue>();
 		boolean marshalled = false;
 		for (Object object : o)

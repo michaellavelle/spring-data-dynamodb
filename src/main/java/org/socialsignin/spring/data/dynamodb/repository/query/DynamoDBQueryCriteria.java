@@ -19,6 +19,8 @@ public interface DynamoDBQueryCriteria<T,ID extends Serializable> {
 
 	public DynamoDBQueryCriteria<T, ID> withPropertyIn(String segment, Iterable<?> o,Class<?> type);
 
+	public DynamoDBQueryCriteria<T, ID> withPropertyBetween(String segment, Object value1,Object value2,Class<?> type);
+
 	
 	public DynamoDBQueryCriteria<T, ID> withSort(Sort sort);	
 	

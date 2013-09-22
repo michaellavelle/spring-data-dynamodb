@@ -458,58 +458,70 @@ public class PartTreeDynamoDBQueryUnitTests {
 		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropotypeEntityForHashKey("someUserName")).thenReturn(
 				prototypeHashKey);
 
+
 		// Mock out specific DynamoDBMapper behavior expected by this method
-		ArgumentCaptor<DynamoDBQueryExpression> queryCaptor = ArgumentCaptor.forClass(DynamoDBQueryExpression.class);
+		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
 		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
-		Mockito.when(mockPlaylistQueryResults.get(0)).thenReturn(mockPlaylist);
-		Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
-		Mockito.when(mockDynamoDBMapper.query(classCaptor.capture(), queryCaptor.capture())).thenReturn(
-				mockPlaylistQueryResults);
+		Mockito.when(mockPlaylistScanResults.get(0)).thenReturn(mockPlaylist);
+		Mockito.when(mockPlaylistScanResults.size()).thenReturn(1);
+		Mockito.when(mockDynamoDBMapper.scan(classCaptor.capture(), scanCaptor.capture())).thenReturn(
+				mockPlaylistScanResults);
 
 		// Execute the query
 		Object[] parameters = new Object[] { "someUserName", "somePlaylistName" };
 		Object o = partTreeDynamoDBQuery.execute(parameters);
 
 		// Assert that we obtain the expected results
-		assertEquals(mockPlaylistQueryResults, o);
-		assertEquals(1, mockPlaylistQueryResults.size());
-		assertEquals(mockPlaylist, mockPlaylistQueryResults.get(0));
+		assertEquals(mockPlaylistScanResults, o);
+		assertEquals(1, mockPlaylistScanResults.size());
+		assertEquals(mockPlaylist, mockPlaylistScanResults.get(0));
 
 		// Assert that we scanned DynamoDB for the correct class
 		assertEquals(classCaptor.getValue(), Playlist.class);
+		
+		
+		// Assert that we have the correct filter conditions
+		Map<String, Condition> filterConditions = scanCaptor.getValue().getScanFilter();
+		assertEquals(2, filterConditions.size());
+		Condition filterCondition1 = filterConditions.get("userName");
+		Condition filterCondition2 = filterConditions.get("playlistName");
 
-		// Assert that we have a query key condition and a filter condition
-		Object hashKeyPrototypeObject = queryCaptor.getValue().getHashKeyValues();
-		assertTrue(hashKeyPrototypeObject instanceof Playlist);
-		Playlist hashKeyPropertyPlaylist = (Playlist) hashKeyPrototypeObject;
-		assertEquals("someUserName", hashKeyPropertyPlaylist.getUserName());
-		// Assert that we only one filter condition for the one property
-		Map<String, Condition> filterConditions = queryCaptor.getValue().getRangeKeyConditions();
-		assertEquals(1, filterConditions.size());
-		Condition filterCondition = filterConditions.get("playlistName");
+		assertEquals(ComparisonOperator.EQ.name(), filterCondition1.getComparisonOperator());
+		assertEquals(ComparisonOperator.NE.name(), filterCondition2.getComparisonOperator());
 
-		assertNotNull(filterCondition);
-
-		assertEquals(ComparisonOperator.NE.name(), filterCondition.getComparisonOperator());
-
-		// Assert we only have one attribute value for the filter condition
-		assertEquals(1, filterCondition.getAttributeValueList().size());
+		// Assert we only have one attribute value for this filter condition
+		assertEquals(1, filterCondition1.getAttributeValueList().size());
+		assertEquals(1, filterCondition2.getAttributeValueList().size());
 
 		// Assert that there the attribute value type for this attribute value
 		// is String,
 		// and its value is the parameter expected
-		assertEquals("somePlaylistName", filterCondition.getAttributeValueList().get(0).getS());
+		assertEquals("someUserName", filterCondition1.getAttributeValueList().get(0).getS());
+		assertEquals("somePlaylistName", filterCondition2.getAttributeValueList().get(0).getS());
 
 		// Assert that all other attribute value types other than String type
 		// are null
-		assertNull(filterCondition.getAttributeValueList().get(0).getSS());
-		assertNull(filterCondition.getAttributeValueList().get(0).getN());
-		assertNull(filterCondition.getAttributeValueList().get(0).getNS());
-		assertNull(filterCondition.getAttributeValueList().get(0).getB());
-		assertNull(filterCondition.getAttributeValueList().get(0).getBS());
+		assertNull(filterCondition1.getAttributeValueList().get(0).getSS());
+		assertNull(filterCondition1.getAttributeValueList().get(0).getN());
+		assertNull(filterCondition1.getAttributeValueList().get(0).getNS());
+		assertNull(filterCondition1.getAttributeValueList().get(0).getB());
+		assertNull(filterCondition1.getAttributeValueList().get(0).getBS());
+
+		assertNull(filterCondition2.getAttributeValueList().get(0).getSS());
+		assertNull(filterCondition2.getAttributeValueList().get(0).getN());
+		assertNull(filterCondition2.getAttributeValueList().get(0).getNS());
+		assertNull(filterCondition2.getAttributeValueList().get(0).getB());
+		assertNull(filterCondition2.getAttributeValueList().get(0).getBS());
 
 		// Verify that the expected DynamoDBMapper method was called
-		Mockito.verify(mockDynamoDBMapper).query(classCaptor.getValue(), queryCaptor.getValue());
+		Mockito.verify(mockDynamoDBMapper).scan(classCaptor.getValue(), scanCaptor.getValue()); // Assert
+																								// that
+																								// we
+																								// obtain
+																								// the
+																								// expected
+																								// results
+
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

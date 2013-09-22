@@ -71,26 +71,28 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 			throw new UnsupportedOperationException("Case insensitivity not supported");
 		
 		Class<?> propertyType = part.getProperty().getType();
-		
+
 		switch (part.getType()) {
 		case IN:
-		Object in = iterator.next();
-
-		boolean isIterable = ClassUtils.isAssignable(in.getClass(), Iterable.class);
-		boolean isArray = ObjectUtils.isArray(in);
-		Assert.isTrue(isIterable || isArray,"In criteria can only operate with Iterable or Array parameters");
+			Object in = iterator.next();
+			boolean isIterable = ClassUtils.isAssignable(in.getClass(), Iterable.class);
+			boolean isArray = ObjectUtils.isArray(in);
+			Assert.isTrue(isIterable || isArray,"In criteria can only operate with Iterable or Array parameters");
 			Iterable<?> iterable = isIterable ? ((Iterable<?>)in) : Arrays.asList(ObjectUtils.toObjectArray(in));
-			return criteria.withPropertyIn(part.getProperty().getSegment(), iterable,propertyType);
+			return criteria.withPropertyIn(part.getProperty().getSegment(), iterable,propertyType);	
+		case CONTAINING:
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.CONTAINS,iterator.next(),propertyType);
+		case STARTING_WITH:
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.BEGINS_WITH,iterator.next(),propertyType);
+		case BETWEEN:
+			Object first = iterator.next();
+			Object second = iterator.next();
+			return criteria.withPropertyBetween(part.getProperty().getSegment(), first,second,propertyType);	
 		case AFTER:
-			// TODO Do we want to check that value is a DynamoDB date here - ie. a Date object or a String?
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GT,iterator.next(),propertyType);
-		case BEFORE:
-			// TODO Do we want to check that value is a DynamoDB date here - ie. a Date object or a String?
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LT,iterator.next(),propertyType);
 		case GREATER_THAN:
 			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GT,iterator.next(),propertyType);
+		case BEFORE:
 		case LESS_THAN:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LT,iterator.next(),propertyType);
 		case GREATER_THAN_EQUAL:
 			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GE,iterator.next(),propertyType);
 		case LESS_THAN_EQUAL:
@@ -106,7 +108,6 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 		case SIMPLE_PROPERTY:
 			return criteria.withPropertyEquals(part.getProperty().getSegment(), iterator.next(),propertyType);	
 		case NEGATING_SIMPLE_PROPERTY:
-			//return builder.notEqual(upperIfIgnoreCase(path), upperIfIgnoreCase(provider.next(part).getExpression()));
 			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.NE,iterator.next(),propertyType);
 		default:
 			throw new IllegalArgumentException("Unsupported keyword " + part.getType());
@@ -124,7 +125,7 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 	@Override
 	protected DynamoDBQueryCriteria<T,ID> or(DynamoDBQueryCriteria<T,ID> base,
 			DynamoDBQueryCriteria<T,ID> criteria) {
-		throw new UnsupportedOperationException("Or queries not yet supported");
+		throw new UnsupportedOperationException("Or queries not supported");
 	}
 
 	@Override
