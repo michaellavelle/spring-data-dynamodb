@@ -79,8 +79,8 @@ or in xml...
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://socialsignin.org/schema/data/dynamodb
-                           http://socialsignin.org/schema/data/dynamodb/spring-dynamodb.xsd">
+                           http://docs.socialsignin.org/schema/data/dynamodb
+                           http://docs.socialsignin.org/schema/data/dynamodb/spring-dynamodb.xsd">
 
   <bean id="amazonDynamoDB" class="com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient">
     <constructor-arg ref="amazonAWSCredentials" />
