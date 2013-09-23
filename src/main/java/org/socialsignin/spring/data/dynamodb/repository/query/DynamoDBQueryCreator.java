@@ -76,6 +76,7 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQue
 		switch (part.getType()) {
 		case IN:
 			Object in = iterator.next();
+			Assert.notNull(in,"Creating conditions on null parameters not supported: please specify a value for '" + part.getProperty().getSegment() + "'");
 			boolean isIterable = ClassUtils.isAssignable(in.getClass(), Iterable.class);
 			boolean isArray = ObjectUtils.isArray(in);
 			Assert.isTrue(isIterable || isArray,"In criteria can only operate with Iterable or Array parameters");
