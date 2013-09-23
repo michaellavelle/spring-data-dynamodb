@@ -68,6 +68,36 @@ public class DynamoDBConfig {
 }
 ```
 
+or in xml...
+
+```xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://socialsignin.org/schema/data/dynamodb
+                           http://socialsignin.org/schema/data/dynamodb/spring-dynamodb.xsd">
+
+  <bean id="amazonDynamoDB" class="com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient">
+    <constructor-arg ref="amazonAWSCredentials" />
+    <property name="endpoint" value="${amazon.dynamodb.endpoint}" />
+  </bean>
+  
+  <bean id="amazonAWSCredentials" class="com.amazonaws.auth.BasicAWSCredentials">
+    <constructor-arg value="${amazon.aws.accesskey}" />
+    <constructor-arg value="${amazon.aws.secretkey}" />
+  </bean>
+  
+  <dynamodb:repositories base-package="com.acme.repositories" />
+  
+</beans>
+
+```xml
+
 Create a DynamoDB hash-key only table in AWS console, with table name 'User' and with hash key attribute name "id"
 
 Create a DynamoDB entity for this table:
