@@ -92,7 +92,7 @@ or in xml...
     <constructor-arg value="${amazon.aws.secretkey}" />
   </bean>
   
-  <dynamodb:repositories base-package="com.acme.repositories" />
+  <dynamodb:repositories base-package="com.acme.repositories" amazon-dynamodb-ref="amazonDynamoDB" />
   
 </beans>
 
