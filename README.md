@@ -96,7 +96,7 @@ or in xml...
   
 </beans>
 
-```xml
+```
 
 Create a DynamoDB hash-key only table in AWS console, with table name 'User' and with hash key attribute name "id"
 
