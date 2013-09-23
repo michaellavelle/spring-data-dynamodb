@@ -212,7 +212,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test
+	@Test(expected=UnsupportedOperationException.class)
 	public void testExecute_WhenFinderMethodIsFindingEntityWithCompositeIdList_WhenFindingByNotCompositeId() {
 		PlaylistId playlistId = new PlaylistId();
 		playlistId.setUserName("someUserName");
@@ -237,49 +237,8 @@ public class PartTreeDynamoDBQueryUnitTests {
 		// Execute the query
 
 		Object[] parameters = new Object[] { playlistId };
-		Object o = partTreeDynamoDBQuery.execute(parameters);
+		partTreeDynamoDBQuery.execute(parameters);
 
-		// Assert that we obtain the expected results
-		assertEquals(mockPlaylistScanResults, o);
-		assertEquals(1, mockPlaylistScanResults.size());
-		assertEquals(mockPlaylist, mockPlaylistScanResults.get(0));
-
-		// Assert that we scanned DynamoDB for the correct class
-		assertEquals(classCaptor.getValue(), Playlist.class);
-
-		// Assert that we only one filter condition for each of the two
-		// properties
-		Map<String, Condition> filterConditions = scanCaptor.getValue().getScanFilter();
-		assertEquals(2, filterConditions.size());
-		Condition filterCondition1 = filterConditions.get("userName");
-		Condition filterCondition2 = filterConditions.get("playlistName");
-
-		assertNotNull(filterCondition1);
-		assertNotNull(filterCondition2);
-
-		assertEquals(ComparisonOperator.NE.name(), filterCondition1.getComparisonOperator());
-		assertEquals(ComparisonOperator.NE.name(), filterCondition2.getComparisonOperator());
-
-		// Assert we only have one attribute value for each filter condition
-		assertEquals(1, filterCondition1.getAttributeValueList().size());
-		assertEquals(1, filterCondition2.getAttributeValueList().size());
-
-		// Assert that there the attribute value type for this attribute value
-		// is String,
-		// and its value is the parameter expected
-		assertEquals("someUserName", filterCondition1.getAttributeValueList().get(0).getS());
-		assertEquals("somePlaylistName", filterCondition2.getAttributeValueList().get(0).getS());
-
-		// Assert that all other attribute value types other than String type
-		// are null
-		assertNull(filterCondition1.getAttributeValueList().get(0).getSS());
-		assertNull(filterCondition1.getAttributeValueList().get(0).getN());
-		assertNull(filterCondition1.getAttributeValueList().get(0).getNS());
-		assertNull(filterCondition1.getAttributeValueList().get(0).getB());
-		assertNull(filterCondition1.getAttributeValueList().get(0).getBS());
-
-		// Verify that the expected DynamoDBMapper method was called
-		Mockito.verify(mockDynamoDBMapper).scan(classCaptor.getValue(), scanCaptor.getValue());
 	}
 
 	@Test

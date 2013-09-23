@@ -85,7 +85,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 	
 	private void checkComparisonOperatorPermittedForCompositeHashAndRangeKey(ComparisonOperator comparisonOperator) {
 
-		if (ComparisonOperator.EQ.equals(comparisonOperator) || ComparisonOperator.CONTAINS.equals(comparisonOperator) || ComparisonOperator.BEGINS_WITH.equals(comparisonOperator) ) {
+		if (!ComparisonOperator.EQ.equals(comparisonOperator) && !ComparisonOperator.CONTAINS.equals(comparisonOperator) && !ComparisonOperator.BEGINS_WITH.equals(comparisonOperator) ) {
 			throw new UnsupportedOperationException("Only EQ,CONTAINS,BEGINS_WITH supported for composite id comparison");
 		}
 	
