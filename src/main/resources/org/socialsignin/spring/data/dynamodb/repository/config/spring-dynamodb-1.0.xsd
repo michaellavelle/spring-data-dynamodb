@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xsd:schema xmlns="http://socialsignin.org/schema/data/dynamodb"
+<xsd:schema xmlns="http://docs.socialsignin.org/schema/data/dynamodb"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
 	xmlns:tool="http://www.springframework.org/schema/tool"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:repository="http://www.springframework.org/schema/data/repository"
-	targetNamespace="http://socialsignin.org/schema/data/dynamodb"
+	targetNamespace="http://docs.socialsignin.org/schema/data/dynamodb"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 	<xsd:import namespace="http://www.springframework.org/schema/tool" />
