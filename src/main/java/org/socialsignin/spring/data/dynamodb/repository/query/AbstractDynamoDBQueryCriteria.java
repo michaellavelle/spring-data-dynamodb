@@ -31,6 +31,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T,ID extends Serializable> i
 	private String hashKeyPropertyName;
 	
 	protected MultiValueMap<String,Condition> attributeConditions;
+	protected MultiValueMap<String,Condition> propertyConditions;
+
 	protected Object hashKeyAttributeValue;
 	protected Object hashKeyPropertyValue;
 	protected Sort sort;
@@ -44,9 +46,11 @@ public abstract class AbstractDynamoDBQueryCriteria<T,ID extends Serializable> i
 	{
 		this.clazz = dynamoDBEntityInformation.getJavaType();
 		this.attributeConditions = new LinkedMultiValueMap<String,Condition>();
+		this.propertyConditions = new LinkedMultiValueMap<String,Condition>();
 		this.hashKeyPropertyName = dynamoDBEntityInformation.getHashKeyPropertyName();
 		this.entityInformation = dynamoDBEntityInformation;
 		this.attributeNamesByPropertyName = new HashMap<String,String>();
+
 		
 	}
 
@@ -161,6 +165,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T,ID extends Serializable> i
 	public DynamoDBQueryCriteria<T, ID> withCondition(String propertyName,Condition condition)
 	{
 		attributeConditions.add(getAttributeName(propertyName), condition);
+		propertyConditions.add(propertyName, condition);
+
 		return this;
 	}
 	

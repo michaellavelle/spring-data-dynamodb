@@ -137,42 +137,44 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 		{
 			Condition rangeKeyCondition = createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ, getRangeKeyAttributeValue(),getRangeKeyAttributeValue().getClass(),true);
 			queryExpression.withRangeKeyCondition(getRangeKeyAttributeName(), rangeKeyCondition);
-			applySortIfSpecified(queryExpression,getRangeKeyAttributeName());		
+			applySortIfSpecified(queryExpression,getRangeKeyPropertyName());		
 		}
 		else if (isOnlyASingleAttributeConditionAndItIsOnEitherRangeOrIndexRangeKey())
 		{
 			
-			Entry<String, List<Condition>> singleConditions = attributeConditions.entrySet().iterator().next();
+			Entry<String, List<Condition>> singleAttributeConditions = attributeConditions.entrySet().iterator().next();
+			Entry<String, List<Condition>> singlePropertyConditions = propertyConditions.entrySet().iterator().next();
 
-			for (Condition condition : singleConditions.getValue())
+			
+			for (Condition condition : singleAttributeConditions.getValue())
 			{
 				
-				queryExpression.withRangeKeyCondition(singleConditions.getKey(), condition);
+				queryExpression.withRangeKeyCondition(singleAttributeConditions.getKey(), condition);
 			}
-			applySortIfSpecified(queryExpression,singleConditions.getKey());
+			applySortIfSpecified(queryExpression,singlePropertyConditions.getKey());
 		}
 		else
 		{
-			applySortIfSpecified(queryExpression,getRangeKeyAttributeName());
+			applySortIfSpecified(queryExpression,getRangeKeyPropertyName());
 		}
 	
 		
 		return queryExpression;
 	}
 	
-	protected void applySortIfSpecified(DynamoDBQueryExpression<T> queryExpression,String permittedAttributeName)
+	protected void applySortIfSpecified(DynamoDBQueryExpression<T> queryExpression,String permittedPropertyName)
 	{
 		if (sort != null)
 		{
 			for (Order order : sort)
 			{
-				if (permittedAttributeName.equals(getAttributeName(order.getProperty())))
+				if (permittedPropertyName.equals(order.getProperty()))
 				{
 					queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
 				}
 				else
 				{
-					throw new UnsupportedOperationException("Sorting only possible by " + permittedAttributeName + " for the criteria specified");
+					throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyName + " for the criteria specified");
 				}
 			}
 		}
@@ -285,6 +287,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 			}
 			else if (entityInformation.isCompositeHashAndRangeKeyProperty(propertyName))
 			{
+				Assert.notNull(value,"Creating conditions on null composite id properties not supported: please specify a value for '" + propertyName + "'");
 				Object hashKey = entityInformation.getHashKey((ID)value);
 				Object rangeKey = entityInformation.getRangeKey((ID)value);
 				if (hashKey != null)
