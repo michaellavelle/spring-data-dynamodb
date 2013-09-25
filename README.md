@@ -133,12 +133,20 @@ public class User {
 }
 ```
 
-Create a repository interface in `com.acme.repositories`:
+Create a CRUD repository interface in `com.acme.repositories`:
 
 ```java
 @EnableScan
 public interface UserRepository extends CrudRepository<User, String> {
   List<User> findByLastName(String lastName);
+}
+```
+
+or for paging and sorting...
+
+```java
+public interface UserRepository extends PagingAndSortingRepository<User, String> {
+  Page<User> findByLastName(String lastName,Pageable pageable);
 }
 ```
 
