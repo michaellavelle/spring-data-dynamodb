@@ -51,6 +51,9 @@ public class SimpleDynamoDBCrudRepositoryUnitTests {
 	private Playlist testPlaylist;
 
 	private PlaylistId testPlaylistId;
+	
+	@Mock
+	EnableScanPermissions mockEnableScanPermissions;
 
 	@Mock
 	DynamoDBEntityInformation<User, Long> entityWithSimpleIdInformation;
@@ -71,16 +74,21 @@ public class SimpleDynamoDBCrudRepositoryUnitTests {
 
 		when(entityWithSimpleIdInformation.getJavaType()).thenReturn(User.class);
 		when(entityWithSimpleIdInformation.getHashKey(1l)).thenReturn(1l);
+		
+		when(mockEnableScanPermissions.isFindAllUnpaginatedScanEnabled()).thenReturn(true);
+		when(mockEnableScanPermissions.isDeleteAllUnpaginatedScanEnabled()).thenReturn(true);
+		when(mockEnableScanPermissions.isCountUnpaginatedScanEnabled()).thenReturn(true);
 
+		
 		when(entityWithCompositeIdInformation.getJavaType()).thenReturn(Playlist.class);
 		when(entityWithCompositeIdInformation.getHashKey(testPlaylistId)).thenReturn("michael");
 		when(entityWithCompositeIdInformation.getRangeKey(testPlaylistId)).thenReturn("playlist1");
 		when(entityWithCompositeIdInformation.isRangeKeyAware()).thenReturn(true);
 
 		repoForEntityWithOnlyHashKey = new SimpleDynamoDBCrudRepository<User, Long>(entityWithSimpleIdInformation,
-				dynamoDBMapper);
+				dynamoDBMapper,mockEnableScanPermissions);
 		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBCrudRepository<Playlist, PlaylistId>(
-				entityWithCompositeIdInformation, dynamoDBMapper);
+				entityWithCompositeIdInformation, dynamoDBMapper,mockEnableScanPermissions);
 
 		when(dynamoDBMapper.load(User.class, 1l)).thenReturn(testUser);
 		when(dynamoDBMapper.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);

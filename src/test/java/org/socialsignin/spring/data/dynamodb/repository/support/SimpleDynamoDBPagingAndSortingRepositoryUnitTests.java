@@ -51,6 +51,9 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 	private Playlist testPlaylist;
 
 	private PlaylistId testPlaylistId;
+	
+	@Mock
+	EnableScanPermissions mockEnableScanPermissions;
 
 	@Mock
 	DynamoDBEntityInformation<User, Long> entityWithOnlyHashKeyInformation;
@@ -71,6 +74,12 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 
 		when(entityWithOnlyHashKeyInformation.getJavaType()).thenReturn(User.class);
 		when(entityWithOnlyHashKeyInformation.getHashKey(1l)).thenReturn(1l);
+		
+		
+		when(mockEnableScanPermissions.isFindAllUnpaginatedScanEnabled()).thenReturn(true);
+		when(mockEnableScanPermissions.isDeleteAllUnpaginatedScanEnabled()).thenReturn(true);
+		when(mockEnableScanPermissions.isCountUnpaginatedScanEnabled()).thenReturn(true);
+
 
 		when(entityWithHashAndRangeKeyInformation.getJavaType()).thenReturn(Playlist.class);
 		when(entityWithHashAndRangeKeyInformation.getHashKey(testPlaylistId)).thenReturn("michael");
@@ -78,9 +87,9 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 		when(entityWithHashAndRangeKeyInformation.isRangeKeyAware()).thenReturn(true);
 
 		repoForEntityWithOnlyHashKey = new SimpleDynamoDBPagingAndSortingRepository<User, Long>(entityWithOnlyHashKeyInformation,
-				dynamoDBMapper);
+				dynamoDBMapper,mockEnableScanPermissions);
 		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBPagingAndSortingRepository<Playlist, PlaylistId>(
-				entityWithHashAndRangeKeyInformation, dynamoDBMapper);
+				entityWithHashAndRangeKeyInformation, dynamoDBMapper,mockEnableScanPermissions);
 
 		when(dynamoDBMapper.load(User.class, 1l)).thenReturn(testUser);
 		when(dynamoDBMapper.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);

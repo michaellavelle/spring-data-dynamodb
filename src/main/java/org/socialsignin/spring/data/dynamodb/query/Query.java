@@ -24,4 +24,7 @@ public interface Query<T> {
      *    Persistence query language UPDATE or DELETE statement
      */
     public T getSingleResult();
+    
+    
+    public void setScanEnabled(boolean scanEnabled);
 }

@@ -59,6 +59,7 @@ public class PartTreeDynamoDBQuery<T,ID extends Serializable> extends AbstractDy
 		
 		ParametersParameterAccessor accessor = new ParametersParameterAccessor(
 				parameters, values);
+		
 		DynamoDBQueryCreator<T,ID> queryCreator = createCreator(accessor);
 		return queryCreator.createQuery();
 

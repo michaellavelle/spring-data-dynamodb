@@ -16,15 +16,13 @@ import com.amazonaws.services.dynamodbv2.model.Condition;
 
 public class DynamoDBEntityWithHashKeyOnlyCriteria<T,ID extends Serializable> extends AbstractDynamoDBQueryCriteria<T, ID> {
 
-	
 	public DynamoDBEntityWithHashKeyOnlyCriteria(DynamoDBEntityInformation<T,ID> entityInformation) {
 		super(entityInformation);
-
 	}
 	
 	protected Query<T> buildSingleEntityLoadQuery(DynamoDBMapper dynamoDBMapper)
 	{
-		return new SingleEntityLoadByHashKeyQuery<T>(dynamoDBMapper,clazz,getHashKeyAttributeValue());
+		return new SingleEntityLoadByHashKeyQuery<T>(dynamoDBMapper,clazz,getHashKeyPropertyValue());
 	}
 	
 	protected Query<T> buildFinderQuery(DynamoDBMapper dynamoDBMapper)

@@ -18,6 +18,7 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityMetadataSupport;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -29,10 +30,12 @@ public class DynamoDBQueryMethod<T, ID extends Serializable> extends
 		QueryMethod {
 
 	private final Method method;
+	private final boolean scanEnabledForRepository;
 
 	public DynamoDBQueryMethod(Method method, RepositoryMetadata metadata) {
 		super(method, metadata);
 		this.method = method;
+		this.scanEnabledForRepository = metadata.getRepositoryInterface().isAnnotationPresent(EnableScan.class);
 	}
 
 	/**
@@ -43,6 +46,11 @@ public class DynamoDBQueryMethod<T, ID extends Serializable> extends
 	Class<?> getReturnType() {
 
 		return method.getReturnType();
+	}
+	
+	
+	public boolean isScanEnabled() {
+		return scanEnabledForRepository || method.isAnnotationPresent(EnableScan.class);
 	}
 
 	/*

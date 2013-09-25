@@ -47,7 +47,6 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	}
 	
 	
-
 	@Override
 	protected QueryLookupStrategy getQueryLookupStrategy(Key key) {
 		return DynamoDBQueryLookupStrategy.create(dynamoDBMapper, key);
@@ -66,9 +65,15 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T, ID extends Serializable> DynamoDBCrudRepository<?, ?> getDynamoDBRepository(
 			RepositoryMetadata metadata) {
-
-		return new SimpleDynamoDBPagingAndSortingRepository(getEntityInformation(metadata.getDomainType()), dynamoDBMapper);
+		return new SimpleDynamoDBPagingAndSortingRepository(getEntityInformation(metadata.getDomainType()), dynamoDBMapper,
+				getEnableScanPermissions(metadata));
 	}
+	
+	protected EnableScanPermissions getEnableScanPermissions(RepositoryMetadata metadata)
+	{
+		return new EnableScanAnnotationPermissions(metadata.getRepositoryInterface());
+	}
+	
 
 	@Override
 	protected Object getTargetRepository(RepositoryMetadata metadata) {

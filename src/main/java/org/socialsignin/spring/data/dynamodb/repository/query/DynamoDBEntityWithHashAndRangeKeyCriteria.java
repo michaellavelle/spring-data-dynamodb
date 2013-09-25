@@ -29,6 +29,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 
 	
 	private Object rangeKeyAttributeValue;
+	private Object rangeKeyPropertyValue;
 	private String rangeKeyPropertyName;
 	private Set<String> indexRangeKeyPropertyNames;
 	private DynamoDBIdIsHashAndRangeKeyEntityInformation<T,ID> entityInformation;
@@ -73,6 +74,11 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 		return rangeKeyAttributeValue;
 	}
 	
+	protected Object getRangeKeyPropertyValue()
+	{
+		return rangeKeyPropertyValue;
+	}
+	
 	protected boolean isRangeKeySpecified()
 	{
 		return getRangeKeyAttributeValue() != null;
@@ -80,7 +86,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 	
 	protected Query<T> buildSingleEntityLoadQuery(DynamoDBMapper dynamoDBMapper)
 	{
-		return new SingleEntityLoadByHashAndRangeKeyQuery<T>(dynamoDBMapper,entityInformation.getJavaType(),getHashKeyAttributeValue(),getRangeKeyAttributeValue());
+		return new SingleEntityLoadByHashAndRangeKeyQuery<T>(dynamoDBMapper,entityInformation.getJavaType(),getHashKeyPropertyValue(),getRangeKeyPropertyValue());
 	}
 	
 	private void checkComparisonOperatorPermittedForCompositeHashAndRangeKey(ComparisonOperator comparisonOperator) {
@@ -190,6 +196,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 		return attributeConditions.size() == 0 && isHashAndRangeKeySpecified();
 	}
 	
+	
 	protected boolean isHashAndRangeKeySpecified()
 	{
 		return isHashKeySpecified() && isRangeKeySpecified();
@@ -259,6 +266,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID extends Serializable
 		Assert.notNull(value,"Creating conditions on null range keys not supported: please specify a value for '" + getRangeKeyPropertyName() + "'");
 
 		rangeKeyAttributeValue = getPropertyAttributeValue(getRangeKeyPropertyName(),value);
+		rangeKeyPropertyValue = value;
 		return this;
 	}
 	

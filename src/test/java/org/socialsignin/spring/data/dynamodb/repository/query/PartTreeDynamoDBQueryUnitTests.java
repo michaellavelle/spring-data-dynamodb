@@ -108,6 +108,9 @@ public class PartTreeDynamoDBQueryUnitTests {
 		Mockito.when(mockUserEntityMetadata.getHashKeyPropertyName()).thenReturn("id");
 		Mockito.when(mockUserEntityMetadata.isHashKeyProperty("id")).thenReturn(true);
 		Mockito.when(mockUserEntityMetadata.getJavaType()).thenReturn(User.class);
+		Mockito.when(mockDynamoDBUserQueryMethod.isScanEnabled()).thenReturn(true);
+		Mockito.when(mockDynamoDBPlaylistQueryMethod.isScanEnabled()).thenReturn(true);
+
 
 	}
 

@@ -58,6 +58,13 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 	}
 
 	protected abstract Query<T> doCreateQuery(Object[] values);
+	
+	protected Query<T> doCreateQueryWithPermissions(Object values[])
+	{
+		Query<T> query = doCreateQuery(values);
+		query.setScanEnabled(method.isScanEnabled());
+		return query;
+	}
 
 	private interface QueryExecution<T, ID extends Serializable> {
 		public Object execute(AbstractDynamoDBQuery<T, ID> query, Object[] values);
@@ -67,7 +74,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 
 		@Override
 		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
-			Query<T> query = dynamoDBQuery.doCreateQuery(values);
+			Query<T> query = dynamoDBQuery.doCreateQueryWithPermissions(values);
 			return query.getResultList();
 		}
 
@@ -110,7 +117,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 
 			ParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
 			Pageable pageable = accessor.getPageable();
-			Query<T> query = dynamoDBQuery.doCreateQuery(values);
+			Query<T> query = dynamoDBQuery.doCreateQueryWithPermissions(values);
 			List<T> results = query.getResultList();
 			return createPage(results, pageable);
 		}
@@ -146,7 +153,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 		@Override
 		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
 
-			return dynamoDBQuery.doCreateQuery(values).getSingleResult();
+			return dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
 
 		}
 	}

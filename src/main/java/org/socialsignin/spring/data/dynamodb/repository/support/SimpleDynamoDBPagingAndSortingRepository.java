@@ -39,8 +39,9 @@ public class SimpleDynamoDBPagingAndSortingRepository<T,ID extends Serializable>
 implements DynamoDBPagingAndSortingRepository<T,ID>{
 
 	public SimpleDynamoDBPagingAndSortingRepository(DynamoDBEntityInformation<T, ID> entityInformation,
-			DynamoDBMapper dynamoDBMapper) {
-		super(entityInformation, dynamoDBMapper);
+			DynamoDBMapper dynamoDBMapper,EnableScanPermissions enableScanPermissions) {
+		super(entityInformation, dynamoDBMapper,enableScanPermissions);
+		
 	}
 
 	@Override

@@ -6,7 +6,16 @@ public abstract class AbstractQuery<T> implements Query<T> {
 
 	protected DynamoDBMapper dynamoDBMapper;
 	protected Class<T> clazz;
+	protected boolean scanEnabled = false;
 	
+	public void setScanEnabled(boolean scanEnabled) {
+		this.scanEnabled = scanEnabled;
+	}
+
+	public boolean isScanEnabled() {
+		return scanEnabled;
+	}
+
 	public AbstractQuery(DynamoDBMapper dynamoDBMapper,Class<T> clazz)
 	{
 		this.dynamoDBMapper = dynamoDBMapper;
