@@ -45,7 +45,7 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 			// Check declared methods for EnableScan annotation
 			for (Method method : ReflectionUtils.getAllDeclaredMethods(repositoryInterface)) {
 	
-				if (!method.isAnnotationPresent(EnableScan.class) && method.getParameterTypes().length == 0 )
+				if (!method.isAnnotationPresent(EnableScan.class) || method.getParameterTypes().length > 0 )
 				{
 					// Only consider methods which have the EnableScan annotation and which accept no parameters
 					continue;
