@@ -136,6 +136,7 @@ public class User {
 Create a repository interface in `com.acme.repositories`:
 
 ```java
+@EnableScan
 public interface UserRepository extends CrudRepository<User, String> {
   List<User> findByLastName(String lastName);
 }
