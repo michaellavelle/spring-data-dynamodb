@@ -50,7 +50,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 
 		Set<Class<? extends Annotation>> annotations = new HashSet<Class<? extends Annotation>>();
 
-		 annotations.add(Reference.class); // Reference not yet supported
+		annotations.add(Reference.class); // Reference not yet supported
 		ASSOCIATION_ANNOTATIONS = Collections.unmodifiableSet(annotations);
 
 		annotations = new HashSet<Class<? extends Annotation>>();
@@ -120,13 +120,13 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 
 	public boolean isEntity() {
 
-		 return isAnnotationPresent(Reference.class);// Reference not Yet
+		return isAnnotationPresent(Reference.class);// Reference not Yet
 		// Supported
 		// return propertyDescriptor != null
 		// && propertyDescriptor.getPropertyType().isAnnotationPresent(
 		// DynamoDBTable.class);
 
-		//return false;
+		// return false;
 
 	}
 
@@ -144,7 +144,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 			if (findAnnotation(annotationType) != null) {
 				// No query lookup yet supported ( see
 				// Repositories.getPersistentEntity(..) )
-				//return !information.isCollectionLike();
+				// return !information.isCollectionLike();
 				return true;
 			}
 		}
@@ -163,9 +163,6 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	public boolean isTransient() {
 		return isAnnotationPresent(Transient.class) || super.isTransient() || isAnnotationPresent(DynamoDBIgnore.class);
 	}
-	
-	
-	
 
 	@Override
 	public boolean isVersionProperty() {

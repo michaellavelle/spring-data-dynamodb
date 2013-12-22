@@ -47,20 +47,19 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 	protected DynamoDBEntityInformation<T, ID> entityInformation;
 
 	protected Class<T> domainType;
-	
+
 	protected EnableScanPermissions enableScanPermissions;
-		
-	public SimpleDynamoDBCrudRepository(DynamoDBEntityInformation<T, ID> entityInformation,
-			DynamoDBMapper dynamoDBMapper,EnableScanPermissions enableScanPermissions) {
+
+	public SimpleDynamoDBCrudRepository(DynamoDBEntityInformation<T, ID> entityInformation, DynamoDBMapper dynamoDBMapper,
+			EnableScanPermissions enableScanPermissions) {
 		Assert.notNull(entityInformation);
 		Assert.notNull(dynamoDBMapper);
 		this.entityInformation = entityInformation;
 		this.dynamoDBMapper = dynamoDBMapper;
 		this.domainType = entityInformation.getJavaType();
 		this.enableScanPermissions = enableScanPermissions;
-	
+
 	}
-	
 
 	@Override
 	public T findOne(ID id) {
@@ -134,27 +133,25 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 		Assert.notNull(id, "The given id must not be null!");
 		return findOne(id) != null;
 	}
-	
-	public void assertScanEnabled(boolean scanEnabled,String methodName)
-	{
-		Assert.isTrue(scanEnabled,"Scanning for unpaginated " + methodName + "() queries is not enabled.  " +
-				"To enable, re-implement the " + methodName + "() method in your repository interface and annotate with @EnableScan, or " +
-				"enable scanning for all repository methods by annotating your repository interface with @EnableScan");
+
+	public void assertScanEnabled(boolean scanEnabled, String methodName) {
+		Assert.isTrue(scanEnabled, "Scanning for unpaginated " + methodName + "() queries is not enabled.  "
+				+ "To enable, re-implement the " + methodName
+				+ "() method in your repository interface and annotate with @EnableScan, or "
+				+ "enable scanning for all repository methods by annotating your repository interface with @EnableScan");
 	}
-	
+
 	@Override
 	public List<T> findAll() {
 
-		assertScanEnabled(enableScanPermissions.isFindAllUnpaginatedScanEnabled(),"findAll");
+		assertScanEnabled(enableScanPermissions.isFindAllUnpaginatedScanEnabled(), "findAll");
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		return dynamoDBMapper.scan(domainType, scanExpression);
 	}
 
-	
-
 	@Override
 	public long count() {
-		assertScanEnabled(enableScanPermissions.isCountUnpaginatedScanEnabled(),"count");
+		assertScanEnabled(enableScanPermissions.isCountUnpaginatedScanEnabled(), "count");
 		final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		return dynamoDBMapper.count(domainType, scanExpression);
 	}
@@ -166,8 +163,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 
 		T entity = findOne(id);
 		if (entity == null) {
-			throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", domainType, id),
-					1);
+			throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", domainType, id), 1);
 		}
 		dynamoDBMapper.delete(entity);
 	}
@@ -192,8 +188,8 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 
 	@Override
 	public void deleteAll() {
-		
-		assertScanEnabled(enableScanPermissions.isDeleteAllUnpaginatedScanEnabled(),"deleteAll");
+
+		assertScanEnabled(enableScanPermissions.isDeleteAllUnpaginatedScanEnabled(), "deleteAll");
 		dynamoDBMapper.batchDelete(findAll());
 	}
 

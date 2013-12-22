@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.springframework.util.Assert;
 
@@ -23,23 +24,26 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
 /**
- * Encapsulates minimal information needed to load DynamoDB entities. 
+ * Encapsulates minimal information needed to load DynamoDB entities.
  * 
- * This default implementation is NOT range-key aware - getRangeKey(ID id) will always return null
+ * This default implementation is NOT range-key aware - getRangeKey(ID id) will
+ * always return null
  * 
- * Delegates to wrapped DynamoDBHashKeyExtractingEntityMetadata component for many operations - it is the responsibility of calling clients to ensure
- * they pass in a valid DynamoDBHashKeyExtractingEntityMetadata implementation for this entity.
+ * Delegates to wrapped DynamoDBHashKeyExtractingEntityMetadata component for
+ * many operations - it is the responsibility of calling clients to ensure they
+ * pass in a valid DynamoDBHashKeyExtractingEntityMetadata implementation for
+ * this entity.
  * 
- * Entities of type T must have a public getter method of return type ID annotated with @DynamoDBHashKey to ensure correct behavior
+ * Entities of type T must have a public getter method of return type ID
+ * annotated with @DynamoDBHashKey to ensure correct behavior
  * 
  * @author Michael Lavelle
  */
-public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable> extends GetterReflectionEntityInformation<T, ID>
-		implements DynamoDBEntityInformation<T,ID> {
+public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable> extends
+		GetterReflectionEntityInformation<T, ID> implements DynamoDBEntityInformation<T, ID> {
 
 	private DynamoDBHashKeyExtractingEntityMetadata<T> metadata;
-	private HashKeyExtractor<ID,ID> hashKeyExtractor;
-	
+	private HashKeyExtractor<ID, ID> hashKeyExtractor;
 
 	public DynamoDBIdIsHashKeyEntityInformationImpl(Class<T> domainClass, DynamoDBHashKeyExtractingEntityMetadata<T> metadata) {
 		super(domainClass, DynamoDBHashKey.class);
@@ -47,20 +51,21 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable
 		this.hashKeyExtractor = new HashKeyIsIdHashKeyExtractor<ID>(getIdType());
 	}
 
-	
 	@Override
 	public Object getHashKey(final ID id) {
-		Assert.isAssignable(getIdType(), id.getClass(),"Expected ID type to be the same as the return type of the hash key method ( " + getIdType() + " ) : ");
+		Assert.isAssignable(getIdType(), id.getClass(),
+				"Expected ID type to be the same as the return type of the hash key method ( " + getIdType() + " ) : ");
 		return hashKeyExtractor.getHashKey(id);
 	}
-	
-	//  The following methods simply delegate to metadata, or always return constants
-	
+
+	// The following methods simply delegate to metadata, or always return
+	// constants
+
 	@Override
 	public boolean isRangeKeyAware() {
 		return false;
 	}
-	
+
 	@Override
 	public String getOverriddenAttributeName(String attributeName) {
 		return metadata.getOverriddenAttributeName(attributeName);
@@ -81,16 +86,24 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable
 		return metadata.getMarshallerForProperty(propertyName);
 	}
 
-
 	@Override
 	public Object getRangeKey(ID id) {
 		return null;
 	}
 
+	@Override
+	public String getDynamoDBTableName() {
+		return metadata.getDynamoDBTableName();
+	}
 
 	@Override
 	public String getHashKeyPropertyName() {
 		return metadata.getHashKeyPropertyName();
 	}
-	
+
+	@Override
+	public Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName() {
+		return metadata.getGlobalSecondaryIndexNamesByPropertyName();
+	}
+
 }

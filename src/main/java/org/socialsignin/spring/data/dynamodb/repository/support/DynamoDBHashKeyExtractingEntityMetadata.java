@@ -15,23 +15,32 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
+import java.util.Map;
+
 import org.springframework.data.repository.core.EntityMetadata;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
 /**
- * Obtains basic hash key-related metadata about a DynamoDBEntity, such as whether properties have overridden attribute names or
- * have custom marshallers assigned, whether a property is a hash key property or a composite id property, 
- * and generates a hash key prototype entity given a hash key.
+ * Obtains basic hash key-related metadata about a DynamoDBEntity, such as
+ * whether properties have overridden attribute names or have custom marshallers
+ * assigned, whether a property is a hash key property or a composite id
+ * property, and generates a hash key prototype entity given a hash key.
  * 
  * @author Michael Lavelle
  */
 public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetadata<T> {
 
 	public String getOverriddenAttributeName(String propertyName);
+
 	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName);
+
 	public boolean isHashKeyProperty(String propertyName);
+
 	public String getHashKeyPropertyName();
 
-	
+	public String getDynamoDBTableName();
+
+	Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName();
+
 }

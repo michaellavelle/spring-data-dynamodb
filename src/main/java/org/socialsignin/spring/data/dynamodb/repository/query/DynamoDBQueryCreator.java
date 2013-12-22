@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.socialsignin.spring.data.dynamodb.query.Query;
+import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 import org.springframework.data.domain.Sort;
@@ -34,113 +35,123 @@ import org.springframework.util.ObjectUtils;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+
 /**
  * @author Michael Lavelle
  */
-public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractQueryCreator<Query<T>, DynamoDBQueryCriteria<T,ID>> {
+public class DynamoDBQueryCreator<T, ID extends Serializable> extends
+		AbstractQueryCreator<Query<T>, DynamoDBQueryCriteria<T, ID>> {
 
-	private DynamoDBEntityInformation<T,ID> entityMetadata;
+	private DynamoDBEntityInformation<T, ID> entityMetadata;
 	private DynamoDBMapper dynamoDBMapper;
-	
-	public DynamoDBQueryCreator(PartTree tree,DynamoDBEntityInformation<T,ID> entityMetadata,DynamoDBMapper dynamoDBMapper) {
+	private QueryRequestMapper queryRequestMapper;
+
+	public DynamoDBQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBMapper dynamoDBMapper,
+			QueryRequestMapper queryRequestMapper) {
 		super(tree);
 		this.entityMetadata = entityMetadata;
 		this.dynamoDBMapper = dynamoDBMapper;
+		this.queryRequestMapper = queryRequestMapper;
 	}
-	
-	public DynamoDBQueryCreator(PartTree tree,ParameterAccessor parameterAccessor,DynamoDBEntityInformation<T,ID> entityMetadata,DynamoDBMapper dynamoDBMapper) {
-		super(tree,parameterAccessor);
+
+	public DynamoDBQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
+			DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+		super(tree, parameterAccessor);
 		this.entityMetadata = entityMetadata;
 		this.dynamoDBMapper = dynamoDBMapper;
+		this.queryRequestMapper = queryRequestMapper;
 
 	}
-	
+
 	@Override
-	protected DynamoDBQueryCriteria<T,ID> create(Part part, Iterator<Object> iterator) {
-		
-		DynamoDBQueryCriteria<T,ID> criteria = entityMetadata.isRangeKeyAware() ? new DynamoDBEntityWithHashAndRangeKeyCriteria<T,ID>((DynamoDBIdIsHashAndRangeKeyEntityInformation<T,ID>)entityMetadata) : 
-			new DynamoDBEntityWithHashKeyOnlyCriteria<T,ID>(entityMetadata);
-		return addCriteria(criteria,part,iterator);
-	}
-	
+	protected DynamoDBQueryCriteria<T, ID> create(Part part, Iterator<Object> iterator) {
 
-	
-	protected DynamoDBQueryCriteria<T,ID> addCriteria(DynamoDBQueryCriteria<T,ID> criteria,Part part, Iterator<Object> iterator)
-	{
+		DynamoDBQueryCriteria<T, ID> criteria = entityMetadata.isRangeKeyAware() ? new DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID>(
+				(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID>) entityMetadata)
+				: new DynamoDBEntityWithHashKeyOnlyCriteria<T, ID>(entityMetadata);
+		return addCriteria(criteria, part, iterator);
+	}
+
+	protected DynamoDBQueryCriteria<T, ID> addCriteria(DynamoDBQueryCriteria<T, ID> criteria, Part part, Iterator<Object> iterator) {
 		if (part.shouldIgnoreCase().equals(IgnoreCaseType.ALWAYS))
 			throw new UnsupportedOperationException("Case insensitivity not supported");
-		
+
 		Class<?> propertyType = part.getProperty().getType();
 
-		
 		switch (part.getType()) {
 		case IN:
 			Object in = iterator.next();
-			Assert.notNull(in,"Creating conditions on null parameters not supported: please specify a value for '" + part.getProperty().getSegment() + "'");
+			Assert.notNull(in, "Creating conditions on null parameters not supported: please specify a value for '"
+					+ part.getProperty().getSegment() + "'");
 			boolean isIterable = ClassUtils.isAssignable(in.getClass(), Iterable.class);
 			boolean isArray = ObjectUtils.isArray(in);
-			Assert.isTrue(isIterable || isArray,"In criteria can only operate with Iterable or Array parameters");
-			Iterable<?> iterable = isIterable ? ((Iterable<?>)in) : Arrays.asList(ObjectUtils.toObjectArray(in));
-			return criteria.withPropertyIn(part.getProperty().getSegment(), iterable,propertyType);	
+			Assert.isTrue(isIterable || isArray, "In criteria can only operate with Iterable or Array parameters");
+			Iterable<?> iterable = isIterable ? ((Iterable<?>) in) : Arrays.asList(ObjectUtils.toObjectArray(in));
+			return criteria.withPropertyIn(part.getProperty().getSegment(), iterable, propertyType);
 		case CONTAINING:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.CONTAINS,iterator.next(),propertyType);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.CONTAINS,
+					iterator.next(), propertyType);
 		case STARTING_WITH:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.BEGINS_WITH,iterator.next(),propertyType);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.BEGINS_WITH,
+					iterator.next(), propertyType);
 		case BETWEEN:
 			Object first = iterator.next();
 			Object second = iterator.next();
-			return criteria.withPropertyBetween(part.getProperty().getSegment(), first,second,propertyType);	
+			return criteria.withPropertyBetween(part.getProperty().getSegment(), first, second, propertyType);
 		case AFTER:
 		case GREATER_THAN:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GT,iterator.next(),propertyType);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GT, iterator.next(),
+					propertyType);
 		case BEFORE:
 		case LESS_THAN:
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LT, iterator.next(),
+					propertyType);
 		case GREATER_THAN_EQUAL:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GE,iterator.next(),propertyType);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GE, iterator.next(),
+					propertyType);
 		case LESS_THAN_EQUAL:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LE,iterator.next(),propertyType);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LE, iterator.next(),
+					propertyType);
 		case IS_NULL:
 			return criteria.withNoValuedCriteria(part.getProperty().getSegment(), ComparisonOperator.NULL);
 		case IS_NOT_NULL:
 			return criteria.withNoValuedCriteria(part.getProperty().getSegment(), ComparisonOperator.NOT_NULL);
 		case TRUE:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ,Boolean.TRUE,propertyType);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ, Boolean.TRUE,
+					propertyType);
 		case FALSE:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ,Boolean.FALSE,propertyType);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ, Boolean.FALSE,
+					propertyType);
 		case SIMPLE_PROPERTY:
-			return criteria.withPropertyEquals(part.getProperty().getSegment(), iterator.next(),propertyType);	
+			return criteria.withPropertyEquals(part.getProperty().getSegment(), iterator.next(), propertyType);
 		case NEGATING_SIMPLE_PROPERTY:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.NE,iterator.next(),propertyType);
+			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.NE, iterator.next(),
+					propertyType);
 		default:
 			throw new IllegalArgumentException("Unsupported keyword " + part.getType());
 		}
-		
-	}
-	
-	@Override
-	protected DynamoDBQueryCriteria<T,ID> and(Part part, DynamoDBQueryCriteria<T,ID> base,
-			Iterator<Object> iterator) {		
-		return addCriteria(base,part,iterator);
-		
+
 	}
 
 	@Override
-	protected DynamoDBQueryCriteria<T,ID> or(DynamoDBQueryCriteria<T,ID> base,
-			DynamoDBQueryCriteria<T,ID> criteria) {
+	protected DynamoDBQueryCriteria<T, ID> and(Part part, DynamoDBQueryCriteria<T, ID> base, Iterator<Object> iterator) {
+		return addCriteria(base, part, iterator);
+
+	}
+
+	@Override
+	protected DynamoDBQueryCriteria<T, ID> or(DynamoDBQueryCriteria<T, ID> base, DynamoDBQueryCriteria<T, ID> criteria) {
 		throw new UnsupportedOperationException("Or queries not supported");
 	}
 
 	@Override
-	protected Query<T> complete(DynamoDBQueryCriteria<T,ID> criteria, Sort sort) {
-		if (sort != null)
-		{
+	protected Query<T> complete(DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
+		if (sort != null) {
 			criteria.withSort(sort);
 		}
-		
-		return criteria.buildQuery(dynamoDBMapper);
-		
+
+		return criteria.buildQuery(dynamoDBMapper, queryRequestMapper);
+
 	}
-
-
 
 }

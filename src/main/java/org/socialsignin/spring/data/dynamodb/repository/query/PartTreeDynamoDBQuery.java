@@ -18,49 +18,50 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 import java.io.Serializable;
 
 import org.socialsignin.spring.data.dynamodb.query.Query;
+import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.PartTree;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+
 /**
  * @author Michael Lavelle
  */
-public class PartTreeDynamoDBQuery<T,ID extends Serializable> extends AbstractDynamoDBQuery<T,ID> implements
-		RepositoryQuery {
+public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 
-	private DynamoDBQueryMethod<T,ID> queryMethod;
+	private DynamoDBQueryMethod<T, ID> queryMethod;
 	private final Parameters<?, ?> parameters;
+
+	private QueryRequestMapper queryRequestMapper;
 
 	private final PartTree tree;
 
-	public PartTreeDynamoDBQuery(DynamoDBMapper dynamoDBMapper,
-			DynamoDBQueryMethod<T,ID> method) {
+	public PartTreeDynamoDBQuery(DynamoDBMapper dynamoDBMapper, DynamoDBQueryMethod<T, ID> method,
+			QueryRequestMapper queryRequestMapper) {
 		super(dynamoDBMapper, method);
 		this.queryMethod = method;
 		this.parameters = method.getParameters();
 		this.tree = new PartTree(method.getName(), method.getEntityType());
+		this.queryRequestMapper = queryRequestMapper;
 	}
 
 	public PartTree getTree() {
 		return tree;
 	}
 
-	protected DynamoDBQueryCreator<T,ID> createCreator(
-			ParametersParameterAccessor accessor) {
-
-		return new DynamoDBQueryCreator<T,ID>(tree, accessor,
-				queryMethod.getEntityInformation(),dynamoDBMapper);
+	protected DynamoDBQueryCreator<T, ID> createCreator(ParametersParameterAccessor accessor) {
+		return new DynamoDBQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBMapper,
+				queryRequestMapper);
 	}
 
 	@Override
 	public Query<T> doCreateQuery(Object[] values) {
-		
-		ParametersParameterAccessor accessor = new ParametersParameterAccessor(
-				parameters, values);
-		
-		DynamoDBQueryCreator<T,ID> queryCreator = createCreator(accessor);
+
+		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
+
+		DynamoDBQueryCreator<T, ID> queryCreator = createCreator(accessor);
 		return queryCreator.createQuery();
 
 	}

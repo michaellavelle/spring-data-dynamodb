@@ -19,10 +19,11 @@ import java.lang.reflect.Method;
 
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
 import org.springframework.util.ReflectionUtils;
+
 /**
  * 
  * @author Michael Lavelle
- *
+ * 
  */
 public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 
@@ -30,50 +31,42 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 	private boolean countUnpaginatedScanEnabled = false;
 	private boolean deleteAllUnpaginatedScanEnabled = false;
 
-	
-	public EnableScanAnnotationPermissions(Class<?> repositoryInterface)
-	{
+	public EnableScanAnnotationPermissions(Class<?> repositoryInterface) {
 		// Check to see if global EnableScan is declared at interface level
-		if (repositoryInterface.isAnnotationPresent(EnableScan.class))
-		{
+		if (repositoryInterface.isAnnotationPresent(EnableScan.class)) {
 			this.findAllUnpaginatedScanEnabled = true;
 			this.countUnpaginatedScanEnabled = true;
 			this.deleteAllUnpaginatedScanEnabled = true;
-		}
-		else
-		{
+		} else {
 			// Check declared methods for EnableScan annotation
 			for (Method method : ReflectionUtils.getAllDeclaredMethods(repositoryInterface)) {
-	
-				if (!method.isAnnotationPresent(EnableScan.class) || method.getParameterTypes().length > 0 )
-				{
-					// Only consider methods which have the EnableScan annotation and which accept no parameters
+
+				if (!method.isAnnotationPresent(EnableScan.class) || method.getParameterTypes().length > 0) {
+					// Only consider methods which have the EnableScan
+					// annotation and which accept no parameters
 					continue;
 				}
-	
+
 				if (method.getName().equals("findAll")) {
 					findAllUnpaginatedScanEnabled = true;
 					continue;
 				}
-	
-				
+
 				if (method.getName().equals("deleteAll")) {
 					deleteAllUnpaginatedScanEnabled = true;
 					continue;
 				}
-				
+
 				if (method.getName().equals("count")) {
 					countUnpaginatedScanEnabled = true;
 					continue;
 				}
-			
-	
+
 			}
 		}
-		
+
 	}
-	
-	
+
 	@Override
 	public boolean isFindAllUnpaginatedScanEnabled() {
 		return findAllUnpaginatedScanEnabled;

@@ -1,6 +1,5 @@
-
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +38,9 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 
-
 /**
- * A portable CDI extension which registers beans for Spring Data DynamoDB repositories.
+ * A portable CDI extension which registers beans for Spring Data DynamoDB
+ * repositories.
  * 
  * @author Michael Lavelle
  */
@@ -53,17 +52,19 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 
 	private final Map<Set<Annotation>, Bean<DynamoDBMapperConfig>> dbMapperConfigs = new HashMap<Set<Annotation>, Bean<DynamoDBMapperConfig>>();
 
-	
 	public DynamoDBRepositoryExtension() {
 		LOGGER.info("Activating CDI extension for Spring Data DynamoDB repositories.");
 	}
 
 	/**
-	 * Implementation of a an observer which checks for AmazonDynamoDBClient beans and stores them in {@link #amazonDynamoDBClients} for
-	 * later association with corresponding repository beans.
+	 * Implementation of a an observer which checks for AmazonDynamoDBClient
+	 * beans and stores them in {@link #amazonDynamoDBClients} for later
+	 * association with corresponding repository beans.
 	 * 
-	 * @param <X> The type.
-	 * @param processAnnotatedType The annotated type as defined by CDI.
+	 * @param <X>
+	 *            The type.
+	 * @param processAnnotatedType
+	 *            The annotated type as defined by CDI.
 	 */
 	@SuppressWarnings("unchecked")
 	<X> void processBean(@Observes ProcessBean<X> processBean) {
@@ -81,20 +82,22 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 			if (type instanceof Class<?> && DynamoDBMapperConfig.class.isAssignableFrom((Class<?>) type)) {
 				Set<Annotation> qualifiers = new HashSet<Annotation>(bean.getQualifiers());
 				if (bean.isAlternative() || !dbMapperConfigs.containsKey(qualifiers)) {
-						LOGGER.debug("Discovered '{}' with qualifiers {}.", DynamoDBMapperConfig.class.getName(), qualifiers);
-						dbMapperConfigs.put(qualifiers, (Bean<DynamoDBMapperConfig>) bean);
+					LOGGER.debug("Discovered '{}' with qualifiers {}.", DynamoDBMapperConfig.class.getName(), qualifiers);
+					dbMapperConfigs.put(qualifiers, (Bean<DynamoDBMapperConfig>) bean);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Implementation of a an observer which registers beans to the CDI container for the detected Spring Data
-	 * repositories.
+	 * Implementation of a an observer which registers beans to the CDI
+	 * container for the detected Spring Data repositories.
 	 * <p>
-	 * The repository beans are associated to the EntityManagers using their qualifiers.
+	 * The repository beans are associated to the EntityManagers using their
+	 * qualifiers.
 	 * 
-	 * @param beanManager The BeanManager instance.
+	 * @param beanManager
+	 *            The BeanManager instance.
 	 */
 	void afterBeanDiscovery(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager beanManager) {
 
@@ -113,18 +116,22 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 	/**
 	 * Creates a {@link Bean}.
 	 * 
-	 * @param <T> The type of the repository.
-	 * @param repositoryType The class representing the repository.
-	 * @param beanManager The BeanManager instance.
+	 * @param <T>
+	 *            The type of the repository.
+	 * @param repositoryType
+	 *            The class representing the repository.
+	 * @param beanManager
+	 *            The BeanManager instance.
 	 * @return The bean.
 	 */
 	private <T> Bean<T> createRepositoryBean(Class<T> repositoryType, Set<Annotation> qualifiers, BeanManager beanManager) {
 
-		// Determine the amazondbclient bean which matches the qualifiers of the repository.
+		// Determine the amazondbclient bean which matches the qualifiers of the
+		// repository.
 		Bean<AmazonDynamoDB> amazonDynamoDBBean = amazonDynamoDBs.get(qualifiers);
-		
-		
-		// Determine the dynamo db mapper configbean which matches the qualifiers of the repository.
+
+		// Determine the dynamo db mapper configbean which matches the
+		// qualifiers of the repository.
 		Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean = dbMapperConfigs.get(qualifiers);
 
 		if (amazonDynamoDBBean == null) {
@@ -133,6 +140,7 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 		}
 
 		// Construct and return the repository bean.
-		return new DynamoDBRepositoryBean<T>(beanManager, amazonDynamoDBBean,dynamoDBMapperConfigBean, qualifiers, repositoryType);
+		return new DynamoDBRepositoryBean<T>(beanManager, amazonDynamoDBBean, dynamoDBMapperConfigBean, qualifiers,
+				repositoryType);
 	}
 }

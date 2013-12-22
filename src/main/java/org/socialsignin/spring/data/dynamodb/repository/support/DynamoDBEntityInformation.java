@@ -20,12 +20,14 @@ import java.io.Serializable;
 import org.springframework.data.repository.core.EntityInformation;
 
 /**
- * Encapsulates minimal information needed to load DynamoDB entities. 
+ * Encapsulates minimal information needed to load DynamoDB entities.
  * 
- * As a minimum, provides access to hash-key related metadata. 
+ * As a minimum, provides access to hash-key related metadata.
  * 
- * Implementing classes can elect to be either range-key aware or not.  If a subclass is not range-key aware it should
- * return null from getRangeKey(ID id) method, and return false from isRangeKeyAware and isCompositeHashAndRangeKeyProperty methods
+ * Implementing classes can elect to be either range-key aware or not. If a
+ * subclass is not range-key aware it should return null from getRangeKey(ID id)
+ * method, and return false from isRangeKeyAware and
+ * isCompositeHashAndRangeKeyProperty methods
  * 
  * @author Michael Lavelle
  */
@@ -33,12 +35,11 @@ public interface DynamoDBEntityInformation<T, ID extends Serializable> extends E
 		DynamoDBHashKeyExtractingEntityMetadata<T> {
 
 	boolean isRangeKeyAware();
-	
+
 	boolean isCompositeHashAndRangeKeyProperty(String propertyName);
 
 	Object getHashKey(ID id);
 
 	Object getRangeKey(ID id);
-	
-		
+
 }

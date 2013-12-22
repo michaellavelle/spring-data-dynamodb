@@ -58,9 +58,8 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 	}
 
 	protected abstract Query<T> doCreateQuery(Object[] values);
-	
-	protected Query<T> doCreateQueryWithPermissions(Object values[])
-	{
+
+	protected Query<T> doCreateQueryWithPermissions(Object values[]) {
 		Query<T> query = doCreateQuery(values);
 		query.setScanEnabled(method.isScanEnabled());
 		return query;

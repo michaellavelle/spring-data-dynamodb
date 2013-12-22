@@ -17,7 +17,6 @@ package org.socialsignin.spring.data.dynamodb.mapping;
 
 import java.text.SimpleDateFormat;
 
-
 /**
  * @author Michael Lavelle
  */

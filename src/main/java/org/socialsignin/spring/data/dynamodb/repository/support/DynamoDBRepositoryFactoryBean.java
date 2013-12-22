@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
+
 import java.io.Serializable;
 
 import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
+import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -49,9 +51,10 @@ public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory() {
-		DynamoDBMapper dynamoDBMapper = dynamoDBMapperConfig == null ? new DynamoDBMapper(amazonDynamoDB)
-				: new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
-		return new DynamoDBRepositoryFactory(dynamoDBMapper);
+		DynamoDBMapper dynamoDBMapper = dynamoDBMapperConfig == null ? new DynamoDBMapper(amazonDynamoDB) : new DynamoDBMapper(
+				amazonDynamoDB, dynamoDBMapperConfig);
+		return new DynamoDBRepositoryFactory(dynamoDBMapper, new QueryRequestMapper(amazonDynamoDB, dynamoDBMapperConfig,
+				dynamoDBMapper));
 	}
 
 	public void setDynamoDBMapperConfig(DynamoDBMapperConfig dynamoDBMapperConfig) {

@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
@@ -24,18 +25,19 @@ import org.springframework.data.repository.core.support.ReflectionEntityInformat
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
 /**
- * Encapsulates minimal information needed to load DynamoDB entities that have both hash and range key,
- * and have a composite id attribute annotated with @Id. 
+ * Encapsulates minimal information needed to load DynamoDB entities that have
+ * both hash and range key, and have a composite id attribute annotated with
+ * @Id.
  * 
  * Delegates to metadata and hashKeyExtractor components for all operations.
  * 
  * @author Michael Lavelle
  */
 public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Serializable> extends
-		ReflectionEntityInformation<T, ID> implements DynamoDBIdIsHashAndRangeKeyEntityInformation<T,ID> {
+		ReflectionEntityInformation<T, ID> implements DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> {
 
 	private DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata;
-	private HashAndRangeKeyExtractor<ID,?> hashAndRangeKeyExtractor;
+	private HashAndRangeKeyExtractor<ID, ?> hashAndRangeKeyExtractor;
 
 	public DynamoDBIdIsHashAndRangeKeyEntityInformationImpl(Class<T> domainClass,
 			DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata) {
@@ -45,8 +47,7 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Seri
 	}
 
 	@Override
-	public boolean isRangeKeyAware()
-	{
+	public boolean isRangeKeyAware() {
 		return true;
 	}
 
@@ -60,31 +61,20 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Seri
 		return hashAndRangeKeyExtractor.getRangeKey(id);
 	}
 
-	
 	@Override
 	public String getOverriddenAttributeName(String attributeName) {
 		return metadata.getOverriddenAttributeName(attributeName);
 	}
 
-
 	@Override
 	public boolean isHashKeyProperty(String propertyName) {
-			return metadata.isHashKeyProperty(propertyName);
+		return metadata.isHashKeyProperty(propertyName);
 	}
-
-
-	@Override
-	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
-		return metadata.getHashKeyPropotypeEntityForHashKey(hashKey);
-	}
-	
 
 	@Override
 	public boolean isCompositeHashAndRangeKeyProperty(String propertyName) {
 		return metadata.isCompositeHashAndRangeKeyProperty(propertyName);
 	}
-
-	
 
 	@Override
 	public String getRangeKeyPropertyName() {
@@ -107,12 +97,23 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Seri
 	}
 
 	@Override
-	public <H> HashAndRangeKeyExtractor<ID,H> getHashAndRangeKeyExtractor(Class<ID> idClass) {
+	public <H> HashAndRangeKeyExtractor<ID, H> getHashAndRangeKeyExtractor(Class<ID> idClass) {
 		return metadata.getHashAndRangeKeyExtractor(idClass);
 	}
 
-	
-	
-	
+	@Override
+	public String getDynamoDBTableName() {
+		return metadata.getDynamoDBTableName();
+	}
+
+	@Override
+	public Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName() {
+		return metadata.getGlobalSecondaryIndexNamesByPropertyName();
+	}
+
+	@Override
+	public <H> T getHashKeyPropotypeEntityForHashKey(H hashKey) {
+		return metadata.getHashKeyPropotypeEntityForHashKey(hashKey);
+	}
 
 }

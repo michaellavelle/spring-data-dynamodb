@@ -46,7 +46,8 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 		ReflectionUtils.doWithMethods(idType, new MethodCallback() {
 			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
-					Assert.isNull(hashKeyMethod, "Multiple methods annotated by @DynamoDBHashKey within type " + idType.getName() + "!");	
+					Assert.isNull(hashKeyMethod, "Multiple methods annotated by @DynamoDBHashKey within type " + idType.getName()
+							+ "!");
 					ReflectionUtils.makeAccessible(method);
 					hashKeyMethod = method;
 				}
@@ -55,7 +56,8 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 		ReflectionUtils.doWithMethods(idType, new MethodCallback() {
 			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBRangeKey.class) != null) {
-					Assert.isNull(rangeKeyMethod, "Multiple methods annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");	
+					Assert.isNull(rangeKeyMethod,
+							"Multiple methods annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
 					ReflectionUtils.makeAccessible(method);
 					rangeKeyMethod = method;
 				}

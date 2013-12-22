@@ -23,15 +23,17 @@ import java.util.Set;
  * 
  * @author Michael Lavelle
  */
-public interface DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID extends Serializable> extends DynamoDBHashKeyExtractingEntityMetadata<T> {
+public interface DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID extends Serializable> extends
+		DynamoDBHashKeyExtractingEntityMetadata<T> {
 
-	public <H> HashAndRangeKeyExtractor<ID,H> getHashAndRangeKeyExtractor(Class<ID> idClass);
+	public <H> HashAndRangeKeyExtractor<ID, H> getHashAndRangeKeyExtractor(Class<ID> idClass);
+
 	public String getRangeKeyPropertyName();
+
 	public Set<String> getIndexRangeKeyPropertyNames();
+
 	boolean isCompositeHashAndRangeKeyProperty(String propertyName);
+
 	public <H> T getHashKeyPropotypeEntityForHashKey(H hashKey);
-
-
-
 
 }

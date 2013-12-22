@@ -35,8 +35,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
  * 
  * @author Michael Lavelle
  */
-public class DynamoDBMappingContext extends
-		AbstractMappingContext<DynamoDBPersistentEntityImpl<?>, DynamoDBPersistentProperty> {
+public class DynamoDBMappingContext extends AbstractMappingContext<DynamoDBPersistentEntityImpl<?>, DynamoDBPersistentProperty> {
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -49,9 +48,6 @@ public class DynamoDBMappingContext extends
 		return new DynamoDBPersistentEntityImpl<T>(typeInformation, null);
 
 	}
-	
-	
-	
 
 	/*
 	 * (non-Javadoc)

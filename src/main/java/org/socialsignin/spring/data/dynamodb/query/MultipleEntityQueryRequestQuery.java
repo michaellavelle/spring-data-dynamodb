@@ -15,25 +15,25 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import java.util.List;
 
-/**
- * @author Michael Lavelle
- */
-public class SingleEntityLoadByHashAndRangeKeyQuery<T> extends AbstractSingleEntityQuery<T> implements Query<T> {
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 
-	private Object hashKey;
-	private Object rangeKey;
+public class MultipleEntityQueryRequestQuery<T> extends AbstractMultipleEntityQuery<T> {
 
-	public SingleEntityLoadByHashAndRangeKeyQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz, Object hashKey, Object rangeKey) {
-		super(dynamoDBMapper, clazz);
-		this.hashKey = hashKey;
-		this.rangeKey = rangeKey;
+	private QueryRequestMapper queryRequestMapper;
+	private QueryRequest queryRequest;
+	
+	public MultipleEntityQueryRequestQuery(QueryRequestMapper queryRequestMapper,Class<T> clazz,QueryRequest queryRequest) {
+		super(null, clazz);
+		this.queryRequest = queryRequest;
+		this.queryRequestMapper = queryRequestMapper;
 	}
-
+	
 	@Override
-	public T getSingleResult() {
-		return dynamoDBMapper.load(clazz, hashKey, rangeKey);
+	public List<T> getResultList() {
+
+		return queryRequestMapper.query(clazz, queryRequest);		
 	}
 
 }

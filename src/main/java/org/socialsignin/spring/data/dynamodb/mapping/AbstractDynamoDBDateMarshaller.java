@@ -27,12 +27,11 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 public class AbstractDynamoDBDateMarshaller implements DynamoDBMarshaller<Date> {
 
 	private DateFormat dateFormat;
-	
-	public AbstractDynamoDBDateMarshaller(DateFormat dateFormat)
-	{
+
+	public AbstractDynamoDBDateMarshaller(DateFormat dateFormat) {
 		this.dateFormat = dateFormat;
 	}
-	
+
 	@Override
 	public String marshall(Date getterReturnResult) {
 		return dateFormat.format(getterReturnResult);
