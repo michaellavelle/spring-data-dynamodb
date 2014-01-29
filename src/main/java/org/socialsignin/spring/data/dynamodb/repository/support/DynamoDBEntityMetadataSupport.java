@@ -252,18 +252,17 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 	}
 
 	private void addGlobalSecondaryIndexNames(Method method, DynamoDBIndexRangeKey dynamoDBIndexRangeKey) {
-		final Map<String, String[]> secondaryIndexNames = new HashMap<String, String[]>();
 
 		if (dynamoDBIndexRangeKey.globalSecondaryIndexNames() != null
 				&& dynamoDBIndexRangeKey.globalSecondaryIndexNames().length > 0) {
 
-			secondaryIndexNames.put(getPropertyNameForAccessorMethod(method), method.getAnnotation(DynamoDBIndexRangeKey.class)
+			globalSecondaryIndexNames.put(getPropertyNameForAccessorMethod(method), method.getAnnotation(DynamoDBIndexRangeKey.class)
 					.globalSecondaryIndexNames());
 		}
 		if (dynamoDBIndexRangeKey.globalSecondaryIndexName() != null
 				&& dynamoDBIndexRangeKey.globalSecondaryIndexName().trim().length() > 0) {
 
-			secondaryIndexNames.put(getPropertyNameForAccessorMethod(method),
+			globalSecondaryIndexNames.put(getPropertyNameForAccessorMethod(method),
 					new String[] { method.getAnnotation(DynamoDBIndexRangeKey.class).globalSecondaryIndexName() });
 		}
 	}
