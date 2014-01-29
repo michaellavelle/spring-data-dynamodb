@@ -29,6 +29,7 @@ import org.springframework.util.ReflectionUtils.MethodCallback;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
@@ -76,8 +77,13 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 					hasRangeKey = true;
 				}
 				DynamoDBIndexRangeKey dynamoDBRangeKeyAnnotation = method.getAnnotation(DynamoDBIndexRangeKey.class);
+				DynamoDBIndexHashKey dynamoDBHashKeyAnnotation = method.getAnnotation(DynamoDBIndexHashKey.class);
+
 				if (dynamoDBRangeKeyAnnotation != null) {
 					addGlobalSecondaryIndexNames(method, dynamoDBRangeKeyAnnotation);
+				}
+				if (dynamoDBHashKeyAnnotation != null) {
+					addGlobalSecondaryIndexNames(method, dynamoDBHashKeyAnnotation);
 				}
 			}
 		});
@@ -174,6 +180,10 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
 			}
+			if (method.getAnnotation(DynamoDBIndexHashKey.class) != null
+					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
+				return method.getAnnotation(DynamoDBIndexHashKey.class).attributeName();
+			}
 			if (method.getAnnotation(DynamoDBVersionAttribute.class) != null
 					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
 				return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
@@ -264,6 +274,22 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 			globalSecondaryIndexNames.put(getPropertyNameForAccessorMethod(method),
 					new String[] { method.getAnnotation(DynamoDBIndexRangeKey.class).globalSecondaryIndexName() });
+		}
+	}
+	
+	private void addGlobalSecondaryIndexNames(Method method, DynamoDBIndexHashKey dynamoDBIndexHashKey) {
+
+		if (dynamoDBIndexHashKey.globalSecondaryIndexNames() != null
+				&& dynamoDBIndexHashKey.globalSecondaryIndexNames().length > 0) {
+
+			globalSecondaryIndexNames.put(getPropertyNameForAccessorMethod(method), method.getAnnotation(DynamoDBIndexHashKey.class)
+					.globalSecondaryIndexNames());
+		}
+		if (dynamoDBIndexHashKey.globalSecondaryIndexName() != null
+				&& dynamoDBIndexHashKey.globalSecondaryIndexName().trim().length() > 0) {
+
+			globalSecondaryIndexNames.put(getPropertyNameForAccessorMethod(method),
+					new String[] { method.getAnnotation(DynamoDBIndexHashKey.class).globalSecondaryIndexName() });
 		}
 	}
 
