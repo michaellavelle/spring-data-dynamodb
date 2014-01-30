@@ -115,5 +115,15 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Seri
 	public <H> T getHashKeyPropotypeEntityForHashKey(H hashKey) {
 		return metadata.getHashKeyPropotypeEntityForHashKey(hashKey);
 	}
+	
+	@Override
+	public boolean isGlobalIndexHashKeyProperty(String propertyName) {
+		return metadata.isGlobalIndexHashKeyProperty(propertyName);
+	}
+
+	@Override
+	public boolean isGlobalIndexRangeKeyProperty(String propertyName) {
+		return metadata.isGlobalIndexRangeKeyProperty(propertyName);
+	}
 
 }

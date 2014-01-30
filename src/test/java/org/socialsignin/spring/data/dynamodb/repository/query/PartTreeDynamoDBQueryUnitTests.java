@@ -1900,6 +1900,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 				"findByJoinYear", 1, "id", null);
 		Mockito.when(mockDynamoDBUserQueryMethod.isCollectionQuery()).thenReturn(true);
 		DynamoDBMarshaller marshaller = new DynamoDBYearMarshaller();
+		Mockito.when(mockUserEntityMetadata.isGlobalIndexHashKeyProperty("joinYear")).thenReturn(true);		
 
 		Mockito.when(mockUserEntityMetadata.getMarshallerForProperty("joinYear")).thenReturn(marshaller);
 				
@@ -1974,6 +1975,10 @@ public class PartTreeDynamoDBQueryUnitTests {
 			Mockito.when(mockDynamoDBUserQueryMethod.isCollectionQuery()).thenReturn(true);
 			DynamoDBMarshaller marshaller = new DynamoDBYearMarshaller();
 
+			Mockito.when(mockUserEntityMetadata.isGlobalIndexHashKeyProperty("joinYear")).thenReturn(true);
+			Mockito.when(mockUserEntityMetadata.isGlobalIndexRangeKeyProperty("postCode")).thenReturn(true);
+
+			
 			Mockito.when(mockUserEntityMetadata.getMarshallerForProperty("joinYear")).thenReturn(marshaller);
 					
 			Map<String, String[]> indexRangeKeySecondaryIndexNames = new HashMap<String,String[]>();
@@ -2054,7 +2059,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 			Mockito.when(mockDynamoDBPlaylistQueryMethod.isCollectionQuery()).thenReturn(true);
 
 			
-					
+			Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexHashKeyProperty("displayName")).thenReturn(true);		
 			Map<String, String[]> indexRangeKeySecondaryIndexNames = new HashMap<String,String[]>();
 			indexRangeKeySecondaryIndexNames.put("displayName", new String[] {"DisplayName-index"});
 			Mockito.when(mockPlaylistEntityMetadata.getGlobalSecondaryIndexNamesByPropertyName()).thenReturn(indexRangeKeySecondaryIndexNames);
@@ -2195,7 +2200,9 @@ public class PartTreeDynamoDBQueryUnitTests {
 					Mockito.when(mockDynamoDBPlaylistQueryMethod.isCollectionQuery()).thenReturn(true);
 
 					
-							
+					Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexHashKeyProperty("userName")).thenReturn(true);
+					Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexHashKeyProperty("displayName")).thenReturn(true);
+
 					Map<String, String[]> indexRangeKeySecondaryIndexNames = new HashMap<String,String[]>();
 					indexRangeKeySecondaryIndexNames.put("displayName", new String[] {"Id-DisplayName-index"});
 					indexRangeKeySecondaryIndexNames.put("userName", new String[] {"Id-DisplayName-index"});
@@ -2275,7 +2282,8 @@ public class PartTreeDynamoDBQueryUnitTests {
 					Mockito.when(mockDynamoDBPlaylistQueryMethod.isCollectionQuery()).thenReturn(true);
 
 					
-							
+					Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexHashKeyProperty("playlistName")).thenReturn(true);
+					Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexRangeKeyProperty("displayName")).thenReturn(true);
 					Map<String, String[]> indexRangeKeySecondaryIndexNames = new HashMap<String,String[]>();
 					indexRangeKeySecondaryIndexNames.put("playlistName", new String[] {"PlaylistName-DisplayName-index"});
 					indexRangeKeySecondaryIndexNames.put("displayName", new String[] {"PlaylistName-DisplayName-index"});
@@ -2357,7 +2365,10 @@ public class PartTreeDynamoDBQueryUnitTests {
 					Mockito.when(mockDynamoDBPlaylistQueryMethod.isCollectionQuery()).thenReturn(true);
 
 					
-							
+					Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexHashKeyProperty("displayName")).thenReturn(true);
+					Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexRangeKeyProperty("playlistName")).thenReturn(true);
+
+					
 					Map<String, String[]> indexRangeKeySecondaryIndexNames = new HashMap<String,String[]>();
 					indexRangeKeySecondaryIndexNames.put("displayName", new String[] {"DisplayName-PlaylistName-index"});
 					indexRangeKeySecondaryIndexNames.put("playlistName", new String[] {"DisplayName-PlaylistName-index"});

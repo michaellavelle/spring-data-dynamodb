@@ -229,6 +229,35 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 		return isOnlyASingleAttributeConditionAndItIsOnEitherRangeOrIndexRangeKey;
 
 	}
+	
+	
+
+	@Override
+	protected boolean hasIndexHashKeyEqualCondition() {
+	
+		boolean hasCondition = super.hasIndexHashKeyEqualCondition();
+		if (!hasCondition)
+		{
+			if (rangeKeyAttributeValue != null && entityInformation.isGlobalIndexHashKeyProperty(rangeKeyPropertyName))
+			{
+					hasCondition = true;
+			}
+		}
+		return hasCondition;
+	}
+
+	@Override
+	protected boolean hasIndexRangeKeyCondition() {
+		boolean hasCondition =  super.hasIndexRangeKeyCondition();
+		if (!hasCondition)
+		{
+			if (rangeKeyAttributeValue != null && entityInformation.isGlobalIndexRangeKeyProperty(rangeKeyPropertyName))
+			{
+					hasCondition = true;
+			}
+		}
+		return hasCondition;
+	}
 
 	protected boolean isApplicableForGlobalSecondaryIndex() {
 		boolean global = super.isApplicableForGlobalSecondaryIndex();
@@ -236,6 +265,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 				&& !entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet().contains(getRangeKeyPropertyName())) {
 			return false;
 		}
+		
 		return global;
 
 	}

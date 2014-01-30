@@ -255,13 +255,48 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		return getAttributeName(getHashKeyPropertyName());
 	}
 
+	
+	protected boolean hasIndexHashKeyEqualCondition()
+	{
+		boolean hasIndexHashKeyEqualCondition = false;
+		for (Map.Entry<String, List<Condition>> propertyConditionList : propertyConditions.entrySet())
+		{
+			if (entityInformation.isGlobalIndexHashKeyProperty(propertyConditionList.getKey()))
+			{
+				for (Condition condition : propertyConditionList.getValue())
+				{
+					if ( condition.getComparisonOperator().equals(ComparisonOperator.EQ.name()))
+					{
+							 	hasIndexHashKeyEqualCondition = true;
+					}
+				}
+			}
+		}
+		return hasIndexHashKeyEqualCondition;
+	}
+	
+	protected boolean hasIndexRangeKeyCondition()
+	{
+		boolean hasIndexRangeKeyCondition = false;
+		for (Map.Entry<String, List<Condition>> propertyConditionList : propertyConditions.entrySet())
+		{
+			if (entityInformation.isGlobalIndexRangeKeyProperty(propertyConditionList.getKey()))
+			{
+				hasIndexRangeKeyCondition = true;
+			}
+		}
+		return hasIndexRangeKeyCondition;
+	}
 	protected boolean isApplicableForGlobalSecondaryIndex() {
 		boolean global = this.getGlobalSecondaryIndexName() != null;
 		if (global && getHashKeyAttributeValue() != null
 				&& !entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet().contains(getHashKeyPropertyName())) {
 			return false;
 		}
-		return global && this.attributeConditions.keySet().size() <= 2 && comparisonOperatorsPermittedForQuery();
+		
+		int attributeConditionCount = attributeConditions.keySet().size();
+		boolean attributeConditionsAppropriate =  hasIndexHashKeyEqualCondition() && (attributeConditionCount  == 1 || (attributeConditionCount == 2 && hasIndexRangeKeyCondition()));  
+		return global && (attributeConditionCount == 0 || attributeConditionsAppropriate) && comparisonOperatorsPermittedForQuery();
 
 	}
 

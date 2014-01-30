@@ -42,5 +42,9 @@ public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetada
 	public String getDynamoDBTableName();
 
 	Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName();
+	
+	boolean isGlobalIndexHashKeyProperty(String propertyName);
+
+	boolean isGlobalIndexRangeKeyProperty(String propertyName);
 
 }

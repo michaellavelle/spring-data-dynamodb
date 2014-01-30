@@ -105,5 +105,15 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable
 	public Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName() {
 		return metadata.getGlobalSecondaryIndexNamesByPropertyName();
 	}
+	
+	@Override
+	public boolean isGlobalIndexHashKeyProperty(String propertyName) {
+		return metadata.isGlobalIndexHashKeyProperty(propertyName);
+	}
+
+	@Override
+	public boolean isGlobalIndexRangeKeyProperty(String propertyName) {
+		return metadata.isGlobalIndexRangeKeyProperty(propertyName);
+	}
 
 }

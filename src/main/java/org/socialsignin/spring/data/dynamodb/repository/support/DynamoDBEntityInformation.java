@@ -42,4 +42,5 @@ public interface DynamoDBEntityInformation<T, ID extends Serializable> extends E
 
 	Object getRangeKey(ID id);
 
+
 }

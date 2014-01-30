@@ -19,7 +19,9 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +47,9 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 	private final Class<T> domainType;
 	private boolean hasRangeKey;
 	private String hashKeyPropertyName;
+	private List<String> globalIndexHashKeyPropertyNames;
+	private List<String> globalIndexRangeKeyPropertyNames;
+
 	private String dynamoDBTableName;
 	private Map<String, String[]> globalSecondaryIndexNames = new HashMap<String, String[]>();
 
@@ -67,7 +72,8 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		Assert.notNull(table, "Domain type must by annotated with DynamoDBTable!");
 		this.dynamoDBTableName = table.tableName();
 		this.globalSecondaryIndexNames = new HashMap<String, String[]>();
-
+		this.globalIndexHashKeyPropertyNames = new ArrayList<String>();
+		this.globalIndexRangeKeyPropertyNames = new ArrayList<String>();
 		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
 			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
@@ -269,37 +275,59 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 		if (dynamoDBIndexRangeKey.globalSecondaryIndexNames() != null
 				&& dynamoDBIndexRangeKey.globalSecondaryIndexNames().length > 0) {
+			String propertyName = getPropertyNameForAccessorMethod(method);
 
-			globalSecondaryIndexNames.put(getPropertyNameForAccessorMethod(method), method.getAnnotation(DynamoDBIndexRangeKey.class)
+			globalSecondaryIndexNames.put(propertyName, method.getAnnotation(DynamoDBIndexRangeKey.class)
 					.globalSecondaryIndexNames());
+			globalIndexRangeKeyPropertyNames.add(propertyName);
+
 		}
 		if (dynamoDBIndexRangeKey.globalSecondaryIndexName() != null
 				&& dynamoDBIndexRangeKey.globalSecondaryIndexName().trim().length() > 0) {
-
-			globalSecondaryIndexNames.put(getPropertyNameForAccessorMethod(method),
+			String propertyName = getPropertyNameForAccessorMethod(method);
+			globalSecondaryIndexNames.put(propertyName,
 					new String[] { method.getAnnotation(DynamoDBIndexRangeKey.class).globalSecondaryIndexName() });
+			globalIndexRangeKeyPropertyNames.add(propertyName);
+
 		}
+
 	}
 	
 	private void addGlobalSecondaryIndexNames(Method method, DynamoDBIndexHashKey dynamoDBIndexHashKey) {
 
 		if (dynamoDBIndexHashKey.globalSecondaryIndexNames() != null
 				&& dynamoDBIndexHashKey.globalSecondaryIndexNames().length > 0) {
+			String propertyName = getPropertyNameForAccessorMethod(method);
 
-			globalSecondaryIndexNames.put(getPropertyNameForAccessorMethod(method), method.getAnnotation(DynamoDBIndexHashKey.class)
+			globalSecondaryIndexNames.put(propertyName, method.getAnnotation(DynamoDBIndexHashKey.class)
 					.globalSecondaryIndexNames());
+			globalIndexHashKeyPropertyNames.add(propertyName);
+
 		}
 		if (dynamoDBIndexHashKey.globalSecondaryIndexName() != null
 				&& dynamoDBIndexHashKey.globalSecondaryIndexName().trim().length() > 0) {
+			String propertyName = getPropertyNameForAccessorMethod(method);
 
-			globalSecondaryIndexNames.put(getPropertyNameForAccessorMethod(method),
+			globalSecondaryIndexNames.put(propertyName,
 					new String[] { method.getAnnotation(DynamoDBIndexHashKey.class).globalSecondaryIndexName() });
+			globalIndexHashKeyPropertyNames.add(propertyName);
+
 		}
 	}
 
 	@Override
 	public Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName() {
 		return globalSecondaryIndexNames;
+	}
+
+	@Override
+	public boolean isGlobalIndexHashKeyProperty(String propertyName) {
+		return globalIndexHashKeyPropertyNames.contains(propertyName);
+	}
+
+	@Override
+	public boolean isGlobalIndexRangeKeyProperty(String propertyName) {
+		return globalIndexRangeKeyPropertyNames.contains(propertyName);
 	}
 
 }
