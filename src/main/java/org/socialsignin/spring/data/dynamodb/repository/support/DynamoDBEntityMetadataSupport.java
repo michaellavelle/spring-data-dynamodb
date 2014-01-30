@@ -214,6 +214,10 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
 			}
+			if (method.getAnnotation(DynamoDBIndexHashKey.class) != null
+					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
+				return method.getAnnotation(DynamoDBIndexHashKey.class).attributeName();
+			}
 			if (method.getAnnotation(DynamoDBVersionAttribute.class) != null
 					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
 				return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
