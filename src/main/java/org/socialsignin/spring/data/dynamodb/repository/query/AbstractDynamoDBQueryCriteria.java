@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -108,9 +109,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 
 			queryRequest.setKeyConditions(keyConditions);
 			queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);
-			applySortIfSpecified(queryRequest, allowedSortProperties);
+			applySortIfSpecified(queryRequest, new ArrayList<String>(new HashSet<String>(allowedSortProperties)));
 		}
-
 		return queryRequest;
 	}
 
