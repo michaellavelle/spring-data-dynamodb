@@ -2201,11 +2201,11 @@ public class PartTreeDynamoDBQueryUnitTests {
 
 					
 					Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexHashKeyProperty("userName")).thenReturn(true);
-					Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexHashKeyProperty("displayName")).thenReturn(true);
+					Mockito.when(mockPlaylistEntityMetadata.isGlobalIndexRangeKeyProperty("displayName")).thenReturn(true);
 
 					Map<String, String[]> indexRangeKeySecondaryIndexNames = new HashMap<String,String[]>();
-					indexRangeKeySecondaryIndexNames.put("displayName", new String[] {"Id-DisplayName-index"});
-					indexRangeKeySecondaryIndexNames.put("userName", new String[] {"Id-DisplayName-index"});
+					indexRangeKeySecondaryIndexNames.put("displayName", new String[] {"UserName-DisplayName-index"});
+					indexRangeKeySecondaryIndexNames.put("userName", new String[] {"UserName-DisplayName-index"});
 
 					Mockito.when(mockPlaylistEntityMetadata.getGlobalSecondaryIndexNamesByPropertyName()).thenReturn(indexRangeKeySecondaryIndexNames);
 					
@@ -2236,7 +2236,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 
 					String indexName =  queryCaptor.getValue().getIndexName();
 					assertNotNull(indexName);
-					assertEquals("Id-DisplayName-index",indexName);
+					assertEquals("UserName-DisplayName-index",indexName);
 					
 					assertEquals("playlist",queryCaptor.getValue().getTableName());
 
@@ -2520,6 +2520,8 @@ public class PartTreeDynamoDBQueryUnitTests {
 					// Verify that the expected DynamoDBMapper method was called
 					Mockito.verify(mockQueryRequestMapper).query(classCaptor.getValue(), queryCaptor.getValue());
 				}				
+				
+				
 				
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
