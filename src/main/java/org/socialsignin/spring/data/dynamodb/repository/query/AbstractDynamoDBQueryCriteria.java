@@ -272,6 +272,10 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 				}
 			}
 		}
+		if (hashKeyAttributeValue != null && entityInformation.isGlobalIndexHashKeyProperty(hashKeyPropertyName))
+		{
+			hasIndexHashKeyEqualCondition = true;
+		}
 		return hasIndexHashKeyEqualCondition;
 	}
 	
@@ -284,6 +288,10 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 			{
 				hasIndexRangeKeyCondition = true;
 			}
+		}
+		if (hashKeyAttributeValue != null && entityInformation.isGlobalIndexRangeKeyProperty(hashKeyPropertyName))
+		{
+			hasIndexRangeKeyCondition = true;
 		}
 		return hasIndexRangeKeyCondition;
 	}
