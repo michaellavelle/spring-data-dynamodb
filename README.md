@@ -77,6 +77,7 @@ or in xml...
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:dynamodb="http://docs.socialsignin.org/schema/data/dynamodb"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://docs.socialsignin.org/schema/data/dynamodb
