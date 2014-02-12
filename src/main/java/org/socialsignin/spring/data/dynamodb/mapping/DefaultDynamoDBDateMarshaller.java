@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.mapping;
 
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 /**
  * @author Michael Lavelle
@@ -23,6 +24,11 @@ import java.text.SimpleDateFormat;
 public class DefaultDynamoDBDateMarshaller extends AbstractDynamoDBDateMarshaller {
 
 	public DefaultDynamoDBDateMarshaller() {
-		super(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+		super(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") {
+        private static final long serialVersionUID = 1L;
+        {
+            setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+    });
 	}
 }
