@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -1764,6 +1765,7 @@ public class PartTreeDynamoDBQueryUnitTests {
 			throws ParseException {
 		String joinDateString = "2013-09-12T14:04:03.123Z";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date joinDate = dateFormat.parse(joinDateString);
 
 		setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
