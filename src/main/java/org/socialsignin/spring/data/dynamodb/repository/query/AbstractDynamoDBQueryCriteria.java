@@ -497,7 +497,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 			List<Date> attributeValueAsList = getAttributeValueAsList(attributeValue);
 			if (expandCollectionValues && attributeValueAsList != null) {
 				List<String> attributeValueAsStringList = getDateListAsStringList(attributeValueAsList);
-				attributeValueObject.withNS(attributeValueAsStringList);
+				attributeValueObject.withSS(attributeValueAsStringList);
 			} else {
 				Date date = (Date) attributeValue;
 				String marshalledDate = new DefaultDynamoDBDateMarshaller().marshall(date);
