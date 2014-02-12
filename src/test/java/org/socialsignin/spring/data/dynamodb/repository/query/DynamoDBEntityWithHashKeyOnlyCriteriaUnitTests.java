@@ -13,9 +13,7 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DynamoDBEntityWithHashKeyOnlyCriteriaUnitTests {
-
-	private DynamoDBEntityWithHashKeyOnlyCriteria<User,String> criteria;
+public class DynamoDBEntityWithHashKeyOnlyCriteriaUnitTests extends AbstractDynamoDBQueryCriteriaUnitTests<DynamoDBEntityWithHashKeyOnlyCriteria<User,String>> {
 	
 	@Mock
 	private DynamoDBEntityInformation<User,String> entityInformation;
