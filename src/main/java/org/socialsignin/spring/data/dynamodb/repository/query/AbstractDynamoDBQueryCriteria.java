@@ -62,6 +62,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 
 	protected Object hashKeyAttributeValue;
 	protected Object hashKeyPropertyValue;
+	protected String globalSecondaryIndexName;
 	protected Sort sort;
 
 	public abstract boolean isApplicableForLoad();
@@ -210,39 +211,97 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 
 	}
 
-	protected String getGlobalSecondaryIndexName() {
-
-		if (attributeConditions == null || attributeConditions.size() == 0)
-			return null;
+	private String getFirstDeclaredIndexNameForAttribute(Map<String,String[]> indexNamesByAttributeName,List<String> indexNamesToCheck,String attributeName)
+	{
 		String indexName = null;
-		for (Entry<String, List<Condition>> singleAttributeConditions : attributeConditions.entrySet()) {
-			for (Map.Entry<String, String[]> indexNamesEntry : entityInformation.getGlobalSecondaryIndexNamesByPropertyName()
-					.entrySet()) {
-
-				if (getAttributeName(indexNamesEntry.getKey()).equals(singleAttributeConditions.getKey())) {
-					String[] indexNames = indexNamesEntry.getValue();
-					if (indexNames.length > 1) {
-						throw new RuntimeException("Don't know which index name to use");
-					}
-					String newIndexName = indexNames[0];
-
-					if (indexName != null) {
-						if (indexName.equals(newIndexName)) {
-						} else {
-							throw new RuntimeException("Already using a different indexName:" + indexName);
-
-						}
-					} else {
-						indexName = newIndexName;
-
-					}
-				}
+		String[] declaredOrderedIndexNamesForAttribute = indexNamesByAttributeName.get(attributeName);
+		for (String declaredOrderedIndexNameForAttribute : declaredOrderedIndexNamesForAttribute)
+		{
+			if (indexName == null && indexNamesToCheck.contains(declaredOrderedIndexNameForAttribute))
+			{
+					indexName = declaredOrderedIndexNameForAttribute;
 			}
-
 		}
+		
 		return indexName;
 	}
 
+	protected String getGlobalSecondaryIndexName() {
+
+		
+		// Lazy evaluate the globalSecondaryIndexName if not already set
+		
+		// We must have attribute conditions specified in order to use a global secondary index, otherwise return null for index name
+		// Also this method only evaluates the 
+		if (globalSecondaryIndexName == null  && attributeConditions != null && !attributeConditions.isEmpty())
+		{
+			// Declare map of index names by attribute name which we will populate below - this will be used to determine which index to use if multiple indexes are applicable
+			Map<String,String[]> indexNamesByAttributeName =  new HashMap<String,String[]>(); 
+
+			// Declare map of attribute lists by index name which we will populate below - this will be used to determine whether we have an exact match index for specified attribute conditions
+			MultiValueMap<String,String> attributeListsByIndexName = new LinkedMultiValueMap<String,String>(); 
+
+			// Populate the above maps
+			for (Entry<String, String[]> indexNamesForPropertyNameEntry : entityInformation.getGlobalSecondaryIndexNamesByPropertyName().entrySet())
+			{
+				String propertyName = indexNamesForPropertyNameEntry.getKey();
+				String attributeName = getAttributeName(propertyName);
+				indexNamesByAttributeName.put(attributeName, indexNamesForPropertyNameEntry.getValue());
+				for (String indexNameForPropertyName : indexNamesForPropertyNameEntry.getValue())
+				{
+					attributeListsByIndexName.add(indexNameForPropertyName, attributeName);
+				}
+			}
+			
+			// Declare lists to store matching index names
+			List<String> exactMatchIndexNames = new ArrayList<String>();
+			List<String> partialMatchIndexNames = new ArrayList<String>();
+			
+			// Populate matching index name lists - an index is either an exact match ( the index attributes match all the specified criteria exactly)
+			// or a partial match ( the properties for the specified criteria are contained within the property set for an index )
+			for (Entry<String, List<String>> attributeListForIndexNameEntry : attributeListsByIndexName.entrySet())
+			{
+				String indexNameForAttributeList = attributeListForIndexNameEntry.getKey();
+				List<String> attributeList = attributeListForIndexNameEntry.getValue();
+				if (attributeList.containsAll(attributeConditions.keySet()))
+				{
+					if (attributeConditions.keySet().containsAll(attributeList))
+					{
+						exactMatchIndexNames.add(indexNameForAttributeList);
+					}
+					else
+					{
+						partialMatchIndexNames.add(indexNameForAttributeList);
+					}
+				}
+			}
+			
+			if (exactMatchIndexNames.size() > 1)
+			{
+				throw new RuntimeException("Multiple indexes defined on same attribute set:" + attributeConditions.keySet());
+			}
+			else if (exactMatchIndexNames.size() == 1)
+			{
+				globalSecondaryIndexName = exactMatchIndexNames.get(0);
+			}
+			else if (partialMatchIndexNames.size() > 1)
+			{
+				if (attributeConditions.size() == 1)
+				{
+					globalSecondaryIndexName = getFirstDeclaredIndexNameForAttribute(indexNamesByAttributeName, partialMatchIndexNames, attributeConditions.keySet().iterator().next());
+				}
+				if (globalSecondaryIndexName == null)
+				{
+					globalSecondaryIndexName = partialMatchIndexNames.get(0);
+				}
+			}
+			else if (partialMatchIndexNames.size() == 1)
+			{
+				globalSecondaryIndexName = partialMatchIndexNames.get(0);
+			}
+		}
+		return globalSecondaryIndexName;
+	}
 	protected boolean isHashKeyProperty(String propertyName) {
 		return hashKeyPropertyName.equals(propertyName);
 	}
