@@ -89,7 +89,6 @@ public class DynamoDBQueryCreator<T, ID extends Serializable> extends
 	
 		switch (part.getType()) {
 		
-		
 		case IN:
 			Object in = iterator.next();
 			Assert.notNull(in, "Creating conditions on null parameters not supported: please specify a value for '"
