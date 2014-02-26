@@ -25,6 +25,7 @@ import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
@@ -76,57 +77,67 @@ public class DynamoDBQueryCreator<T, ID extends Serializable> extends
 		if (part.shouldIgnoreCase().equals(IgnoreCaseType.ALWAYS))
 			throw new UnsupportedOperationException("Case insensitivity not supported");
 
-		Class<?> propertyType = part.getProperty().getType();
-
+		Class<?> leafNodePropertyType = part.getProperty().getLeafProperty().getType();
+		
+		PropertyPath leafNodePropertyPath = part.getProperty().getLeafProperty();
+		String leafNodePropertyName = leafNodePropertyPath.toDotPath();
+		if (leafNodePropertyName.indexOf(".") != -1)
+		{
+			int index = leafNodePropertyName.lastIndexOf(".");
+			leafNodePropertyName = leafNodePropertyName.substring(index);
+		}
+	
 		switch (part.getType()) {
+		
+		
 		case IN:
 			Object in = iterator.next();
 			Assert.notNull(in, "Creating conditions on null parameters not supported: please specify a value for '"
-					+ part.getProperty().getSegment() + "'");
+					+ leafNodePropertyName + "'");
 			boolean isIterable = ClassUtils.isAssignable(in.getClass(), Iterable.class);
 			boolean isArray = ObjectUtils.isArray(in);
 			Assert.isTrue(isIterable || isArray, "In criteria can only operate with Iterable or Array parameters");
 			Iterable<?> iterable = isIterable ? ((Iterable<?>) in) : Arrays.asList(ObjectUtils.toObjectArray(in));
-			return criteria.withPropertyIn(part.getProperty().getSegment(), iterable, propertyType);
+			return criteria.withPropertyIn(leafNodePropertyName, iterable, leafNodePropertyType);
 		case CONTAINING:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.CONTAINS,
-					iterator.next(), propertyType);
+			return criteria.withSingleValueCriteria(leafNodePropertyName, ComparisonOperator.CONTAINS,
+					iterator.next(), leafNodePropertyType);
 		case STARTING_WITH:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.BEGINS_WITH,
-					iterator.next(), propertyType);
+			return criteria.withSingleValueCriteria(leafNodePropertyName, ComparisonOperator.BEGINS_WITH,
+					iterator.next(), leafNodePropertyType);
 		case BETWEEN:
 			Object first = iterator.next();
 			Object second = iterator.next();
-			return criteria.withPropertyBetween(part.getProperty().getSegment(), first, second, propertyType);
+			return criteria.withPropertyBetween(leafNodePropertyName, first, second, leafNodePropertyType);
 		case AFTER:
 		case GREATER_THAN:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GT, iterator.next(),
-					propertyType);
+			return criteria.withSingleValueCriteria(leafNodePropertyName, ComparisonOperator.GT, iterator.next(),
+					leafNodePropertyType);
 		case BEFORE:
 		case LESS_THAN:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LT, iterator.next(),
-					propertyType);
+			return criteria.withSingleValueCriteria(leafNodePropertyName, ComparisonOperator.LT, iterator.next(),
+					leafNodePropertyType);
 		case GREATER_THAN_EQUAL:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.GE, iterator.next(),
-					propertyType);
+			return criteria.withSingleValueCriteria(leafNodePropertyName, ComparisonOperator.GE, iterator.next(),
+					leafNodePropertyType);
 		case LESS_THAN_EQUAL:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.LE, iterator.next(),
-					propertyType);
+			return criteria.withSingleValueCriteria(leafNodePropertyName, ComparisonOperator.LE, iterator.next(),
+					leafNodePropertyType);
 		case IS_NULL:
-			return criteria.withNoValuedCriteria(part.getProperty().getSegment(), ComparisonOperator.NULL);
+			return criteria.withNoValuedCriteria(leafNodePropertyName, ComparisonOperator.NULL);
 		case IS_NOT_NULL:
-			return criteria.withNoValuedCriteria(part.getProperty().getSegment(), ComparisonOperator.NOT_NULL);
+			return criteria.withNoValuedCriteria(leafNodePropertyName, ComparisonOperator.NOT_NULL);
 		case TRUE:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ, Boolean.TRUE,
-					propertyType);
+			return criteria.withSingleValueCriteria(leafNodePropertyName, ComparisonOperator.EQ, Boolean.TRUE,
+					leafNodePropertyType);
 		case FALSE:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.EQ, Boolean.FALSE,
-					propertyType);
+			return criteria.withSingleValueCriteria(leafNodePropertyName, ComparisonOperator.EQ, Boolean.FALSE,
+					leafNodePropertyType);
 		case SIMPLE_PROPERTY:
-			return criteria.withPropertyEquals(part.getProperty().getSegment(), iterator.next(), propertyType);
+			return criteria.withPropertyEquals(leafNodePropertyName, iterator.next(), leafNodePropertyType);
 		case NEGATING_SIMPLE_PROPERTY:
-			return criteria.withSingleValueCriteria(part.getProperty().getSegment(), ComparisonOperator.NE, iterator.next(),
-					propertyType);
+			return criteria.withSingleValueCriteria(leafNodePropertyName, ComparisonOperator.NE, iterator.next(),
+					leafNodePropertyType);
 		default:
 			throw new IllegalArgumentException("Unsupported keyword " + part.getType());
 		}
