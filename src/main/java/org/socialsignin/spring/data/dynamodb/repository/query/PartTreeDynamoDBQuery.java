@@ -56,9 +56,9 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 				queryRequestMapper);
 	}
 	
-	protected DynamoDBCountQueryCreator<T, ID> createCountQueryCreator(ParametersParameterAccessor accessor) {
+	protected DynamoDBCountQueryCreator<T, ID> createCountQueryCreator(ParametersParameterAccessor accessor,boolean pageQuery) {
 		return new DynamoDBCountQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBMapper,
-				queryRequestMapper);
+				queryRequestMapper,pageQuery);
 	}
 
 	@Override
@@ -71,10 +71,10 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 	}
 	
 	@Override
-	public Query<Long> doCreateCountQuery(Object[] values) {
+	public Query<Long> doCreateCountQuery(Object[] values,boolean pageQuery) {
 
 		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
-		DynamoDBCountQueryCreator<T, ID> queryCreator = createCountQueryCreator(accessor);
+		DynamoDBCountQueryCreator<T, ID> queryCreator = createCountQueryCreator(accessor,pageQuery);
 		return queryCreator.createQuery();
 
 	}

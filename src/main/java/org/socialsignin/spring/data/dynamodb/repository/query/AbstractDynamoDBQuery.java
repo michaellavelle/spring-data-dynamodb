@@ -24,6 +24,8 @@ import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
@@ -47,6 +49,9 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 	protected QueryExecution<T, ID> getExecution() {
 		if (method.isCollectionQuery()) {
 			return new CollectionExecution();
+		}
+		else if (method.isSliceQuery()) {
+				return new SlicedExecution(method.getParameters());
 		} else if (method.isPageQuery()) {
 			return new PagedExecution(method.getParameters());
 		} else if (method.isModifyingQuery()) {
@@ -57,7 +62,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 	}
 
 	protected abstract Query<T> doCreateQuery(Object[] values);
-	protected abstract Query<Long> doCreateCountQuery(Object[] values);
+	protected abstract Query<Long> doCreateCountQuery(Object[] values,boolean pageQuery);
 	protected abstract boolean isCountQuery();
 	
 	protected Query<T> doCreateQueryWithPermissions(Object values[]) {
@@ -66,8 +71,8 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 		return query;
 	}
 	
-	protected Query<Long> doCreateCountQueryWithPermissions(Object values[]) {
-		Query<Long> query = doCreateCountQuery(values);
+	protected Query<Long> doCreateCountQueryWithPermissions(Object values[],boolean pageQuery) {
+		Query<Long> query = doCreateCountQuery(values,pageQuery);
 		query.setScanCountEnabled(method.isScanCountEnabled());
 		return query;
 	}
@@ -124,10 +129,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			ParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
 			Pageable pageable = accessor.getPageable();
 			Query<T> query = dynamoDBQuery.doCreateQueryWithPermissions(values);
-			
 
-			
-			
 			List<T> results = query.getResultList();
 			return createPage(results, pageable,dynamoDBQuery,values);
 		}
@@ -144,10 +146,64 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			}
 			List<T> results = readPageOfResults(iterator, pageable.getPageSize());
 			
-			Query<Long> countQuery = dynamoDBQuery.doCreateCountQueryWithPermissions(values);
+			Query<Long> countQuery = dynamoDBQuery.doCreateCountQueryWithPermissions(values,true);
 			
 			return new PageImpl<T>(results, pageable, countQuery.getSingleResult());
 
+		}
+	}
+	
+	class SlicedExecution implements QueryExecution<T, ID> {
+
+		private final Parameters<?, ?> parameters;
+
+		public SlicedExecution(Parameters<?, ?> parameters) {
+
+			this.parameters = parameters;
+		}
+
+		private int scanThroughResults(Iterator<T> iterator, int resultsToScan) {
+			int processed = 0;
+			while (iterator.hasNext() && processed < resultsToScan) {
+				iterator.next();
+				processed++;
+			}
+			return processed;
+		}
+
+		private List<T> readPageOfResults(Iterator<T> iterator, int pageSize) {
+			int processed = 0;
+			List<T> resultsPage = new ArrayList<T>();
+			while (iterator.hasNext() && processed < pageSize) {
+				resultsPage.add(iterator.next());
+				processed++;
+			}
+			return resultsPage;
+		}
+
+		@Override
+		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
+
+			ParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
+			Pageable pageable = accessor.getPageable();
+			Query<T> query = dynamoDBQuery.doCreateQueryWithPermissions(values);
+			List<T> results = query.getResultList();
+			return createSlice(results, pageable);
+		}
+
+		private Slice<T> createSlice(List<T> allResults, Pageable pageable) {
+
+			Iterator<T> iterator = allResults.iterator();
+			int processedCount = 0;
+			if (pageable.getOffset() > 0) {
+				processedCount = scanThroughResults(iterator, pageable.getOffset());
+				if (processedCount < pageable.getOffset())
+					return new SliceImpl<T>(new ArrayList<T>());
+			}
+			List<T> results = readPageOfResults(iterator, pageable.getPageSize());
+			// Scan ahead to retrieve the next page count
+			boolean hasMoreResults = scanThroughResults(iterator, 1) > 0;
+			return new SliceImpl<T>(results, pageable, hasMoreResults);
 		}
 	}
 
@@ -157,7 +213,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
 			if (isCountQuery())
 			{
-				return dynamoDBQuery.doCreateCountQueryWithPermissions(values).getSingleResult();
+				return dynamoDBQuery.doCreateCountQueryWithPermissions(values,false).getSingleResult();
 			}
 			else
 			{

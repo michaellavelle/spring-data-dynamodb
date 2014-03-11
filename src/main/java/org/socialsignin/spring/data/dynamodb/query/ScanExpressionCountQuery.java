@@ -26,10 +26,13 @@ public class ScanExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long>
 	
 	private Class<T> domainClass;
 	
-	public ScanExpressionCountQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz,DynamoDBScanExpression scanExpression) {
+	private boolean pageQuery;
+	
+	public ScanExpressionCountQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz,DynamoDBScanExpression scanExpression,boolean pageQuery) {
 		super(dynamoDBMapper, Long.class);
 		this.scanExpression = scanExpression;
 		this.domainClass = clazz;
+		this.pageQuery = pageQuery;
 	}
 
 	@Override
@@ -40,9 +43,19 @@ public class ScanExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long>
 	
 	public void assertScanCountEnabled(boolean scanCountEnabled)
 	{
-		Assert.isTrue(scanCountEnabled,"Scanning for the total counts for this query is not enabled.  " +
+		if (pageQuery)
+		{
+			Assert.isTrue(scanCountEnabled,"Scanning for the total counts for this query is not enabled.  " +
 				"To enable annotate your repository method with @EnableScanCount, or " +
-				"enable scanning for all repository methods by annotating your repository interface with @EnableScanCount");
+				"enable scanning for all repository methods by annotating your repository interface with @EnableScanCount.  This total count is required to serve this Page query - if total counts are not desired an alternative approach could be to replace the Page query with a Slice query ");
+	
+		}
+		else
+		{
+			Assert.isTrue(scanCountEnabled,"Scanning for counts for this query is not enabled.  " +
+					"To enable annotate your repository method with @EnableScanCount, or " +
+					"enable scanning for all repository methods by annotating your repository interface with @EnableScanCount");
+		}
 	}
 
 }

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.socialsignin.spring.data.dynamodb.query.CountByHashKeyQuery;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityQueryRequestQuery;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityScanExpressionQuery;
 import org.socialsignin.spring.data.dynamodb.query.Query;
@@ -49,6 +50,10 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID extends Serializable> e
 	protected Query<T> buildSingleEntityLoadQuery(DynamoDBMapper dynamoDBMapper) {
 		return new SingleEntityLoadByHashKeyQuery<T>(dynamoDBMapper, clazz, getHashKeyPropertyValue());
 	}
+	
+	protected Query<Long> buildSingleEntityCountQuery(DynamoDBMapper dynamoDBMapper) {
+		return new CountByHashKeyQuery<T>(dynamoDBMapper, clazz, getHashKeyPropertyValue());
+	}
 
 	protected Query<T> buildFinderQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
 		if (isApplicableForGlobalSecondaryIndex()) {
@@ -62,7 +67,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID extends Serializable> e
 		}
 	}
 	
-	protected Query<Long> buildFinderCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+	protected Query<Long> buildFinderCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper,boolean pageQuery) {
 		if (isApplicableForGlobalSecondaryIndex()) {
 
 			List<Condition> hashKeyConditions = getHashKeyConditions();
@@ -71,7 +76,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID extends Serializable> e
 			return new QueryRequestCountQuery<T>(queryRequestMapper, entityInformation.getJavaType(), queryRequest);
 
 		} else {
-			return new ScanExpressionCountQuery<T>(dynamoDBMapper, clazz, buildScanExpression());
+			return new ScanExpressionCountQuery<T>(dynamoDBMapper, clazz, buildScanExpression(),pageQuery);
 		}
 	}
 

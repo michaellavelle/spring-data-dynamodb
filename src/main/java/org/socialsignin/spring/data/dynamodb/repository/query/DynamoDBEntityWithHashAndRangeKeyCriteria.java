@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.socialsignin.spring.data.dynamodb.query.CountByHashAndRangeKeyQuery;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityQueryExpressionQuery;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityQueryRequestQuery;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityScanExpressionQuery;
@@ -100,6 +101,11 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 
 	protected Query<T> buildSingleEntityLoadQuery(DynamoDBMapper dynamoDBMapper) {
 		return new SingleEntityLoadByHashAndRangeKeyQuery<T>(dynamoDBMapper, entityInformation.getJavaType(),
+				getHashKeyPropertyValue(), getRangeKeyPropertyValue());
+	}
+	
+	protected Query<Long> buildSingleEntityCountQuery(DynamoDBMapper dynamoDBMapper) {
+		return new CountByHashAndRangeKeyQuery<T>(dynamoDBMapper, entityInformation.getJavaType(),
 				getHashKeyPropertyValue(), getRangeKeyPropertyValue());
 	}
 
@@ -210,7 +216,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 	}
 	
 	
-	protected Query<Long> buildFinderCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+	protected Query<Long> buildFinderCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper,boolean pageQuery) {
 		if (isApplicableForQuery()) {
 			if (isApplicableForGlobalSecondaryIndex()) {
 				String tableName = queryRequestMapper.getOverriddenTableName(entityInformation);
@@ -225,7 +231,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 		
 			}
 		} else {
-			return new ScanExpressionCountQuery<T>(dynamoDBMapper, clazz, buildScanExpression());
+			return new ScanExpressionCountQuery<T>(dynamoDBMapper, clazz, buildScanExpression(),pageQuery);
 		}
 	}
 
