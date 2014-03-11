@@ -30,6 +30,8 @@ import org.springframework.util.ReflectionUtils;
 public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 
 	private boolean findAllUnpaginatedScanEnabled = false;
+	private boolean findAllPaginatedScanEnabled = false;
+
 	private boolean findAllUnpaginatedScanCountEnabled = false;
 
 	private boolean countUnpaginatedScanEnabled = false;
@@ -41,6 +43,7 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 			this.findAllUnpaginatedScanEnabled = true;
 			this.countUnpaginatedScanEnabled = true;
 			this.deleteAllUnpaginatedScanEnabled = true;
+			this.findAllPaginatedScanEnabled = true;
 		} else {
 			// Check declared methods for EnableScan annotation
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(repositoryInterface);
@@ -82,6 +85,20 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 				}
 
 			}
+			for (Method method : methods) {
+
+				if (!method.isAnnotationPresent(EnableScan.class) || method.getParameterTypes().length != 1) {
+					// Only consider methods which have the EnableScan
+					// annotation and which have a single pageable parameter
+					continue;
+				}
+
+				if (method.getName().equals("findAll") && Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {
+					findAllPaginatedScanEnabled = true;
+					continue;
+				}
+
+			}
 		}
 		if (!findAllUnpaginatedScanCountEnabled && repositoryInterface.isAnnotationPresent(EnableScanCount.class)) {
 			findAllUnpaginatedScanCountEnabled = true;
@@ -108,6 +125,11 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 	@Override
 	public boolean isFindAllUnpaginatedScanCountEnabled() {
 		return findAllUnpaginatedScanCountEnabled;
+	}
+
+	@Override
+	public boolean isFindAllPaginatedScanEnabled() {
+		return findAllPaginatedScanEnabled;
 	}
 
 }

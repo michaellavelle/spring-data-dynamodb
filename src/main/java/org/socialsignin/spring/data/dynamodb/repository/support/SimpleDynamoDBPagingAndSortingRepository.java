@@ -90,6 +90,7 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID extends Serializable
 		// Scan ahead to retrieve the next page count
 		List<T> results = readPageOfResults(iterator, pageable.getPageSize());
 		
+		assertScanEnabled(enableScanPermissions.isFindAllPaginatedScanEnabled(), "findAll(Pageable pageable)");
 		assertScanCountEnabled(enableScanPermissions.isFindAllUnpaginatedScanCountEnabled(), "findAll(Pageable pageable)");
 
 		int totalCount = dynamoDBMapper.count(domainType, scanExpression);

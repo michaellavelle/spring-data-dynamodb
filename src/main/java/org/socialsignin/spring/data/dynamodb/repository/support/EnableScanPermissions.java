@@ -22,6 +22,8 @@ public interface EnableScanPermissions {
 
 	boolean isFindAllUnpaginatedScanEnabled();
 	
+	boolean isFindAllPaginatedScanEnabled();
+	
 	boolean isFindAllUnpaginatedScanCountEnabled();
 
 	boolean isDeleteAllUnpaginatedScanEnabled();
