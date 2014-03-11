@@ -30,7 +30,7 @@ Download the jar though Maven:
 <dependency>
   <groupId>org.socialsignin</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -148,6 +148,10 @@ or for paging and sorting...
 ```java
 public interface UserRepository extends PagingAndSortingRepository<User, String> {
   Page<User> findByLastName(String lastName,Pageable pageable);
+  
+  @EnableScan 
+  @EnableScanCount
+  public Page<User> findAll(Pageable pageable);
 }
 ```
 
