@@ -418,6 +418,86 @@ public class PartTreeDynamoDBQueryUnitTests {
 		// Verify that the expected DynamoDBMapper method was called
 		Mockito.verify(mockDynamoDBMapper).query(classCaptor.getValue(), queryCaptor.getValue());
 	}
+	
+
+	@Test
+	public void testExecute_WhenFinderMethodIsCountingEntityWithCompositeIdList_WhenFindingByRangeKeyOnly_ScanCountEnabled() {
+
+		setupCommonMocksForThisRepositoryMethod(mockPlaylistEntityMetadata, mockDynamoDBPlaylistQueryMethod,
+				Playlist.class, "countByPlaylistName", 1, "userName", "playlistName");
+
+		Mockito.when(mockDynamoDBPlaylistQueryMethod.isCollectionQuery()).thenReturn(false);
+		Mockito.when(mockDynamoDBPlaylistQueryMethod.isScanCountEnabled()).thenReturn(true);
+
+		// Mock out specific DynamoDBMapper behavior expected by this method
+		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
+		@SuppressWarnings("rawtypes")
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		Mockito.when(mockDynamoDBMapper.count(classCaptor.capture(), scanCaptor.capture())).thenReturn(
+				100);
+
+		// Execute the query
+
+		Object[] parameters = new Object[] { "somePlaylistName" };
+		Object o = partTreeDynamoDBQuery.execute(parameters);
+
+		// Assert that we obtain the expected results
+		assertEquals(100l, o);
+
+		// Assert that we scanned DynamoDB for the correct class
+		assertEquals(classCaptor.getValue(), Playlist.class);
+
+		// Assert that we only one filter condition for the one property
+		Map<String, Condition> filterConditions = scanCaptor.getValue().getScanFilter();
+		assertEquals(1, filterConditions.size());
+		Condition filterCondition = filterConditions.get("playlistName");
+
+		assertNotNull(filterCondition);
+
+		assertEquals(ComparisonOperator.EQ.name(), filterCondition.getComparisonOperator());
+
+		// Assert we only have one attribute value for the filter condition
+		assertEquals(1, filterCondition.getAttributeValueList().size());
+
+		// Assert that there the attribute value type for this attribute value
+		// is String,
+		// and its value is the parameter expected
+		assertEquals("somePlaylistName", filterCondition.getAttributeValueList().get(0).getS());
+
+		// Assert that all other attribute value types other than String type
+		// are null
+		assertNull(filterCondition.getAttributeValueList().get(0).getSS());
+		assertNull(filterCondition.getAttributeValueList().get(0).getN());
+		assertNull(filterCondition.getAttributeValueList().get(0).getNS());
+		assertNull(filterCondition.getAttributeValueList().get(0).getB());
+		assertNull(filterCondition.getAttributeValueList().get(0).getBS());
+
+		// Verify that the expected DynamoDBMapper method was called
+		Mockito.verify(mockDynamoDBMapper).count(classCaptor.getValue(), scanCaptor.getValue());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testExecute_WhenFinderMethodIsCountingEntityWithCompositeIdList_WhenFindingByRangeKeyOnly_ScanCountDisabled() {
+
+		setupCommonMocksForThisRepositoryMethod(mockPlaylistEntityMetadata, mockDynamoDBPlaylistQueryMethod,
+				Playlist.class, "countByPlaylistName", 1, "userName", "playlistName");
+
+		Mockito.when(mockDynamoDBPlaylistQueryMethod.isCollectionQuery()).thenReturn(false);
+		Mockito.when(mockDynamoDBPlaylistQueryMethod.isScanCountEnabled()).thenReturn(false);
+
+		// Mock out specific DynamoDBMapper behavior expected by this method
+		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
+		@SuppressWarnings("rawtypes")
+		ArgumentCaptor<Class> classCaptor = ArgumentCaptor.forClass(Class.class);
+		Mockito.when(mockDynamoDBMapper.count(classCaptor.capture(), scanCaptor.capture())).thenReturn(
+				100);
+
+		// Execute the query
+
+		Object[] parameters = new Object[] { "somePlaylistName" };
+		partTreeDynamoDBQuery.execute(parameters);
+
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test

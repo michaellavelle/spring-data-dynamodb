@@ -44,4 +44,6 @@ public interface DynamoDBQueryCriteria<T, ID extends Serializable> {
 
 	public Query<T> buildQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper);
 
+	public Query<Long> buildCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper);
+
 }

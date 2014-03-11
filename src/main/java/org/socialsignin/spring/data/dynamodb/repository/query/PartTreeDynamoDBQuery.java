@@ -51,8 +51,13 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 		return tree;
 	}
 
-	protected DynamoDBQueryCreator<T, ID> createCreator(ParametersParameterAccessor accessor) {
+	protected DynamoDBQueryCreator<T, ID> createQueryCreator(ParametersParameterAccessor accessor) {
 		return new DynamoDBQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBMapper,
+				queryRequestMapper);
+	}
+	
+	protected DynamoDBCountQueryCreator<T, ID> createCountQueryCreator(ParametersParameterAccessor accessor) {
+		return new DynamoDBCountQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBMapper,
 				queryRequestMapper);
 	}
 
@@ -60,10 +65,23 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 	public Query<T> doCreateQuery(Object[] values) {
 
 		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
-
-		DynamoDBQueryCreator<T, ID> queryCreator = createCreator(accessor);
+		DynamoDBQueryCreator<T, ID> queryCreator = createQueryCreator(accessor);
 		return queryCreator.createQuery();
 
+	}
+	
+	@Override
+	public Query<Long> doCreateCountQuery(Object[] values) {
+
+		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
+		DynamoDBCountQueryCreator<T, ID> queryCreator = createCountQueryCreator(accessor);
+		return queryCreator.createQuery();
+
+	}
+
+	@Override
+	protected boolean isCountQuery() {
+		return tree.isCountProjection();
 	}
 
 }

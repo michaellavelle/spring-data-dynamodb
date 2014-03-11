@@ -432,11 +432,26 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 			return buildFinderQuery(dynamoDBMapper, queryRequestMapper);
 		}
 	}
+	
+	@Override
+	public Query<Long> buildCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+		if (isApplicableForLoad()) {
+			//return buildSingleEntityLoadQuery(dynamoDBMapper);
+			// TODO ML
+			return null;
+		} else {
+			return buildFinderCountQuery(dynamoDBMapper, queryRequestMapper);
+		}
+	}
+	
 
 	protected abstract Query<T> buildSingleEntityLoadQuery(DynamoDBMapper dynamoDBMapper);
 
 	protected abstract Query<T> buildFinderQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper);
 
+	protected abstract Query<Long> buildFinderCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper);
+
+	
 	protected abstract boolean isOnlyHashKeySpecified();
 
 	@Override

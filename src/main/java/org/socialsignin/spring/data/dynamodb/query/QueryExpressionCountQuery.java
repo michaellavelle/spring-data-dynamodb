@@ -18,40 +18,30 @@ package org.socialsignin.spring.data.dynamodb.query;
 import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBPersistentProperty;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 
 /**
  * {@link DynamoDBPersistentProperty} implementation
  * 
  * @author Michael Lavelle
  */
-public abstract class AbstractQuery<T> implements Query<T> {
+public class QueryExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long> {
 
-	protected DynamoDBMapper dynamoDBMapper;
-	protected Class<T> clazz;
-	protected boolean scanEnabled = false;
-	protected boolean scanCountEnabled = false;
+	private DynamoDBQueryExpression<T> queryExpression;
+
+	private Class<T> domainClass;
 
 	
-	
-	public boolean isScanCountEnabled() {
-		return scanCountEnabled;
+	public QueryExpressionCountQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz,
+			DynamoDBQueryExpression<T> queryExpression) {
+		super(dynamoDBMapper, Long.class);
+		this.queryExpression = queryExpression;
+		this.domainClass = clazz;
 	}
 
-	public void setScanCountEnabled(boolean scanCountEnabled) {
-		this.scanCountEnabled = scanCountEnabled;
-	}
-
-	public void setScanEnabled(boolean scanEnabled) {
-		this.scanEnabled = scanEnabled;
-	}
-
-	public boolean isScanEnabled() {
-		return scanEnabled;
-	}
-
-	public AbstractQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz) {
-		this.dynamoDBMapper = dynamoDBMapper;
-		this.clazz = clazz;
+	@Override
+	public Long getSingleResult() {
+		return new Long(dynamoDBMapper.count(domainClass, queryExpression));
 	}
 
 }

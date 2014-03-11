@@ -29,7 +29,10 @@ import org.socialsignin.spring.data.dynamodb.query.MultipleEntityQueryExpression
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityQueryRequestQuery;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityScanExpressionQuery;
 import org.socialsignin.spring.data.dynamodb.query.Query;
+import org.socialsignin.spring.data.dynamodb.query.QueryExpressionCountQuery;
+import org.socialsignin.spring.data.dynamodb.query.QueryRequestCountQuery;
 import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
+import org.socialsignin.spring.data.dynamodb.query.ScanExpressionCountQuery;
 import org.socialsignin.spring.data.dynamodb.query.SingleEntityLoadByHashAndRangeKeyQuery;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 import org.springframework.util.Assert;
@@ -203,6 +206,26 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 			}
 		} else {
 			return new MultipleEntityScanExpressionQuery<T>(dynamoDBMapper, clazz, buildScanExpression());
+		}
+	}
+	
+	
+	protected Query<Long> buildFinderCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+		if (isApplicableForQuery()) {
+			if (isApplicableForGlobalSecondaryIndex()) {
+				String tableName = queryRequestMapper.getOverriddenTableName(entityInformation);
+				QueryRequest queryRequest = buildQueryRequest(tableName, getGlobalSecondaryIndexName(),
+						getHashKeyAttributeName(), getRangeKeyAttributeName(), this.getRangeKeyPropertyName(),
+						getHashKeyConditions(), getRangeKeyConditions());
+				return new QueryRequestCountQuery<T>(queryRequestMapper, entityInformation.getJavaType(), queryRequest);
+		
+			} else {
+				DynamoDBQueryExpression<T> queryExpression = buildQueryExpression();
+				return new QueryExpressionCountQuery<T>(dynamoDBMapper, entityInformation.getJavaType(), queryExpression);
+		
+			}
+		} else {
+			return new ScanExpressionCountQuery<T>(dynamoDBMapper, clazz, buildScanExpression());
 		}
 	}
 

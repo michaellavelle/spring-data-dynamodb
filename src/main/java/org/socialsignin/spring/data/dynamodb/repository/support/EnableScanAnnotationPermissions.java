@@ -18,6 +18,8 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 import java.lang.reflect.Method;
 
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
+import org.socialsignin.spring.data.dynamodb.repository.EnableScanCount;
+import org.springframework.data.domain.Pageable;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -28,6 +30,8 @@ import org.springframework.util.ReflectionUtils;
 public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 
 	private boolean findAllUnpaginatedScanEnabled = false;
+	private boolean findAllUnpaginatedScanCountEnabled = false;
+
 	private boolean countUnpaginatedScanEnabled = false;
 	private boolean deleteAllUnpaginatedScanEnabled = false;
 
@@ -39,7 +43,8 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 			this.deleteAllUnpaginatedScanEnabled = true;
 		} else {
 			// Check declared methods for EnableScan annotation
-			for (Method method : ReflectionUtils.getAllDeclaredMethods(repositoryInterface)) {
+			Method[] methods = ReflectionUtils.getAllDeclaredMethods(repositoryInterface);
+			for (Method method : methods) {
 
 				if (!method.isAnnotationPresent(EnableScan.class) || method.getParameterTypes().length > 0) {
 					// Only consider methods which have the EnableScan
@@ -63,6 +68,23 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 				}
 
 			}
+			for (Method method : methods) {
+
+				if (!method.isAnnotationPresent(EnableScanCount.class) || method.getParameterTypes().length != 1) {
+					// Only consider methods which have the EnableScanCount
+					// annotation and which have a single pageable parameter
+					continue;
+				}
+
+				if (method.getName().equals("findAll") && Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {
+					findAllUnpaginatedScanCountEnabled = true;
+					continue;
+				}
+
+			}
+		}
+		if (!findAllUnpaginatedScanCountEnabled && repositoryInterface.isAnnotationPresent(EnableScanCount.class)) {
+			findAllUnpaginatedScanCountEnabled = true;
 		}
 
 	}
@@ -81,6 +103,11 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 	@Override
 	public boolean isCountUnpaginatedScanEnabled() {
 		return countUnpaginatedScanEnabled;
+	}
+
+	@Override
+	public boolean isFindAllUnpaginatedScanCountEnabled() {
+		return findAllUnpaginatedScanCountEnabled;
 	}
 
 }

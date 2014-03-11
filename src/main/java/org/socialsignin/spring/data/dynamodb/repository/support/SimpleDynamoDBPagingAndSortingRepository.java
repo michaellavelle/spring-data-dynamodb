@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.util.Assert;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
@@ -88,16 +89,12 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID extends Serializable
 		}
 		// Scan ahead to retrieve the next page count
 		List<T> results = readPageOfResults(iterator, pageable.getPageSize());
-		int nextPageItemCount = scanThroughResults(iterator, pageable.getPageSize());
-		boolean hasMoreResults = nextPageItemCount > 0;
-		int totalProcessed = processedCount + results.size();
-		// Set total count to be the number already returned, or the number
-		// returned added to the count of the next page
-		// This allows paging to determine next/page prev page correctly, even
-		// though we are unable to return
-		// the actual count of total results due to the way DynamoDB scans
-		// results
-		return new PageImpl<T>(results, pageable, hasMoreResults ? (totalProcessed + nextPageItemCount) : totalProcessed);
+		
+		assertScanCountEnabled(enableScanPermissions.isFindAllUnpaginatedScanCountEnabled(), "findAll(Pageable pageable)");
+
+		int totalCount = dynamoDBMapper.count(domainType, scanExpression);
+		
+		return new PageImpl<T>(results, pageable, totalCount);
 
 	}
 
@@ -118,6 +115,13 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID extends Serializable
 			processed++;
 		}
 		return resultsPage;
+	}
+	
+	public void assertScanCountEnabled(boolean countScanEnabled, String methodName) {
+		Assert.isTrue(countScanEnabled, "Scanning for the total counts for unpaginated " + methodName + " queries is not enabled.  "
+				+ "To enable, re-implement the " + methodName
+				+ "() method in your repository interface and annotate with @EnableScanCount, or "
+				+ "enable total count scanning for all repository methods by annotating your repository interface with @EnableScanCount");
 	}
 
 }

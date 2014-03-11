@@ -42,4 +42,6 @@ public interface Query<T> {
     
     
     public void setScanEnabled(boolean scanEnabled);
+    public void setScanCountEnabled(boolean scanCountEnabled);
+
 }

@@ -45,7 +45,6 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 	}
 
 	protected QueryExecution<T, ID> getExecution() {
-
 		if (method.isCollectionQuery()) {
 			return new CollectionExecution();
 		} else if (method.isPageQuery()) {
@@ -58,10 +57,18 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 	}
 
 	protected abstract Query<T> doCreateQuery(Object[] values);
-
+	protected abstract Query<Long> doCreateCountQuery(Object[] values);
+	protected abstract boolean isCountQuery();
+	
 	protected Query<T> doCreateQueryWithPermissions(Object values[]) {
 		Query<T> query = doCreateQuery(values);
 		query.setScanEnabled(method.isScanEnabled());
+		return query;
+	}
+	
+	protected Query<Long> doCreateCountQueryWithPermissions(Object values[]) {
+		Query<Long> query = doCreateCountQuery(values);
+		query.setScanCountEnabled(method.isScanCountEnabled());
 		return query;
 	}
 
@@ -117,12 +124,17 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			ParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
 			Pageable pageable = accessor.getPageable();
 			Query<T> query = dynamoDBQuery.doCreateQueryWithPermissions(values);
+			
+
+			
+			
 			List<T> results = query.getResultList();
-			return createPage(results, pageable);
+			return createPage(results, pageable,dynamoDBQuery,values);
 		}
 
-		private Page<T> createPage(List<T> allResults, Pageable pageable) {
+		private Page<T> createPage(List<T> allResults, Pageable pageable,AbstractDynamoDBQuery<T, ID> dynamoDBQuery,Object[] values) {
 
+			
 			Iterator<T> iterator = allResults.iterator();
 			int processedCount = 0;
 			if (pageable.getOffset() > 0) {
@@ -131,18 +143,10 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 					return new PageImpl<T>(new ArrayList<T>());
 			}
 			List<T> results = readPageOfResults(iterator, pageable.getPageSize());
-			// Scan ahead to retrieve the next page count
-			int nextPageItemCount = scanThroughResults(iterator, pageable.getPageSize());
-			boolean hasMoreResults = nextPageItemCount > 0;
-			int totalProcessed = processedCount + results.size();
-			// Set total count to be the number already returned, or the number
-			// returned added to the count of the next page
-			// This allows paging to determine next/page prev page correctly,
-			// even though we are unable to return
-			// the actual count of total results due to the way DynamoDB scans
-			// results
-			int totalCount = hasMoreResults ? (totalProcessed + nextPageItemCount) : totalProcessed;
-			return new PageImpl<T>(results, pageable, totalCount);
+			
+			Query<Long> countQuery = dynamoDBQuery.doCreateCountQueryWithPermissions(values);
+			
+			return new PageImpl<T>(results, pageable, countQuery.getSingleResult());
 
 		}
 	}
@@ -151,8 +155,14 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 
 		@Override
 		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
-
-			return dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
+			if (isCountQuery())
+			{
+				return dynamoDBQuery.doCreateCountQueryWithPermissions(values).getSingleResult();
+			}
+			else
+			{
+				return dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
+			}
 
 		}
 	}

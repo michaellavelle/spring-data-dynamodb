@@ -140,6 +140,8 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 				+ "() method in your repository interface and annotate with @EnableScan, or "
 				+ "enable scanning for all repository methods by annotating your repository interface with @EnableScan");
 	}
+	
+	
 
 	@Override
 	public List<T> findAll() {

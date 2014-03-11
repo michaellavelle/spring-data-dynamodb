@@ -22,7 +22,9 @@ import java.util.Map;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityQueryRequestQuery;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityScanExpressionQuery;
 import org.socialsignin.spring.data.dynamodb.query.Query;
+import org.socialsignin.spring.data.dynamodb.query.QueryRequestCountQuery;
 import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
+import org.socialsignin.spring.data.dynamodb.query.ScanExpressionCountQuery;
 import org.socialsignin.spring.data.dynamodb.query.SingleEntityLoadByHashKeyQuery;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 
@@ -57,6 +59,19 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID extends Serializable> e
 			return new MultipleEntityQueryRequestQuery<T>(queryRequestMapper, entityInformation.getJavaType(), queryRequest);
 		} else {
 			return new MultipleEntityScanExpressionQuery<T>(dynamoDBMapper, clazz, buildScanExpression());
+		}
+	}
+	
+	protected Query<Long> buildFinderCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+		if (isApplicableForGlobalSecondaryIndex()) {
+
+			List<Condition> hashKeyConditions = getHashKeyConditions();
+			QueryRequest queryRequest = buildQueryRequest(queryRequestMapper.getOverriddenTableName(entityInformation),
+					getGlobalSecondaryIndexName(), getHashKeyAttributeName(), null, null, hashKeyConditions, null);
+			return new QueryRequestCountQuery<T>(queryRequestMapper, entityInformation.getJavaType(), queryRequest);
+
+		} else {
+			return new ScanExpressionCountQuery<T>(dynamoDBMapper, clazz, buildScanExpression());
 		}
 	}
 

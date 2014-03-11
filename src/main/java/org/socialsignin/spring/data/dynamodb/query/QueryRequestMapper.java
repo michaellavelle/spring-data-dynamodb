@@ -23,6 +23,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
+import com.amazonaws.services.dynamodbv2.model.Select;
 
 public class QueryRequestMapper {
 
@@ -57,5 +58,22 @@ public class QueryRequestMapper {
 		return new PaginatedQueryList<T>(dynamoDBMapper, clazz, amazonDynamoDB, queryRequest, queryResult,
 				config.getPaginationLoadingStrategy(), config);
 	}
+	
+	public <T> long count(Class<T> clazz, QueryRequest mutableQueryRequest) {
+
+		mutableQueryRequest.setSelect(Select.COUNT);
+
+        // Count queries can also be truncated for large datasets
+        int count = 0;
+        QueryResult queryResult = null;
+        do {
+            queryResult = amazonDynamoDB.query(mutableQueryRequest);
+            count += queryResult.getCount();
+            mutableQueryRequest.setExclusiveStartKey(queryResult.getLastEvaluatedKey());
+        } while (queryResult.getLastEvaluatedKey() != null);
+
+        return count;
+	}
+	
 
 }

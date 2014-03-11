@@ -11,15 +11,15 @@ import org.springframework.data.repository.query.parser.PartTree;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
-public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractDynamoDBQueryCreator<T, ID,T> {
+public class DynamoDBCountQueryCreator<T,ID extends Serializable> extends AbstractDynamoDBQueryCreator<T, ID,Long> {
 
-	public DynamoDBQueryCreator(PartTree tree,
+	public DynamoDBCountQueryCreator(PartTree tree,
 			DynamoDBEntityInformation<T, ID> entityMetadata,
 			DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
 		super(tree, entityMetadata, dynamoDBMapper, queryRequestMapper);
 	}
 
-	public DynamoDBQueryCreator(PartTree tree,
+	public DynamoDBCountQueryCreator(PartTree tree,
 			ParameterAccessor parameterAccessor,
 			DynamoDBEntityInformation<T, ID> entityMetadata,
 			DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
@@ -28,12 +28,9 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractDyn
 	}
 	
 	@Override
-	protected Query<T> complete(DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
-		if (sort != null) {
-			criteria.withSort(sort);
-		}
-
-		return criteria.buildQuery(dynamoDBMapper, queryRequestMapper);
+	protected Query<Long> complete(DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
+	
+		return criteria.buildCountQuery(dynamoDBMapper, queryRequestMapper);
 
 	}
 
