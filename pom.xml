@@ -63,7 +63,7 @@
 			<artifactId>spring-tx</artifactId>
 			<version>${spring}</version>
 		</dependency>
-
+		
 		<!-- For JavaConfig -->
 		<dependency>
 			<groupId>cglib</groupId>

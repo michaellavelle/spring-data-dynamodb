@@ -24,12 +24,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.springframework.dao.EmptyResultDataAccessException;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
 /**
  * Unit tests for {@link DynamoDBSimpleIdRepository}.
@@ -44,7 +43,7 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 	SimpleDynamoDBPagingAndSortingRepository<Playlist, PlaylistId> repoForEntityWithHashAndRangeKey;
 
 	@Mock
-	DynamoDBMapper dynamoDBMapper;
+	DynamoDBOperations dynamoDBOperations;
 
 	private User testUser;
 
@@ -87,12 +86,12 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 		when(entityWithHashAndRangeKeyInformation.isRangeKeyAware()).thenReturn(true);
 
 		repoForEntityWithOnlyHashKey = new SimpleDynamoDBPagingAndSortingRepository<User, Long>(entityWithOnlyHashKeyInformation,
-				dynamoDBMapper,mockEnableScanPermissions);
+				dynamoDBOperations,mockEnableScanPermissions);
 		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBPagingAndSortingRepository<Playlist, PlaylistId>(
-				entityWithHashAndRangeKeyInformation, dynamoDBMapper,mockEnableScanPermissions);
+				entityWithHashAndRangeKeyInformation, dynamoDBOperations,mockEnableScanPermissions);
 
-		when(dynamoDBMapper.load(User.class, 1l)).thenReturn(testUser);
-		when(dynamoDBMapper.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);
+		when(dynamoDBOperations.load(User.class, 1l)).thenReturn(testUser);
+		when(dynamoDBOperations.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);
 
 	}
 
@@ -108,7 +107,7 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTests {
 	@Test
 	public void findOneEntityWithOnlyHashKey() {
 		User user = repoForEntityWithOnlyHashKey.findOne(1l);
-		Mockito.verify(dynamoDBMapper).load(User.class,1l);
+		Mockito.verify(dynamoDBOperations).load(User.class,1l);
 		assertEquals(testUser, user);
 	}
 	

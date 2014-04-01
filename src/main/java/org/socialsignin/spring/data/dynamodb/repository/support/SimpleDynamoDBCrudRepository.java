@@ -21,11 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
 
@@ -40,22 +40,26 @@ import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
  * @param <ID>
  *            the type of the entity's identifier
  */
-public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements DynamoDBCrudRepository<T, ID> {
-
-	protected DynamoDBMapper dynamoDBMapper;
+public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
+		implements DynamoDBCrudRepository<T, ID> {
 
 	protected DynamoDBEntityInformation<T, ID> entityInformation;
 
 	protected Class<T> domainType;
 
 	protected EnableScanPermissions enableScanPermissions;
+	
+	protected DynamoDBOperations dynamoDBOperations;
 
-	public SimpleDynamoDBCrudRepository(DynamoDBEntityInformation<T, ID> entityInformation, DynamoDBMapper dynamoDBMapper,
+	public SimpleDynamoDBCrudRepository(
+			DynamoDBEntityInformation<T, ID> entityInformation,
+			DynamoDBOperations dynamoDBOperations,
 			EnableScanPermissions enableScanPermissions) {
 		Assert.notNull(entityInformation);
-		Assert.notNull(dynamoDBMapper);
+		Assert.notNull(dynamoDBOperations);
+		
 		this.entityInformation = entityInformation;
-		this.dynamoDBMapper = dynamoDBMapper;
+		this.dynamoDBOperations = dynamoDBOperations;
 		this.domainType = entityInformation.getJavaType();
 		this.enableScanPermissions = enableScanPermissions;
 
@@ -64,9 +68,12 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 	@Override
 	public T findOne(ID id) {
 		if (entityInformation.isRangeKeyAware()) {
-			return dynamoDBMapper.load(domainType, entityInformation.getHashKey(id), entityInformation.getRangeKey(id));
+			return dynamoDBOperations.load(domainType,
+					entityInformation.getHashKey(id),
+					entityInformation.getRangeKey(id));
 		} else {
-			return dynamoDBMapper.load(domainType, entityInformation.getHashKey(id));
+			return dynamoDBOperations.load(domainType,
+					entityInformation.getHashKey(id));
 		}
 	}
 
@@ -76,21 +83,25 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 		List<KeyPair> keyPairs = new ArrayList<KeyPair>();
 		for (ID id : ids) {
 			if (entityInformation.isRangeKeyAware()) {
-				keyPairs.add(new KeyPair().withHashKey(entityInformation.getHashKey(id)).withRangeKey(
+				keyPairs.add(new KeyPair().withHashKey(
+						entityInformation.getHashKey(id)).withRangeKey(
 						entityInformation.getRangeKey(id)));
 			} else {
 				keyPairs.add(new KeyPair().withHashKey(id));
 			}
 		}
 		keyPairsMap.put(domainType, keyPairs);
-		return (List<T>) dynamoDBMapper.batchLoad(keyPairsMap).get(domainType);
+		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(domainType);
 	}
 
 	protected T load(ID id) {
 		if (entityInformation.isRangeKeyAware()) {
-			return dynamoDBMapper.load(domainType, entityInformation.getHashKey(id), entityInformation.getRangeKey(id));
+			return dynamoDBOperations.load(domainType,
+					entityInformation.getHashKey(id),
+					entityInformation.getRangeKey(id));
 		} else {
-			return dynamoDBMapper.load(domainType, entityInformation.getHashKey(id));
+			return dynamoDBOperations.load(domainType,
+					entityInformation.getHashKey(id));
 		}
 	}
 
@@ -100,7 +111,8 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 		List<KeyPair> keyPairs = new ArrayList<KeyPair>();
 		for (ID id : ids) {
 			if (entityInformation.isRangeKeyAware()) {
-				keyPairs.add(new KeyPair().withHashKey(entityInformation.getHashKey(id)).withRangeKey(
+				keyPairs.add(new KeyPair().withHashKey(
+						entityInformation.getHashKey(id)).withRangeKey(
 						entityInformation.getRangeKey(id)));
 			} else {
 				keyPairs.add(new KeyPair().withHashKey(id));
@@ -108,12 +120,14 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 			}
 		}
 		keyPairsMap.put(domainType, keyPairs);
-		return (List<T>) dynamoDBMapper.batchLoad(keyPairsMap).get(domainType);
+		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(domainType);
 	}
 
+	
 	@Override
 	public <S extends T> S save(S entity) {
-		dynamoDBMapper.save(entity);
+
+		dynamoDBOperations.save(entity);
 		return entity;
 	}
 
@@ -123,7 +137,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 		for (S entity : entities) {
 			entityList.add(entity);
 		}
-		dynamoDBMapper.batchSave(entityList);
+		dynamoDBOperations.batchSave(entityList);
 		return entityList;
 	}
 
@@ -135,27 +149,33 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 	}
 
 	public void assertScanEnabled(boolean scanEnabled, String methodName) {
-		Assert.isTrue(scanEnabled, "Scanning for unpaginated " + methodName + "() queries is not enabled.  "
-				+ "To enable, re-implement the " + methodName
-				+ "() method in your repository interface and annotate with @EnableScan, or "
-				+ "enable scanning for all repository methods by annotating your repository interface with @EnableScan");
+		Assert.isTrue(
+				scanEnabled,
+				"Scanning for unpaginated "
+						+ methodName
+						+ "() queries is not enabled.  "
+						+ "To enable, re-implement the "
+						+ methodName
+						+ "() method in your repository interface and annotate with @EnableScan, or "
+						+ "enable scanning for all repository methods by annotating your repository interface with @EnableScan");
 	}
-	
-	
 
 	@Override
 	public List<T> findAll() {
 
-		assertScanEnabled(enableScanPermissions.isFindAllUnpaginatedScanEnabled(), "findAll");
+		assertScanEnabled(
+				enableScanPermissions.isFindAllUnpaginatedScanEnabled(),
+				"findAll");
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
-		return dynamoDBMapper.scan(domainType, scanExpression);
+		return dynamoDBOperations.scan(domainType, scanExpression);
 	}
 
 	@Override
 	public long count() {
-		assertScanEnabled(enableScanPermissions.isCountUnpaginatedScanEnabled(), "count");
+		assertScanEnabled(
+				enableScanPermissions.isCountUnpaginatedScanEnabled(), "count");
 		final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
-		return dynamoDBMapper.count(domainType, scanExpression);
+		return dynamoDBOperations.count(domainType, scanExpression);
 	}
 
 	@Override
@@ -165,15 +185,16 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 
 		T entity = findOne(id);
 		if (entity == null) {
-			throw new EmptyResultDataAccessException(String.format("No %s entity with id %s exists!", domainType, id), 1);
+			throw new EmptyResultDataAccessException(String.format(
+					"No %s entity with id %s exists!", domainType, id), 1);
 		}
-		dynamoDBMapper.delete(entity);
+		dynamoDBOperations.delete(entity);
 	}
 
 	@Override
 	public void delete(T entity) {
 		Assert.notNull(entity, "The entity must not be null!");
-		dynamoDBMapper.delete(entity);
+		dynamoDBOperations.delete(entity);
 	}
 
 	@Override
@@ -185,14 +206,16 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable> implements
 		for (T entity : entities) {
 			entityList.add(entity);
 		}
-		dynamoDBMapper.batchDelete(entityList);
+		dynamoDBOperations.batchDelete(entityList);
 	}
 
 	@Override
 	public void deleteAll() {
 
-		assertScanEnabled(enableScanPermissions.isDeleteAllUnpaginatedScanEnabled(), "deleteAll");
-		dynamoDBMapper.batchDelete(findAll());
+		assertScanEnabled(
+				enableScanPermissions.isDeleteAllUnpaginatedScanEnabled(),
+				"deleteAll");
+		dynamoDBOperations.batchDelete(findAll());
 	}
 
 }

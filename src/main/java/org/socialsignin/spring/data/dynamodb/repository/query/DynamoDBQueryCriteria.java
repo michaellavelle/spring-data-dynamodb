@@ -17,11 +17,10 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
-import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
 import org.springframework.data.domain.Sort;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 
 /**
@@ -42,8 +41,8 @@ public interface DynamoDBQueryCriteria<T, ID extends Serializable> {
 
 	public DynamoDBQueryCriteria<T, ID> withSort(Sort sort);
 
-	public Query<T> buildQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper);
+	public Query<T> buildQuery(DynamoDBOperations dynamoDBOperations);
 
-	public Query<Long> buildCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper,boolean pageQuery);
+	public Query<Long> buildCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery);
 
 }

@@ -17,14 +17,12 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
-import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.PartTree;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
 /**
  * @author Michael Lavelle
@@ -34,17 +32,14 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 	private DynamoDBQueryMethod<T, ID> queryMethod;
 	private final Parameters<?, ?> parameters;
 
-	private QueryRequestMapper queryRequestMapper;
 
 	private final PartTree tree;
 
-	public PartTreeDynamoDBQuery(DynamoDBMapper dynamoDBMapper, DynamoDBQueryMethod<T, ID> method,
-			QueryRequestMapper queryRequestMapper) {
-		super(dynamoDBMapper, method);
+	public PartTreeDynamoDBQuery(DynamoDBOperations dynamoDBOperations, DynamoDBQueryMethod<T, ID> method) {
+		super(dynamoDBOperations, method);
 		this.queryMethod = method;
 		this.parameters = method.getParameters();
 		this.tree = new PartTree(method.getName(), method.getEntityType());
-		this.queryRequestMapper = queryRequestMapper;
 	}
 
 	public PartTree getTree() {
@@ -52,13 +47,12 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 	}
 
 	protected DynamoDBQueryCreator<T, ID> createQueryCreator(ParametersParameterAccessor accessor) {
-		return new DynamoDBQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBMapper,
-				queryRequestMapper);
+		return new DynamoDBQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations);
 	}
 	
 	protected DynamoDBCountQueryCreator<T, ID> createCountQueryCreator(ParametersParameterAccessor accessor,boolean pageQuery) {
-		return new DynamoDBCountQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBMapper,
-				queryRequestMapper,pageQuery);
+		return new DynamoDBCountQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations,
+				pageQuery);
 	}
 
 	@Override

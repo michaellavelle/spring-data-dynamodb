@@ -15,9 +15,9 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 
 public class ScanExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long> implements Query<Long>{
@@ -28,8 +28,8 @@ public class ScanExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long>
 	
 	private boolean pageQuery;
 	
-	public ScanExpressionCountQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz,DynamoDBScanExpression scanExpression,boolean pageQuery) {
-		super(dynamoDBMapper, Long.class);
+	public ScanExpressionCountQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz,DynamoDBScanExpression scanExpression,boolean pageQuery) {
+		super(dynamoDBOperations, Long.class);
 		this.scanExpression = scanExpression;
 		this.domainClass = clazz;
 		this.pageQuery = pageQuery;
@@ -38,7 +38,7 @@ public class ScanExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long>
 	@Override
 	public Long getSingleResult() {
 		assertScanCountEnabled(isScanCountEnabled());
-		return new Long(dynamoDBMapper.count(domainClass,scanExpression));
+		return new Long(dynamoDBOperations.count(domainClass,scanExpression));
 	}
 	
 	public void assertScanCountEnabled(boolean scanCountEnabled)

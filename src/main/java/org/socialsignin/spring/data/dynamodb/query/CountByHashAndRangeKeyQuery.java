@@ -15,7 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 /**
  * @author Michael Lavelle
@@ -25,15 +25,15 @@ public class CountByHashAndRangeKeyQuery<T> extends AbstractSingleEntityQuery<Lo
 	private Object hashKey;
 	private Object rangeKey;
 
-	public CountByHashAndRangeKeyQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz, Object hashKey, Object rangeKey) {
-		super(dynamoDBMapper, Long.class);
+	public CountByHashAndRangeKeyQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz, Object hashKey, Object rangeKey) {
+		super(dynamoDBOperations, Long.class);
 		this.hashKey = hashKey;
 		this.rangeKey = rangeKey;
 	}
 
 	@Override
 	public Long getSingleResult() {
-		return dynamoDBMapper.load(clazz, hashKey, rangeKey) == null ? 0l : 1l;
+		return dynamoDBOperations.load(clazz, hashKey, rangeKey) == null ? 0l : 1l;
 	}
 
 }

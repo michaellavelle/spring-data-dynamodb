@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
-import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 import org.springframework.data.mapping.PropertyPath;
@@ -33,7 +33,6 @@ import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 
 /**
@@ -43,23 +42,19 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R>
 		AbstractQueryCreator<Query<R>, DynamoDBQueryCriteria<T, ID>> {
 
 	private DynamoDBEntityInformation<T, ID> entityMetadata;
-	protected DynamoDBMapper dynamoDBMapper;
-	protected QueryRequestMapper queryRequestMapper;
+	protected DynamoDBOperations dynamoDBOperations;
 
-	public AbstractDynamoDBQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBMapper dynamoDBMapper,
-			QueryRequestMapper queryRequestMapper) {
+	public AbstractDynamoDBQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBOperations dynamoDBOperations) {
 		super(tree);
 		this.entityMetadata = entityMetadata;
-		this.dynamoDBMapper = dynamoDBMapper;
-		this.queryRequestMapper = queryRequestMapper;
+		this.dynamoDBOperations = dynamoDBOperations;
 	}
 
 	public AbstractDynamoDBQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
-			DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+			DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBOperations dynamoDBOperations) {
 		super(tree, parameterAccessor);
 		this.entityMetadata = entityMetadata;
-		this.dynamoDBMapper = dynamoDBMapper;
-		this.queryRequestMapper = queryRequestMapper;
+		this.dynamoDBOperations = dynamoDBOperations;
 
 	}
 

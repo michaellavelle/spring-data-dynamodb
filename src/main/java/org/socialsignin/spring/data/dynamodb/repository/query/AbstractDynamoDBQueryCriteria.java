@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.mapping.DefaultDynamoDBDateMarshaller;
 import org.socialsignin.spring.data.dynamodb.query.Query;
-import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -38,7 +38,6 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -425,32 +424,32 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 	}
 
 	@Override
-	public Query<T> buildQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+	public Query<T> buildQuery(DynamoDBOperations dynamoDBOperations) {
 		if (isApplicableForLoad()) {
-			return buildSingleEntityLoadQuery(dynamoDBMapper);
+			return buildSingleEntityLoadQuery(dynamoDBOperations);
 		} else {
-			return buildFinderQuery(dynamoDBMapper, queryRequestMapper);
+			return buildFinderQuery(dynamoDBOperations);
 		}
 	}
 	
 	@Override
-	public Query<Long> buildCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper,boolean pageQuery) {
+	public Query<Long> buildCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
 		if (isApplicableForLoad()) {
-			return buildSingleEntityCountQuery(dynamoDBMapper);
+			return buildSingleEntityCountQuery(dynamoDBOperations);
 		} else {
-			return buildFinderCountQuery(dynamoDBMapper, queryRequestMapper,pageQuery);
+			return buildFinderCountQuery(dynamoDBOperations,pageQuery);
 		}
 	}
 	
 
-	protected abstract Query<T> buildSingleEntityLoadQuery(DynamoDBMapper dynamoDBMapper);
+	protected abstract Query<T> buildSingleEntityLoadQuery(DynamoDBOperations dynamoDBOperations);
 
-	protected abstract Query<Long> buildSingleEntityCountQuery(DynamoDBMapper dynamoDBMapper);
+	protected abstract Query<Long> buildSingleEntityCountQuery(DynamoDBOperations dynamoDBOperations);
 
 	
-	protected abstract Query<T> buildFinderQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper);
+	protected abstract Query<T> buildFinderQuery(DynamoDBOperations dynamoDBOperations);
 
-	protected abstract Query<Long> buildFinderCountQuery(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper,boolean pageQuery);
+	protected abstract Query<Long> buildFinderCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery);
 
 	
 	protected abstract boolean isOnlyHashKeySpecified();

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBPagingAndSortingRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,7 +28,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 
@@ -58,8 +58,9 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID extends Serializable
 		implements DynamoDBPagingAndSortingRepository<T, ID> {
 
 	public SimpleDynamoDBPagingAndSortingRepository(DynamoDBEntityInformation<T, ID> entityInformation,
-			DynamoDBMapper dynamoDBMapper, EnableScanPermissions enableScanPermissions) {
-		super(entityInformation, dynamoDBMapper, enableScanPermissions);
+			DynamoDBOperations dynamoDBOperations, EnableScanPermissions enableScanPermissions) {
+		super(entityInformation, dynamoDBOperations, enableScanPermissions);
+		
 
 	}
 
@@ -79,7 +80,7 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID extends Serializable
 		// Scan to the end of the page after the requested page
 		int scanTo = pageable.getOffset() + (2 * pageable.getPageSize());
 		scanExpression.setLimit(scanTo);
-		PaginatedScanList<T> paginatedScanList = dynamoDBMapper.scan(domainType, scanExpression);
+		PaginatedScanList<T> paginatedScanList = dynamoDBOperations.scan(domainType, scanExpression);
 		Iterator<T> iterator = paginatedScanList.iterator();
 		int processedCount = 0;
 		if (pageable.getOffset() > 0) {
@@ -93,7 +94,7 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID extends Serializable
 		assertScanEnabled(enableScanPermissions.isFindAllPaginatedScanEnabled(), "findAll(Pageable pageable)");
 		assertScanCountEnabled(enableScanPermissions.isFindAllUnpaginatedScanCountEnabled(), "findAll(Pageable pageable)");
 
-		int totalCount = dynamoDBMapper.count(domainType, scanExpression);
+		int totalCount = dynamoDBOperations.count(domainType, scanExpression);
 		
 		return new PageImpl<T>(results, pageable, totalCount);
 

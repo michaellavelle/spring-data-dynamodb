@@ -22,13 +22,13 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBTemplate;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBRepositoryFactory;
 import org.springframework.data.repository.cdi.CdiRepositoryBean;
 import org.springframework.util.Assert;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 
 /**
@@ -43,6 +43,8 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 	private final Bean<AmazonDynamoDB> amazonDynamoDBBean;
 
 	private final Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean;
+		
+	private final Bean<DynamoDBOperations> dynamoDBOperationsBean;
 
 	/**
 	 * Constructs a {@link DynamoDBRepositoryBean}.
@@ -57,13 +59,22 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 	 *            must not be {@literal null}.
 	 */
 	DynamoDBRepositoryBean(BeanManager beanManager, Bean<AmazonDynamoDB> amazonDynamoDBBean,
-			Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean, Set<Annotation> qualifiers, Class<T> repositoryType) {
+			Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean,Bean<DynamoDBOperations> dynamoDBOperationsBean, Set<Annotation> qualifiers, Class<T> repositoryType) {
 
 		super(qualifiers, repositoryType, beanManager);
+		if (dynamoDBOperationsBean == null)
+		{
+			Assert.notNull(amazonDynamoDBBean);
+		}
+		else
+		{
+			Assert.isNull(amazonDynamoDBBean,"Cannot specify both amazonDynamoDB bean and dynamoDBOperationsBean in repository configuration");
+			Assert.isNull(dynamoDBMapperConfigBean,"Cannot specify both dynamoDBMapperConfigBean bean and dynamoDBOperationsBean in repository configuration");
 
-		Assert.notNull(amazonDynamoDBBean);
+		}
 		this.amazonDynamoDBBean = amazonDynamoDBBean;
 		this.dynamoDBMapperConfigBean = dynamoDBMapperConfigBean;
+		this.dynamoDBOperationsBean = dynamoDBOperationsBean;
 	}
 
 	/*
@@ -81,13 +92,17 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 		// Get an instance from the associated optional AmazonDynamoDB bean.
 		DynamoDBMapperConfig dynamoDBMapperConfig = dynamoDBMapperConfigBean == null ? null : getDependencyInstance(
 				dynamoDBMapperConfigBean, DynamoDBMapperConfig.class);
+		
+		DynamoDBOperations dynamoDBOperations = dynamoDBOperationsBean == null ? null
+				:  getDependencyInstance(
+						dynamoDBOperationsBean, DynamoDBOperations.class);
 
-		// Create the DynamoDB repository instance and return it.
-		DynamoDBMapper dynamoDBMapper = dynamoDBMapperConfig == null ? new DynamoDBMapper(amazonDynamoDB) : new DynamoDBMapper(
-				amazonDynamoDB, dynamoDBMapperConfig);
-
-		DynamoDBRepositoryFactory factory = new DynamoDBRepositoryFactory(dynamoDBMapper, new QueryRequestMapper(amazonDynamoDB,
-				dynamoDBMapperConfig, dynamoDBMapper));
+		if (dynamoDBOperations == null)
+		{
+			dynamoDBOperations = new DynamoDBTemplate(amazonDynamoDB,dynamoDBMapperConfig);
+		}
+		
+		DynamoDBRepositoryFactory factory = new DynamoDBRepositoryFactory(dynamoDBOperations);
 		return factory.getRepository(repositoryType);
 	}
 }

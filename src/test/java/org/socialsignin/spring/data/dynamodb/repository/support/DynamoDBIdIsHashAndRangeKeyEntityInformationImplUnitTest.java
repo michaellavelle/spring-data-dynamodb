@@ -1,8 +1,5 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +11,7 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unused")

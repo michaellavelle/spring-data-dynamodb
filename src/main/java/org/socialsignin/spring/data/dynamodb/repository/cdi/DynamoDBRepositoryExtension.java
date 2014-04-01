@@ -32,6 +32,7 @@ import javax.enterprise.inject.spi.ProcessBean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.springframework.data.repository.cdi.CdiRepositoryExtensionSupport;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -50,6 +51,9 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 
 	private final Map<Set<Annotation>, Bean<AmazonDynamoDB>> amazonDynamoDBs = new HashMap<Set<Annotation>, Bean<AmazonDynamoDB>>();
 
+	private final Map<Set<Annotation>, Bean<DynamoDBOperations>> dynamoDBOperationss = new HashMap<Set<Annotation>, Bean<DynamoDBOperations>>();
+
+	
 	private final Map<Set<Annotation>, Bean<DynamoDBMapperConfig>> dbMapperConfigs = new HashMap<Set<Annotation>, Bean<DynamoDBMapperConfig>>();
 
 	public DynamoDBRepositoryExtension() {
@@ -133,14 +137,17 @@ public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 		// Determine the dynamo db mapper configbean which matches the
 		// qualifiers of the repository.
 		Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean = dbMapperConfigs.get(qualifiers);
-
+		
 		if (amazonDynamoDBBean == null) {
 			throw new UnsatisfiedResolutionException(String.format("Unable to resolve a bean for '%s' with qualifiers %s.",
 					AmazonDynamoDBClient.class.getName(), qualifiers));
 		}
-
+		
+		Bean<DynamoDBOperations> dynamoDBOperationsBean = dynamoDBOperationss.get(qualifiers);
+	
+		
 		// Construct and return the repository bean.
-		return new DynamoDBRepositoryBean<T>(beanManager, amazonDynamoDBBean, dynamoDBMapperConfigBean, qualifiers,
+		return new DynamoDBRepositoryBean<T>(beanManager, amazonDynamoDBBean, dynamoDBMapperConfigBean,dynamoDBOperationsBean,qualifiers,
 				repositoryType);
 	}
 }

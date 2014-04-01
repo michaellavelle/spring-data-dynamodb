@@ -17,9 +17,9 @@ package org.socialsignin.spring.data.dynamodb.query;
 
 import java.util.List;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBPersistentProperty;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 
 /**
@@ -31,15 +31,15 @@ public class MultipleEntityQueryExpressionQuery<T> extends AbstractMultipleEntit
 
 	private DynamoDBQueryExpression<T> queryExpression;
 
-	public MultipleEntityQueryExpressionQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz,
+	public MultipleEntityQueryExpressionQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz,
 			DynamoDBQueryExpression<T> queryExpression) {
-		super(dynamoDBMapper, clazz);
+		super(dynamoDBOperations, clazz);
 		this.queryExpression = queryExpression;
 	}
 
 	@Override
 	public List<T> getResultList() {
-		return dynamoDBMapper.query(clazz, queryExpression);
+		return dynamoDBOperations.query(clazz, queryExpression);
 	}
 
 }

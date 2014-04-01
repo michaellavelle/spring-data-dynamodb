@@ -17,23 +17,25 @@ package org.socialsignin.spring.data.dynamodb.query;
 
 import java.util.List;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 
 public class MultipleEntityQueryRequestQuery<T> extends AbstractMultipleEntityQuery<T> {
 
-	private QueryRequestMapper queryRequestMapper;
+	private DynamoDBOperations dynamoDBOperations;
 	private QueryRequest queryRequest;
 	
-	public MultipleEntityQueryRequestQuery(QueryRequestMapper queryRequestMapper,Class<T> clazz,QueryRequest queryRequest) {
+	public MultipleEntityQueryRequestQuery(DynamoDBOperations dynamoDBOperations,Class<T> clazz,QueryRequest queryRequest) {
 		super(null, clazz);
 		this.queryRequest = queryRequest;
-		this.queryRequestMapper = queryRequestMapper;
+		this.dynamoDBOperations = dynamoDBOperations;
 	}
 	
 	@Override
 	public List<T> getResultList() {
 
-		return queryRequestMapper.query(clazz, queryRequest);		
+		return dynamoDBOperations.query(clazz, queryRequest);		
 	}
 
 }

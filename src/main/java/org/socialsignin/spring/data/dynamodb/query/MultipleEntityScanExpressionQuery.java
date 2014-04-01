@@ -17,25 +17,24 @@ package org.socialsignin.spring.data.dynamodb.query;
 
 import java.util.List;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.springframework.util.Assert;
 
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 
 public class MultipleEntityScanExpressionQuery<T> extends AbstractMultipleEntityQuery<T> {
 
 	private DynamoDBScanExpression scanExpression;
 	
-	public MultipleEntityScanExpressionQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz,DynamoDBScanExpression scanExpression) {
-		super(dynamoDBMapper, clazz);
+	public MultipleEntityScanExpressionQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz,DynamoDBScanExpression scanExpression) {
+		super(dynamoDBOperations, clazz);
 		this.scanExpression = scanExpression;
 	}
 
 	@Override
 	public List<T> getResultList() {
 		assertScanEnabled(isScanEnabled());
-		return dynamoDBMapper.scan(clazz,scanExpression);
+		return dynamoDBOperations.scan(clazz,scanExpression);
 	}
 	
 	public void assertScanEnabled(boolean scanEnabled)

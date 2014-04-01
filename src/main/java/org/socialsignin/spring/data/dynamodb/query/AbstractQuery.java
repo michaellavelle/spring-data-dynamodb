@@ -15,9 +15,8 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBPersistentProperty;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
 /**
  * {@link DynamoDBPersistentProperty} implementation
@@ -26,7 +25,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
  */
 public abstract class AbstractQuery<T> implements Query<T> {
 
-	protected DynamoDBMapper dynamoDBMapper;
+	//protected DynamoDBMapper dynamoDBMapper;
+	protected DynamoDBOperations dynamoDBOperations;
 	protected Class<T> clazz;
 	protected boolean scanEnabled = false;
 	protected boolean scanCountEnabled = false;
@@ -49,8 +49,9 @@ public abstract class AbstractQuery<T> implements Query<T> {
 		return scanEnabled;
 	}
 
-	public AbstractQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz) {
-		this.dynamoDBMapper = dynamoDBMapper;
+	public AbstractQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
+		//this.dynamoDBMapper = dynamoDBMapper;
+		this.dynamoDBOperations = dynamoDBOperations;
 		this.clazz = clazz;
 	}
 

@@ -15,7 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 /**
  * @author Michael Lavelle
@@ -24,14 +24,14 @@ public class SingleEntityLoadByHashKeyQuery<T> extends AbstractSingleEntityQuery
 
 	private Object hashKey;
 
-	public SingleEntityLoadByHashKeyQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz, Object hashKey) {
-		super(dynamoDBMapper, clazz);
+	public SingleEntityLoadByHashKeyQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz, Object hashKey) {
+		super(dynamoDBOperations, clazz);
 		this.hashKey = hashKey;
 	}
 
 	@Override
 	public T getSingleResult() {
-		return dynamoDBMapper.load(clazz, hashKey);
+		return dynamoDBOperations.load(clazz, hashKey);
 	}
 
 }

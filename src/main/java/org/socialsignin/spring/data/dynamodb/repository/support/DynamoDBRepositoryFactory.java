@@ -19,7 +19,7 @@ import static org.springframework.data.querydsl.QueryDslUtils.QUERY_DSL_PRESENT;
 
 import java.io.Serializable;
 
-import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
 import org.socialsignin.spring.data.dynamodb.repository.query.DynamoDBQueryLookupStrategy;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
@@ -28,19 +28,17 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
 /**
  * @author Michael Lavelle
  */
 public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 
-	private DynamoDBMapper dynamoDBMapper;
-	private QueryRequestMapper queryRequestMapper;
+	private DynamoDBOperations dynamoDBOperations;
 
-	public DynamoDBRepositoryFactory(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
-		this.dynamoDBMapper = dynamoDBMapper;
-		this.queryRequestMapper = queryRequestMapper;
+	public DynamoDBRepositoryFactory(DynamoDBOperations dynamoDBOperations) {
+		this.dynamoDBOperations = dynamoDBOperations;
+		
 	}
 
 	@Override
@@ -52,7 +50,7 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 
 	@Override
 	protected QueryLookupStrategy getQueryLookupStrategy(Key key) {
-		return DynamoDBQueryLookupStrategy.create(dynamoDBMapper, key, queryRequestMapper);
+		return DynamoDBQueryLookupStrategy.create(dynamoDBOperations, key);
 	}
 
 	/**
@@ -67,7 +65,7 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T, ID extends Serializable> DynamoDBCrudRepository<?, ?> getDynamoDBRepository(RepositoryMetadata metadata) {
-		return new SimpleDynamoDBPagingAndSortingRepository(getEntityInformation(metadata.getDomainType()), dynamoDBMapper,
+		return new SimpleDynamoDBPagingAndSortingRepository(getEntityInformation(metadata.getDomainType()), dynamoDBOperations,
 				getEnableScanPermissions(metadata));
 	}
 

@@ -123,7 +123,7 @@ public @interface EnableDynamoDBRepositories {
 	 * 
 	 * @return
 	 */
-	String amazonDynamoDBRef() default "amazonDynamoDB";
+	String amazonDynamoDBRef() default "";
 
 	/**
 	 * Returns the {@link DynamoDBMapperConfig } reference to be used for to
@@ -132,5 +132,14 @@ public @interface EnableDynamoDBRepositories {
 	 * @return
 	 */
 	String dynamoDBMapperConfigRef() default "";
+	
+	/**
+	 * Returns the {@link javax.validation.Validator } reference to be used for to
+	 * validate DynamoDB entities
+	 * 
+	 * @return
+	 */
+	String dynamoDBOperationsRef() default "";
+
 
 }

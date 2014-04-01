@@ -17,10 +17,9 @@ package org.socialsignin.spring.data.dynamodb.query;
 
 import java.util.List;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
 /**
  * 
@@ -28,8 +27,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
  */
 public abstract class AbstractMultipleEntityQuery<T> extends AbstractQuery<T> implements Query<T> {
 
-	public AbstractMultipleEntityQuery(DynamoDBMapper dynamoDBMapper, Class<T> clazz) {
-		super(dynamoDBMapper, clazz);
+	public AbstractMultipleEntityQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
+		super(dynamoDBOperations, clazz);
 	}
 
 	@Override

@@ -18,7 +18,7 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryLookupStrategy;
@@ -47,13 +47,11 @@ public class DynamoDBQueryLookupStrategy {
 	 */
 	private abstract static class AbstractQueryLookupStrategy implements QueryLookupStrategy {
 
-		protected DynamoDBMapper dynamoDBMapper;
-		protected QueryRequestMapper queryRequestMapper;
+		protected DynamoDBOperations dynamoDBOperations;
 
-		public AbstractQueryLookupStrategy(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+		public AbstractQueryLookupStrategy(DynamoDBOperations dynamoDBOperations) {
 
-			this.dynamoDBMapper = dynamoDBMapper;
-			this.queryRequestMapper = queryRequestMapper;
+			this.dynamoDBOperations = dynamoDBOperations;
 		}
 
 		/*
@@ -80,17 +78,16 @@ public class DynamoDBQueryLookupStrategy {
 	 */
 	private static class CreateQueryLookupStrategy extends AbstractQueryLookupStrategy {
 
-		public CreateQueryLookupStrategy(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+		public CreateQueryLookupStrategy(DynamoDBOperations dynamoDBOperations) {
 
-			super(dynamoDBMapper, queryRequestMapper);
+			super(dynamoDBOperations);
 		}
 
 		@Override
 		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
 				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			try {
-				return new PartTreeDynamoDBQuery<T, ID>(dynamoDBMapper, new DynamoDBQueryMethod<T, ID>(method, metadata),
-						queryRequestMapper);
+				return new PartTreeDynamoDBQuery<T, ID>(dynamoDBOperations, new DynamoDBQueryMethod<T, ID>(method, metadata));
 			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(String.format("Could not create query metamodel for method %s!",
 						method.toString()), e);
@@ -107,9 +104,9 @@ public class DynamoDBQueryLookupStrategy {
 	 */
 	private static class DeclaredQueryLookupStrategy extends AbstractQueryLookupStrategy {
 
-		public DeclaredQueryLookupStrategy(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+		public DeclaredQueryLookupStrategy(DynamoDBOperations dynamoDBOperations) {
 
-			super(dynamoDBMapper, queryRequestMapper);
+			super(dynamoDBOperations);
 		}
 
 		@Override
@@ -132,11 +129,11 @@ public class DynamoDBQueryLookupStrategy {
 		private final DeclaredQueryLookupStrategy strategy;
 		private final CreateQueryLookupStrategy createStrategy;
 
-		public CreateIfNotFoundQueryLookupStrategy(DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
+		public CreateIfNotFoundQueryLookupStrategy(DynamoDBOperations dynamoDBOperations) {
 
-			super(dynamoDBMapper, queryRequestMapper);
-			this.strategy = new DeclaredQueryLookupStrategy(dynamoDBMapper, queryRequestMapper);
-			this.createStrategy = new CreateQueryLookupStrategy(dynamoDBMapper, queryRequestMapper);
+			super(dynamoDBOperations);
+			this.strategy = new DeclaredQueryLookupStrategy(dynamoDBOperations);
+			this.createStrategy = new CreateQueryLookupStrategy(dynamoDBOperations);
 		}
 
 		@Override
@@ -161,19 +158,19 @@ public class DynamoDBQueryLookupStrategy {
 	 * @param key
 	 * @return
 	 */
-	public static QueryLookupStrategy create(DynamoDBMapper dynamoDBMapper, Key key, QueryRequestMapper queryRequestMapper) {
+	public static QueryLookupStrategy create(DynamoDBOperations dynamoDBOperations, Key key) {
 
 		if (key == null) {
-			return new CreateQueryLookupStrategy(dynamoDBMapper, queryRequestMapper);
+			return new CreateQueryLookupStrategy(dynamoDBOperations);
 		}
 
 		switch (key) {
 		case CREATE:
-			return new CreateQueryLookupStrategy(dynamoDBMapper, queryRequestMapper);
+			return new CreateQueryLookupStrategy(dynamoDBOperations);
 		case USE_DECLARED_QUERY:
 			throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
 		case CREATE_IF_NOT_FOUND:
-			return new CreateIfNotFoundQueryLookupStrategy(dynamoDBMapper, queryRequestMapper);
+			return new CreateIfNotFoundQueryLookupStrategy(dynamoDBOperations);
 		default:
 			throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
 		}

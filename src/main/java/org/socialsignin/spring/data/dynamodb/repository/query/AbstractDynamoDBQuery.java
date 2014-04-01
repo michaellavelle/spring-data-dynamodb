@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -31,18 +32,16 @@ import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.RepositoryQuery;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-
 /**
  * @author Michael Lavelle
  */
 public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implements RepositoryQuery {
 
-	protected final DynamoDBMapper dynamoDBMapper;
+	protected final DynamoDBOperations dynamoDBOperations;
 	private final DynamoDBQueryMethod<T, ID> method;
 
-	public AbstractDynamoDBQuery(DynamoDBMapper dynamoDBMapper, DynamoDBQueryMethod<T, ID> method) {
-		this.dynamoDBMapper = dynamoDBMapper;
+	public AbstractDynamoDBQuery(DynamoDBOperations dynamoDBOperations, DynamoDBQueryMethod<T, ID> method) {
+		this.dynamoDBOperations = dynamoDBOperations;
 		this.method = method;
 	}
 

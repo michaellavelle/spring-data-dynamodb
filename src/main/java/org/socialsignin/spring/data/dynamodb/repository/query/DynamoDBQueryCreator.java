@@ -2,29 +2,26 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
-import org.socialsignin.spring.data.dynamodb.query.QueryRequestMapper;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.PartTree;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-
 public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractDynamoDBQueryCreator<T, ID,T> {
 
 	public DynamoDBQueryCreator(PartTree tree,
 			DynamoDBEntityInformation<T, ID> entityMetadata,
-			DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
-		super(tree, entityMetadata, dynamoDBMapper, queryRequestMapper);
+			DynamoDBOperations dynamoDBOperations) {
+		super(tree, entityMetadata, dynamoDBOperations);
 	}
 
 	public DynamoDBQueryCreator(PartTree tree,
 			ParameterAccessor parameterAccessor,
 			DynamoDBEntityInformation<T, ID> entityMetadata,
-			DynamoDBMapper dynamoDBMapper, QueryRequestMapper queryRequestMapper) {
-		super(tree, parameterAccessor, entityMetadata, dynamoDBMapper,
-				queryRequestMapper);
+			DynamoDBOperations dynamoDBOperations) {
+		super(tree, parameterAccessor, entityMetadata, dynamoDBOperations);
 	}
 	
 	@Override
@@ -33,7 +30,7 @@ public class DynamoDBQueryCreator<T,ID extends Serializable> extends AbstractDyn
 			criteria.withSort(sort);
 		}
 
-		return criteria.buildQuery(dynamoDBMapper, queryRequestMapper);
+		return criteria.buildQuery(dynamoDBOperations);
 
 	}
 

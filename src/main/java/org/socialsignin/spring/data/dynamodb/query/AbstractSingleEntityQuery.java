@@ -18,12 +18,12 @@ package org.socialsignin.spring.data.dynamodb.query;
 import java.util.Arrays;
 import java.util.List;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 public abstract class AbstractSingleEntityQuery<T> extends AbstractQuery<T> implements Query<T> {
 	
-	public AbstractSingleEntityQuery(DynamoDBMapper dynamoDBMapper,Class<T> clazz) {
-		super(dynamoDBMapper,clazz);
+	public AbstractSingleEntityQuery(DynamoDBOperations dynamoDBOperations,Class<T> clazz) {
+		super(dynamoDBOperations,clazz);
 	}
 
 	@SuppressWarnings("unchecked")

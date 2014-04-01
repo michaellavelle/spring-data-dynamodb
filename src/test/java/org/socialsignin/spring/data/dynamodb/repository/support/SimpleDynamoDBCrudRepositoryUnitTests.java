@@ -24,12 +24,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
 /**
  * Unit tests for {@link DynamoDBSimpleIdRepository}.
@@ -44,7 +44,7 @@ public class SimpleDynamoDBCrudRepositoryUnitTests {
 	SimpleDynamoDBCrudRepository<Playlist, PlaylistId> repoForEntityWithHashAndRangeKey;
 
 	@Mock
-	DynamoDBMapper dynamoDBMapper;
+	DynamoDBOperations dynamoDBOperations;
 
 	private User testUser;
 
@@ -86,12 +86,12 @@ public class SimpleDynamoDBCrudRepositoryUnitTests {
 		when(entityWithCompositeIdInformation.isRangeKeyAware()).thenReturn(true);
 
 		repoForEntityWithOnlyHashKey = new SimpleDynamoDBCrudRepository<User, Long>(entityWithSimpleIdInformation,
-				dynamoDBMapper,mockEnableScanPermissions);
+				dynamoDBOperations,mockEnableScanPermissions);
 		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBCrudRepository<Playlist, PlaylistId>(
-				entityWithCompositeIdInformation, dynamoDBMapper,mockEnableScanPermissions);
+				entityWithCompositeIdInformation, dynamoDBOperations,mockEnableScanPermissions);
 
-		when(dynamoDBMapper.load(User.class, 1l)).thenReturn(testUser);
-		when(dynamoDBMapper.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);
+		when(dynamoDBOperations.load(User.class, 1l)).thenReturn(testUser);
+		when(dynamoDBOperations.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);
 
 	}
 
@@ -107,7 +107,7 @@ public class SimpleDynamoDBCrudRepositoryUnitTests {
 	@Test
 	public void findOneEntityWithOnlyHashKey() {
 		User user = repoForEntityWithOnlyHashKey.findOne(1l);
-		Mockito.verify(dynamoDBMapper).load(User.class,1l);
+		Mockito.verify(dynamoDBOperations).load(User.class,1l);
 		assertEquals(testUser, user);
 	}
 	
