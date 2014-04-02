@@ -18,5 +18,6 @@ Import-Template:
  org.springframework.data.*;version="${springdata.commons:[=.=.=.=,+1.0.0)}",
  org.w3c.*;version="0.0.0",
  org.xml.sax.*;version="0.0.0",
+ javax.validation.*;version="0.0.0",
  com.amazonaws.*;version="0.0.0"
  

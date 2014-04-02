@@ -3,6 +3,19 @@ package org.socialsignin.spring.data.dynamodb.core;
 import java.util.List;
 import java.util.Map;
 
+import org.socialsignin.spring.data.dynamodb.mapping.event.AfterDeleteEvent;
+import org.socialsignin.spring.data.dynamodb.mapping.event.AfterLoadEvent;
+import org.socialsignin.spring.data.dynamodb.mapping.event.AfterQueryEvent;
+import org.socialsignin.spring.data.dynamodb.mapping.event.AfterSaveEvent;
+import org.socialsignin.spring.data.dynamodb.mapping.event.AfterScanEvent;
+import org.socialsignin.spring.data.dynamodb.mapping.event.BeforeDeleteEvent;
+import org.socialsignin.spring.data.dynamodb.mapping.event.BeforeSaveEvent;
+import org.socialsignin.spring.data.dynamodb.mapping.event.DynamoDBMappingEvent;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
+
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
@@ -15,11 +28,12 @@ import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.amazonaws.services.dynamodbv2.model.Select;
 
-public class DynamoDBTemplate implements DynamoDBOperations {
+public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAware {
 
 	private DynamoDBMapper dynamoDBMapper;
 	private AmazonDynamoDB amazonDynamoDB;
 	private DynamoDBMapperConfig dynamoDBMapperConfig;
+	private ApplicationEventPublisher eventPublisher;
 	
 	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB,DynamoDBMapperConfig dynamoDBMapperConfig)
 	{
@@ -31,9 +45,14 @@ public class DynamoDBTemplate implements DynamoDBOperations {
 	{
 		this.amazonDynamoDB = amazonDynamoDB;
 		setDynamoDBMapperConfig(null);
-
-		
 	}
+	
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.eventPublisher = applicationContext;
+	}
+
 	
 	public void setDynamoDBMapperConfig(DynamoDBMapperConfig dynamoDBMapperConfig)
 	{
@@ -55,7 +74,9 @@ public class DynamoDBTemplate implements DynamoDBOperations {
 	@Override
 	public <T> PaginatedQueryList<T> query(Class<T> domainClass,
 			DynamoDBQueryExpression<T> queryExpression) {
-		return dynamoDBMapper.query(domainClass, queryExpression);
+		PaginatedQueryList<T> results = dynamoDBMapper.query(domainClass, queryExpression);
+		maybeEmitEvent(new AfterQueryEvent<T>(results));
+		return results;
 	}
 
 	@Override
@@ -66,43 +87,79 @@ public class DynamoDBTemplate implements DynamoDBOperations {
 
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey, Object rangeKey) {
-		return dynamoDBMapper.load(domainClass, hashKey,rangeKey);
+		T entity =  dynamoDBMapper.load(domainClass, hashKey,rangeKey);
+		maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+		return entity;
 	}
 
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey) {
-		return dynamoDBMapper.load(domainClass, hashKey);
+		T entity =  dynamoDBMapper.load(domainClass, hashKey);
+		maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+		return entity;
 	}
 
 	@Override
 	public <T> PaginatedScanList<T> scan(Class<T> domainClass,
 			DynamoDBScanExpression scanExpression) {
-		return dynamoDBMapper.scan(domainClass, scanExpression);
+		PaginatedScanList<T> results = dynamoDBMapper.scan(domainClass, scanExpression);
+		maybeEmitEvent(new AfterScanEvent<T>(results));
+		return results;
 	}
 
 	@Override
 	public Map<String, List<Object>> batchLoad(Map<Class<?>, List<KeyPair>> itemsToGet) {
-		return dynamoDBMapper.batchLoad(itemsToGet);
+		Map<String,List<Object>> results = dynamoDBMapper.batchLoad(itemsToGet);
+		for (List<Object> resultList : results.values())
+		{
+			for (Object entity : resultList)
+			{
+				maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+			}
+		}
+		return results;
 	}
 
 	@Override
 	public void save(Object entity) {
+		maybeEmitEvent(new BeforeSaveEvent<Object>(entity));
 		dynamoDBMapper.save(entity);
+		maybeEmitEvent(new AfterSaveEvent<Object>(entity));
+
 	}
 
 	@Override
 	public void batchSave(Iterable<?> entities) {
+		for (Object entity : entities)
+		{
+			maybeEmitEvent(new BeforeSaveEvent<Object>(entity));
+		}
 		dynamoDBMapper.batchSave(entities);
+		for (Object entity : entities)
+		{
+			maybeEmitEvent(new AfterSaveEvent<Object>(entity));
+		}
 	}
 
 	@Override
 	public void delete(Object entity) {
+		maybeEmitEvent(new BeforeDeleteEvent<Object>(entity));
 		dynamoDBMapper.delete(entity);
+		maybeEmitEvent(new AfterDeleteEvent<Object>(entity));
+
 	}
 
 	@Override
 	public void batchDelete(Iterable<?> entities) {
+		for (Object entity : entities)
+		{
+			maybeEmitEvent(new BeforeDeleteEvent<Object>(entity));
+		}
 		dynamoDBMapper.batchDelete(entities);
+		for (Object entity : entities)
+		{
+			maybeEmitEvent(new AfterDeleteEvent<Object>(entity));
+		}
 		
 	}
 
@@ -142,5 +199,12 @@ public class DynamoDBTemplate implements DynamoDBOperations {
 
 		return tableName;
 	}
+	
+	protected <T> void maybeEmitEvent(DynamoDBMappingEvent<T> event) {
+		if (null != eventPublisher) {
+			eventPublisher.publishEvent(event);
+		}
+}
 
+	
 }

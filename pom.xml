@@ -78,6 +78,20 @@
 			<artifactId>spring-data-commons</artifactId>
 			<version>${springdata.commons}</version>
 		</dependency>
+		
+		<!-- JSR 303 Validation -->
+			<dependency>
+  				<groupId>javax.validation</groupId>
+ 				 <artifactId>validation-api</artifactId>
+  				<version>1.0.0.GA</version>
+  				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+  				<groupId>org.hibernate</groupId>
+  				<artifactId>hibernate-validator</artifactId>
+  				<version>4.2.0.Final</version>
+			</dependency>
 
 		<!-- APACHE -->
 		<dependency>
