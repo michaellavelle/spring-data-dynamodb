@@ -30,7 +30,7 @@ import com.amazonaws.services.dynamodbv2.model.Select;
 
 public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAware {
 
-	private DynamoDBMapper dynamoDBMapper;
+	protected DynamoDBMapper dynamoDBMapper;
 	private AmazonDynamoDB amazonDynamoDB;
 	private DynamoDBMapperConfig dynamoDBMapperConfig;
 	private ApplicationEventPublisher eventPublisher;
@@ -88,14 +88,20 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey, Object rangeKey) {
 		T entity =  dynamoDBMapper.load(domainClass, hashKey,rangeKey);
-		maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+		if (entity != null)
+		{
+			maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+		}
 		return entity;
 	}
 
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey) {
 		T entity =  dynamoDBMapper.load(domainClass, hashKey);
-		maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+		if (entity != null)
+		{
+			maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+		}
 		return entity;
 	}
 
