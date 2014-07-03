@@ -26,10 +26,10 @@ public interface DynamoDBOperations {
 	public Map<String, List<Object>> batchLoad(Map<Class<?>, List<KeyPair>> itemsToGet);
 
 	public void save(Object entity);
-	public void batchSave(Iterable<?> entities);
+	public void batchSave(List<?> entities);
 
 	public void delete(Object entity);
-	public void batchDelete(Iterable<?> entities);
+	public void batchDelete(List<?> entities);
 
 	public String getOverriddenTableName(String tableName);
 
