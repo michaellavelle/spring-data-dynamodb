@@ -135,7 +135,7 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	}
 
 	@Override
-	public void batchSave(Iterable<?> entities) {
+	public void batchSave(List<?> entities) {
 		for (Object entity : entities)
 		{
 			maybeEmitEvent(new BeforeSaveEvent<Object>(entity));
@@ -156,7 +156,7 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	}
 
 	@Override
-	public void batchDelete(Iterable<?> entities) {
+	public void batchDelete(List<?> entities) {
 		for (Object entity : entities)
 		{
 			maybeEmitEvent(new BeforeDeleteEvent<Object>(entity));
