@@ -36,6 +36,7 @@ public class DynamoDBTemplateUnitTests {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testBatchDelete_CallsCorrectDynamoDBMapperMethod()
 	{
@@ -44,12 +45,27 @@ public class DynamoDBTemplateUnitTests {
 			Mockito.verify(dynamoDBMapper).batchDelete(Mockito.any(List.class));
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testBatchSave_CallsCorrectDynamoDBMapperMethod()
 	{
 			List<User> users = new ArrayList<User>();
 			dynamoDBTemplate.batchSave(users);
 			Mockito.verify(dynamoDBMapper).batchSave(Mockito.any(List.class));
+	}
+	
+	@Test
+	public void testGetOverriddenTableName_WhenConfigIsNull()
+	{
+		String overriddenTableName = dynamoDBTemplate.getOverriddenTableName("someTableName");
+		Assert.assertEquals("someTableName", overriddenTableName);
+	}
+	
+	@Test
+	public void testGetOverriddenTableName()
+	{
+		String overriddenTableName = dynamoDBTemplate.getOverriddenTableName("someTableName");
+		Assert.assertEquals("someTableName", overriddenTableName);
 	}
 	
 	@Test
