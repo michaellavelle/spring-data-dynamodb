@@ -39,7 +39,7 @@ public class DynamoDBTemplateUnitTests {
 	@Test
 	public void testBatchDelete_CallsCorrectDynamoDBMapperMethod()
 	{
-			Iterable<User> users = new ArrayList<User>();
+			List<User> users = new ArrayList<User>();
 			dynamoDBTemplate.batchDelete(users);
 			Mockito.verify(dynamoDBMapper).batchDelete(Mockito.any(List.class));
 	}
@@ -47,7 +47,7 @@ public class DynamoDBTemplateUnitTests {
 	@Test
 	public void testBatchSave_CallsCorrectDynamoDBMapperMethod()
 	{
-			Iterable<User> users = new ArrayList<User>();
+			List<User> users = new ArrayList<User>();
 			dynamoDBTemplate.batchSave(users);
 			Mockito.verify(dynamoDBMapper).batchSave(Mockito.any(List.class));
 	}
