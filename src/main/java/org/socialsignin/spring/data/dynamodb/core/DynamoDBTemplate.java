@@ -61,7 +61,7 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 				amazonDynamoDB, dynamoDBMapperConfig);
 		if (dynamoDBMapperConfig == null)
 		{
-			dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
+			this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
 		}
 	}
 	
@@ -195,7 +195,7 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 
 	@Override
 	public String getOverriddenTableName(String tableName) {
-		if (dynamoDBMapperConfig != null && dynamoDBMapperConfig.getTableNameOverride() != null) {
+		if (dynamoDBMapperConfig.getTableNameOverride() != null) {
 			if (dynamoDBMapperConfig.getTableNameOverride().getTableName() != null) {
 				tableName = dynamoDBMapperConfig.getTableNameOverride().getTableName();
 			} else {
