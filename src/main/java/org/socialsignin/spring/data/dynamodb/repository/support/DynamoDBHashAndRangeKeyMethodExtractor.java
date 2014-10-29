@@ -15,6 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.springframework.data.repository.core.EntityMetadata;
@@ -27,5 +28,9 @@ public interface DynamoDBHashAndRangeKeyMethodExtractor<ID> extends EntityMetada
 	Method getHashKeyMethod();
 
 	Method getRangeKeyMethod();
+	
+	Field getHashKeyField();
+
+	Field getRangeKeyField();
 
 }

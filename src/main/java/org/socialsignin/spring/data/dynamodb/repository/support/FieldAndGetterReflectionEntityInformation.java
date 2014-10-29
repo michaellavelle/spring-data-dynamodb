@@ -32,6 +32,7 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.springframework.data.annotation.Id;
@@ -40,6 +41,7 @@ import org.springframework.data.repository.core.support.AbstractEntityInformatio
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
@@ -48,11 +50,12 @@ import org.springframework.util.ReflectionUtils.MethodCallback;
  * 
  * @author Michael Lavelle
  */
-public class GetterReflectionEntityInformation<T, ID extends Serializable> extends AbstractEntityInformation<T, ID> {
+public class FieldAndGetterReflectionEntityInformation<T, ID extends Serializable> extends AbstractEntityInformation<T, ID> {
 
 	private static final Class<Id> DEFAULT_ID_ANNOTATION = Id.class;
 
 	protected Method method;
+	private Field field;
 
 	/**
 	 * Creates a new {@link ReflectionEntityInformation} inspecting the given
@@ -61,12 +64,12 @@ public class GetterReflectionEntityInformation<T, ID extends Serializable> exten
 	 * @param domainClass
 	 *            must not be {@literal null}.
 	 */
-	public GetterReflectionEntityInformation(Class<T> domainClass) {
+	public FieldAndGetterReflectionEntityInformation(Class<T> domainClass) {
 		this(domainClass, DEFAULT_ID_ANNOTATION);
 	}
 
 	/**
-	 * Creates a new {@link GetterReflectionEntityInformation} inspecting the
+	 * Creates a new {@link FieldAndGetterReflectionEntityInformation} inspecting the
 	 * given domain class for a getter carrying the given annotation.
 	 * 
 	 * @param domainClass
@@ -74,7 +77,7 @@ public class GetterReflectionEntityInformation<T, ID extends Serializable> exten
 	 * @param annotation
 	 *            must not be {@literal null}.
 	 */
-	public GetterReflectionEntityInformation(Class<T> domainClass, final Class<? extends Annotation> annotation) {
+	public FieldAndGetterReflectionEntityInformation(Class<T> domainClass, final Class<? extends Annotation> annotation) {
 
 		super(domainClass);
 		Assert.notNull(annotation);
@@ -82,14 +85,31 @@ public class GetterReflectionEntityInformation<T, ID extends Serializable> exten
 		ReflectionUtils.doWithMethods(domainClass, new MethodCallback() {
 			public void doWith(Method method) {
 				if (method.getAnnotation(annotation) != null) {
-					GetterReflectionEntityInformation.this.method = method;
+					FieldAndGetterReflectionEntityInformation.this.method = method;
 					return;
 				}
 			}
 		});
+		
+		if (method == null)
+		{
+			ReflectionUtils.doWithFields(domainClass, new FieldCallback() {
+				public void doWith(Field field) {
+					if (field.getAnnotation(annotation) != null) {
+						FieldAndGetterReflectionEntityInformation.this.field = field;
+						return;
+					}
+				}
+			});
+		}
 
-		Assert.notNull(this.method, String.format("No method annotated with %s found!", annotation.toString()));
-		ReflectionUtils.makeAccessible(method);
+		Assert.isTrue(this.method != null || this.field != null, String.format("No field or method annotated with %s found!", annotation.toString()));
+		Assert.isTrue(this.method == null || this.field == null, String.format("Both field and method annotated with %s found!", annotation.toString()));
+
+		if (method != null)
+		{
+			ReflectionUtils.makeAccessible(method);
+		}
 	}
 
 	/*
@@ -101,7 +121,14 @@ public class GetterReflectionEntityInformation<T, ID extends Serializable> exten
 	 */
 	@SuppressWarnings("unchecked")
 	public ID getId(T entity) {
-		return entity == null ? null : (ID) ReflectionUtils.invokeMethod(method, entity);
+		if (method != null)
+		{
+			return entity == null ? null : (ID) ReflectionUtils.invokeMethod(method, entity);
+		}
+		else
+		{
+			return entity == null ? null : (ID) ReflectionUtils.getField(field, entity);
+		}
 	}
 
 	/*
@@ -112,6 +139,6 @@ public class GetterReflectionEntityInformation<T, ID extends Serializable> exten
 	 */
 	@SuppressWarnings("unchecked")
 	public Class<ID> getIdType() {
-		return (Class<ID>) method.getReturnType();
+		return (Class<ID>) (method != null ? method.getReturnType() : field.getType());
 	}
 }

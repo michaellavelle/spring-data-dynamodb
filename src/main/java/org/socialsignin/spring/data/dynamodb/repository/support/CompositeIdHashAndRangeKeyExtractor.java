@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -33,13 +34,27 @@ public class CompositeIdHashAndRangeKeyExtractor<ID extends Serializable, H> imp
 	@SuppressWarnings("unchecked")
 	@Override
 	public H getHashKey(ID id) {
-
-		return (H) ReflectionUtils.invokeMethod(hashAndRangeKeyMethodExtractor.getHashKeyMethod(), id);
+		Method method = hashAndRangeKeyMethodExtractor.getHashKeyMethod();
+		if (method != null)
+		{
+			return (H) ReflectionUtils.invokeMethod(method, id);
+		}
+		else
+		{
+			return (H) ReflectionUtils.getField(hashAndRangeKeyMethodExtractor.getHashKeyField(), id);
+		}
 	}
 
 	@Override
 	public Object getRangeKey(ID id) {
-		return ReflectionUtils.invokeMethod(hashAndRangeKeyMethodExtractor.getRangeKeyMethod(), id);
-	}
+		Method method = hashAndRangeKeyMethodExtractor.getRangeKeyMethod();
+		if (method != null)
+		{
+			return ReflectionUtils.invokeMethod(method, id);
+		}
+		else
+		{
+			return ReflectionUtils.getField(hashAndRangeKeyMethodExtractor.getRangeKeyField(), id);
+		}	}
 
 }

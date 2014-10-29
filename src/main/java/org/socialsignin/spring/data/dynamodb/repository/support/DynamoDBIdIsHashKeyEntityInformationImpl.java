@@ -40,7 +40,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
  * @author Michael Lavelle
  */
 public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable> extends
-		GetterReflectionEntityInformation<T, ID> implements DynamoDBEntityInformation<T, ID> {
+		FieldAndGetterReflectionEntityInformation<T, ID> implements DynamoDBEntityInformation<T, ID> {
 
 	private DynamoDBHashKeyExtractingEntityMetadata<T> metadata;
 	private HashKeyExtractor<ID, ID> hashKeyExtractor;

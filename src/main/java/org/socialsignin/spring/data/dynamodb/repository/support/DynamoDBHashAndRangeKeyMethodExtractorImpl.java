@@ -15,10 +15,12 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
@@ -33,6 +35,9 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 	private Method hashKeyMethod;
 	private Method rangeKeyMethod;
 
+	private Field hashKeyField;
+	private Field rangeKeyField;
+	
 	/**
 	 * Creates a new {@link DefaultJpaEntityMetadata} for the given domain type.
 	 * 
@@ -53,6 +58,17 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 				}
 			}
 		});
+		ReflectionUtils.doWithFields(idType, new FieldCallback() {
+			public void doWith(Field field) {
+				if (field.getAnnotation(DynamoDBHashKey.class) != null) {
+					Assert.isNull(field, "Multiple fields annotated by @DynamoDBHashKey within type " + idType.getName()
+							+ "!");
+					ReflectionUtils.makeAccessible(field);
+
+					hashKeyField = field;
+				}
+			}
+		});
 		ReflectionUtils.doWithMethods(idType, new MethodCallback() {
 			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBRangeKey.class) != null) {
@@ -63,8 +79,20 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 				}
 			}
 		});
-		Assert.notNull(hashKeyMethod, "No method annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
-		Assert.notNull(rangeKeyMethod, "No method annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
+		ReflectionUtils.doWithFields(idType, new FieldCallback() {
+			public void doWith(Field field) {
+				if (field.getAnnotation(DynamoDBRangeKey.class) != null) {
+					Assert.isNull(rangeKeyMethod,
+							"Multiple methods annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
+					ReflectionUtils.makeAccessible(field);
+					rangeKeyField = field;
+				}
+			}
+		});
+		Assert.isTrue(hashKeyMethod != null || hashKeyField != null, "No method or field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
+		Assert.isTrue(rangeKeyMethod != null || hashKeyField != null, "No method or field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
+		Assert.isTrue(hashKeyMethod == null || hashKeyField == null, "Both method and field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
+		Assert.isTrue(rangeKeyMethod == null || hashKeyField == null, "Both method and field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
 
 	}
 
@@ -82,6 +110,17 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 	@Override
 	public Method getRangeKeyMethod() {
 		return rangeKeyMethod;
+	}
+	
+	@Override
+	public Field getHashKeyField() {
+
+		return hashKeyField;
+	}
+
+	@Override
+	public Field getRangeKeyField() {
+		return rangeKeyField;
 	}
 
 }
