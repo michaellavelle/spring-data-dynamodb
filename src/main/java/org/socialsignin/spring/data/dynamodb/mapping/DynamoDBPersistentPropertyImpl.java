@@ -76,11 +76,14 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 
 		super(field, propertyDescriptor, owner, simpleTypeHolder);
 	}
+	
+	
 
 	@Override
-	public boolean shallBePersisted() {
+	public boolean isWritable() {
 		return !isAnnotationPresent(DynamoDBIgnore.class);
 	}
+
 
 	public boolean isHashKeyProperty() {
 		return isAnnotationPresent(DynamoDBHashKey.class);
