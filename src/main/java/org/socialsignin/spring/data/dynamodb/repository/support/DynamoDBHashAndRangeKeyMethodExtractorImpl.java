@@ -37,10 +37,10 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 
 	private Field hashKeyField;
 	private Field rangeKeyField;
-	
+
 	/**
 	 * Creates a new {@link DefaultJpaEntityMetadata} for the given domain type.
-	 * 
+	 *
 	 * @param domainType
 	 *            must not be {@literal null}.
 	 */
@@ -49,7 +49,8 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 		Assert.notNull(idType, "Id type must not be null!");
 		this.idType = idType;
 		ReflectionUtils.doWithMethods(idType, new MethodCallback() {
-			public void doWith(Method method) {
+			@Override
+            public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
 					Assert.isNull(hashKeyMethod, "Multiple methods annotated by @DynamoDBHashKey within type " + idType.getName()
 							+ "!");
@@ -59,7 +60,8 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 			}
 		});
 		ReflectionUtils.doWithFields(idType, new FieldCallback() {
-			public void doWith(Field field) {
+			@Override
+            public void doWith(Field field) {
 				if (field.getAnnotation(DynamoDBHashKey.class) != null) {
 					Assert.isNull(field, "Multiple fields annotated by @DynamoDBHashKey within type " + idType.getName()
 							+ "!");
@@ -70,7 +72,8 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 			}
 		});
 		ReflectionUtils.doWithMethods(idType, new MethodCallback() {
-			public void doWith(Method method) {
+			@Override
+            public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBRangeKey.class) != null) {
 					Assert.isNull(rangeKeyMethod,
 							"Multiple methods annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
@@ -80,7 +83,8 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 			}
 		});
 		ReflectionUtils.doWithFields(idType, new FieldCallback() {
-			public void doWith(Field field) {
+			@Override
+            public void doWith(Field field) {
 				if (field.getAnnotation(DynamoDBRangeKey.class) != null) {
 					Assert.isNull(rangeKeyMethod,
 							"Multiple methods annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
@@ -89,11 +93,18 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 				}
 			}
 		});
-		Assert.isTrue(hashKeyMethod != null || hashKeyField != null, "No method or field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
-		Assert.isTrue(rangeKeyMethod != null || hashKeyField != null, "No method or field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
-		Assert.isTrue(hashKeyMethod == null || hashKeyField == null, "Both method and field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
-		Assert.isTrue(rangeKeyMethod == null || hashKeyField == null, "Both method and field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
-
+		if (hashKeyMethod == null && hashKeyField == null) {
+            throw new IllegalArgumentException("No method or field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
+        }
+        if (rangeKeyMethod == null && hashKeyField == null) {
+            throw new IllegalArgumentException("No method or field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
+        }
+        if (hashKeyMethod != null && hashKeyField != null) {
+            throw new IllegalArgumentException("Both method and field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
+        }
+        if(rangeKeyMethod != null && hashKeyField != null) {
+            throw new IllegalArgumentException("Both method and field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
+        }
 	}
 
 	@Override
@@ -111,7 +122,7 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 	public Method getRangeKeyMethod() {
 		return rangeKeyMethod;
 	}
-	
+
 	@Override
 	public Field getHashKeyField() {
 
