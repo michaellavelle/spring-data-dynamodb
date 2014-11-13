@@ -91,7 +91,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
 			}
 		}
 		keyPairsMap.put(domainType, keyPairs);
-		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(domainType);
+		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(entityInformation.getDynamoDBTableName());
 	}
 
 	protected T load(ID id) {

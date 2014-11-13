@@ -5,3 +5,22 @@
 *.jar
 *.war
 *.ear
+
+# ignore .svn metadata files
+.svn
+# ignore Maven generated target folders
+target
+# ignore eclipse files
+.classpath
+.settings
+# ignore IDEA files
+*.iml
+*.ipr
+*.iws
+.idea
+logs
+gradle.properties
+atlassian-ide-plugin.xml
+# custom ignore files
+*.diff
+
