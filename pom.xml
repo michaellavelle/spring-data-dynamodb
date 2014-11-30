@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.socialsignin</groupId>
 	<artifactId>spring-data-dynamodb</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1.RELEASE</version>
 	<name>Spring Data DynamoDb</name>
 	<description>Spring Data module providing support for DynamoDb repositories.</description>
 	<url>http://github.com/michaellavelle/spring-data-dynamodb</url>
