@@ -21,8 +21,8 @@ Download the jar though Maven:
 
 ```xml
 <repository>
-	<id>opensourceagility-snapshots</id>
-	<url>http://repo.opensourceagility.com/snapshots</url
+	<id>opensourceagility-release</id>
+	<url>http://repo.opensourceagility.com/release</url
 </repository>
 ```
 
@@ -30,7 +30,7 @@ Download the jar though Maven:
 <dependency>
   <groupId>org.socialsignin</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1.RELEASE</version>
 </dependency>
 ```
 
