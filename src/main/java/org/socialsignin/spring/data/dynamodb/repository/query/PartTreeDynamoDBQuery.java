@@ -54,6 +54,8 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 		return new DynamoDBCountQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations,
 				pageQuery);
 	}
+	
+	
 
 	@Override
 	public Query<T> doCreateQuery(Object[] values) {
@@ -76,6 +78,21 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 	@Override
 	protected boolean isCountQuery() {
 		return tree.isCountProjection();
+	}
+
+	@Override
+	protected Integer getResultsRestrictionIfApplicable() {
+
+		if (tree.isLimiting()) {
+			return tree.getMaxResults();
+		}
+		return null;
+	}
+
+	@Override
+	protected boolean isSingleEntityResultsRestriction() {
+		Integer resultsRestiction = getResultsRestrictionIfApplicable();
+		return resultsRestiction != null && resultsRestiction.intValue() == 1;
 	}
 
 }

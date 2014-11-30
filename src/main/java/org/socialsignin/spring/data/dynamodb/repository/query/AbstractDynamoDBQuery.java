@@ -44,18 +44,22 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 		this.dynamoDBOperations = dynamoDBOperations;
 		this.method = method;
 	}
+	
 
 	protected QueryExecution<T, ID> getExecution() {
-		if (method.isCollectionQuery()) {
+		if (method.isCollectionQuery() && !isSingleEntityResultsRestriction()) {
 			return new CollectionExecution();
 		}
-		else if (method.isSliceQuery()) {
+		else if (method.isSliceQuery() && !isSingleEntityResultsRestriction()) {
 				return new SlicedExecution(method.getParameters());
-		} else if (method.isPageQuery()) {
+		} else if (method.isPageQuery() && !isSingleEntityResultsRestriction()) {
 			return new PagedExecution(method.getParameters());
 		} else if (method.isModifyingQuery()) {
 			throw new UnsupportedOperationException("Modifying queries not yet supported");
-		} else {
+		} else if (isSingleEntityResultsRestriction()) {
+			return new SingleEntityLimitedExecution();
+		}
+		else {
 			return new SingleEntityExecution();
 		}
 	}
@@ -63,6 +67,10 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 	protected abstract Query<T> doCreateQuery(Object[] values);
 	protected abstract Query<Long> doCreateCountQuery(Object[] values,boolean pageQuery);
 	protected abstract boolean isCountQuery();
+	
+	protected abstract Integer getResultsRestrictionIfApplicable();
+	protected abstract boolean isSingleEntityResultsRestriction();
+
 	
 	protected Query<T> doCreateQueryWithPermissions(Object values[]) {
 		Query<T> query = doCreateQuery(values);
@@ -80,12 +88,29 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 		public Object execute(AbstractDynamoDBQuery<T, ID> query, Object[] values);
 	}
 
+	
 	class CollectionExecution implements QueryExecution<T, ID> {
 
+		
+		
 		@Override
 		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
 			Query<T> query = dynamoDBQuery.doCreateQueryWithPermissions(values);
-			return query.getResultList();
+			if (getResultsRestrictionIfApplicable() != null)
+			{
+				return restrictMaxResultsIfNecessary(query.getResultList().iterator());
+			}
+			else return query.getResultList();
+		}
+
+		private List<T> restrictMaxResultsIfNecessary(Iterator<T> iterator) {
+			int processed = 0;
+			List<T> resultsPage = new ArrayList<T>();
+			while (iterator.hasNext() && processed < getResultsRestrictionIfApplicable()) {
+				resultsPage.add(iterator.next());
+				processed++;
+			}
+			return resultsPage;		
 		}
 
 	}
@@ -112,10 +137,11 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			return processed;
 		}
 
-		private List<T> readPageOfResults(Iterator<T> iterator, int pageSize) {
+		private List<T> readPageOfResultsRestrictMaxResultsIfNecessary(Iterator<T> iterator, int pageSize) {
 			int processed = 0;
+			int toProcess = getResultsRestrictionIfApplicable() != null ? Math.min(pageSize,getResultsRestrictionIfApplicable()) : pageSize;
 			List<T> resultsPage = new ArrayList<T>();
-			while (iterator.hasNext() && processed < pageSize) {
+			while (iterator.hasNext() && processed < toProcess) {
 				resultsPage.add(iterator.next());
 				processed++;
 			}
@@ -143,11 +169,18 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 				if (processedCount < pageable.getOffset())
 					return new PageImpl<T>(new ArrayList<T>());
 			}
-			List<T> results = readPageOfResults(iterator, pageable.getPageSize());
+			List<T> results = readPageOfResultsRestrictMaxResultsIfNecessary(iterator, pageable.getPageSize());
+			
 			
 			Query<Long> countQuery = dynamoDBQuery.doCreateCountQueryWithPermissions(values,true);
+			long count = countQuery.getSingleResult();
 			
-			return new PageImpl<T>(results, pageable, countQuery.getSingleResult());
+			if (getResultsRestrictionIfApplicable() != null)
+			{
+				count = Math.min(count,getResultsRestrictionIfApplicable());
+			}
+			
+			return new PageImpl<T>(results, pageable, count);
 
 		}
 	}
@@ -170,10 +203,12 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			return processed;
 		}
 
-		private List<T> readPageOfResults(Iterator<T> iterator, int pageSize) {
+		private List<T> readPageOfResultsRestrictMaxResultsIfNecessary(Iterator<T> iterator, int pageSize) {
 			int processed = 0;
+			int toProcess = getResultsRestrictionIfApplicable() != null ? Math.min(pageSize,getResultsRestrictionIfApplicable()) : pageSize;
+
 			List<T> resultsPage = new ArrayList<T>();
-			while (iterator.hasNext() && processed < pageSize) {
+			while (iterator.hasNext() && processed < toProcess) {
 				resultsPage.add(iterator.next());
 				processed++;
 			}
@@ -199,9 +234,10 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 				if (processedCount < pageable.getOffset())
 					return new SliceImpl<T>(new ArrayList<T>());
 			}
-			List<T> results = readPageOfResults(iterator, pageable.getPageSize());
+			List<T> results = readPageOfResultsRestrictMaxResultsIfNecessary(iterator, pageable.getPageSize());
 			// Scan ahead to retrieve the next page count
 			boolean hasMoreResults = scanThroughResults(iterator, 1) > 0;
+			if (getResultsRestrictionIfApplicable() != null && getResultsRestrictionIfApplicable().intValue() <= results.size()) hasMoreResults = false; 
 			return new SliceImpl<T>(results, pageable, hasMoreResults);
 		}
 	}
@@ -217,6 +253,24 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			else
 			{
 				return dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
+			}
+
+		}
+	}
+	
+	class SingleEntityLimitedExecution implements QueryExecution<T, ID> {
+
+		@Override
+		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
+			if (isCountQuery())
+			{
+				return dynamoDBQuery.doCreateCountQueryWithPermissions(values,false).getSingleResult();
+			}
+			else
+			{
+				List<T> resultList =  dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList();
+				return resultList.size() == 0 ? null : resultList.get(0);
+
 			}
 
 		}
