@@ -150,7 +150,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 						throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
 
 					}
-					if (queryRequest.getKeyConditions().size() > 1) {
+					if (queryRequest.getKeyConditions().size() > 1 && !hasIndexHashKeyEqualCondition()) {
 						throw new UnsupportedOperationException(
 								"Sorting for global index queries with criteria on both hash and range not possible");
 
