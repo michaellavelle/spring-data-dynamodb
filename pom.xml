@@ -222,7 +222,7 @@
                     </execution>
                 </executions>
             </plugin>
-
+			<!-- 
             <plugin>
                 <groupId>com.jcabi</groupId>
                 <artifactId>jcabi-dynamodb-maven-plugin</artifactId>
@@ -247,7 +247,7 @@
                     </execution>
                 </executions>
             </plugin>
-
+ 			-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
