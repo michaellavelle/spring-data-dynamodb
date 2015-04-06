@@ -12,7 +12,7 @@ The primary goal of the [Spring Data](http://www.springsource.org/spring-data) p
 ## Demo application ##
 
 For a demo of spring-data-dynamodb, using spring-data-rest to showcase DynamoDB repositories exposed with REST,
-please see <a href="https://github.com/michaellavelle/spring-data-dynamodb-demo">spring-data-dynamodb-demo
+please see <a href="https://github.com/michaellavelle/spring-data-dynamodb-demo">spring-data-dynamodb-demo</a>
 
 ## Quick Start ##
 
@@ -22,7 +22,7 @@ Download the jar though Maven:
 ```xml
 <repository>
 	<id>opensourceagility-release</id>
-	<url>http://repo.opensourceagility.com/release</url
+	<url>http://repo.opensourceagility.com/release</url>
 </repository>
 ```
 
@@ -146,12 +146,12 @@ public interface UserRepository extends CrudRepository<User, String> {
 or for paging and sorting...
 
 ```java
+@EnableScan 
+@EnableScanCount
 public interface UserRepository extends PagingAndSortingRepository<User, String> {
-  Page<User> findByLastName(String lastName,Pageable pageable);
-  
-  @EnableScan 
-  @EnableScanCount
-  public Page<User> findAll(Pageable pageable);
+  Page<User> findByLastName(String lastName, Pageable pageable);
+
+  Page<User> findAll(Pageable pageable);
 }
 ```
 
