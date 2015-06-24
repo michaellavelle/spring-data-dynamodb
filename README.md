@@ -30,7 +30,7 @@ Download the jar though Maven:
 <dependency>
   <groupId>org.socialsignin</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>1.0.1.RELEASE</version>
+  <version>1.0.2.RELEASE</version>
 </dependency>
 ```
 
