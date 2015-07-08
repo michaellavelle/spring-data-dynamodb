@@ -19,6 +19,7 @@ import java.io.Serializable;
 
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
@@ -40,6 +41,8 @@ public interface DynamoDBQueryCriteria<T, ID extends Serializable> {
 	public DynamoDBQueryCriteria<T, ID> withPropertyBetween(String segment, Object value1, Object value2, Class<?> type);
 
 	public DynamoDBQueryCriteria<T, ID> withSort(Sort sort);
+
+	public DynamoDBQueryCriteria<T, ID> withPageable(Pageable pageable);
 
 	public Query<T> buildQuery(DynamoDBOperations dynamoDBOperations);
 
