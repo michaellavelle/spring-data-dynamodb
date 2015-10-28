@@ -22,7 +22,7 @@ Download the jar though Maven:
 ```xml
 <repository>
 	<id>opensourceagility-release</id>
-	<url>http://repo.opensourceagility.com/release</url
+	<url>http://repo.opensourceagility.com/release/</url
 </repository>
 ```
 
