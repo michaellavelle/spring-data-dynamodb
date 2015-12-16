@@ -42,7 +42,7 @@ public class DynamoDBQueryLookupStrategy {
 	/**
 	 * Base class for {@link QueryLookupStrategy} implementations that need
 	 * access to an {@link DynamoDBMapper}.
-	 * 
+	 *
 	 * @author Michael Lavelle
 	 */
 	private abstract static class AbstractQueryLookupStrategy implements QueryLookupStrategy {
@@ -56,13 +56,14 @@ public class DynamoDBQueryLookupStrategy {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.springframework.data.repository.query.QueryLookupStrategy#
 		 * resolveQuery(java.lang.reflect.Method,
 		 * org.springframework.data.repository.core.RepositoryMetadata,
 		 * org.springframework.data.repository.core.NamedQueries)
 		 */
-		public final RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, NamedQueries namedQueries) {
+		@Override
+        public final RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, NamedQueries namedQueries) {
 
 			return createDynamoDBQuery(method, metadata, metadata.getDomainType(), metadata.getIdType(), namedQueries);
 		}
@@ -73,7 +74,7 @@ public class DynamoDBQueryLookupStrategy {
 
 	/**
 	 * {@link QueryLookupStrategy} to create a query from the method name.
-	 * 
+	 *
 	 * @author Michael Lavelle
 	 */
 	private static class CreateQueryLookupStrategy extends AbstractQueryLookupStrategy {
@@ -99,7 +100,7 @@ public class DynamoDBQueryLookupStrategy {
 	/**
 	 * {@link QueryLookupStrategy} that tries to detect a declared query
 	 * declared via {@link Query} annotation
-	 * 
+	 *
 	 * @author Michael Lavelle
 	 */
 	private static class DeclaredQueryLookupStrategy extends AbstractQueryLookupStrategy {
@@ -121,7 +122,7 @@ public class DynamoDBQueryLookupStrategy {
 	 * {@link QueryLookupStrategy} to try to detect a declared query first (
 	 * {@link org.springframework.data.jpa.repository.Query}. In case none is
 	 * found we fall back on query creation.
-	 * 
+	 *
 	 * @author Michael Lavelle
 	 */
 	private static class CreateIfNotFoundQueryLookupStrategy extends AbstractQueryLookupStrategy {
@@ -153,8 +154,8 @@ public class DynamoDBQueryLookupStrategy {
 	/**
 	 * Creates a {@link QueryLookupStrategy} for the given
 	 * {@link DynamoDBMapper} and {@link Key}.
-	 * 
-	 * @param em
+	 *
+	 * @param dynamoDBOperations
 	 * @param key
 	 * @return
 	 */

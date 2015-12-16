@@ -27,10 +27,10 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 /**
  * Encapsulates minimal information needed to load DynamoDB entities that have
  * both hash and range key, and have a composite id attribute annotated with
- * @Id.
- * 
+ * {@link Id}.
+ *
  * Delegates to metadata and hashKeyExtractor components for all operations.
- * 
+ *
  * @author Michael Lavelle
  */
 public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Serializable> extends
@@ -115,7 +115,7 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Seri
 	public <H> T getHashKeyPropotypeEntityForHashKey(H hashKey) {
 		return metadata.getHashKeyPropotypeEntityForHashKey(hashKey);
 	}
-	
+
 	@Override
 	public boolean isGlobalIndexHashKeyProperty(String propertyName) {
 		return metadata.isGlobalIndexHashKeyProperty(propertyName);

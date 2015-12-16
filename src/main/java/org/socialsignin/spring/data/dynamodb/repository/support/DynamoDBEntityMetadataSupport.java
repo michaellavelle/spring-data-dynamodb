@@ -60,8 +60,8 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 	}
 
 	/**
-	 * Creates a new {@link DefaultJpaEntityMetadata} for the given domain type.
-	 * 
+	 * Creates a new {@link DynamoDBEntityMetadataSupport} for the given domain type.
+	 *
 	 * @param domainType
 	 *            must not be {@literal null}.
 	 */
@@ -76,7 +76,8 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		this.globalIndexHashKeyPropertyNames = new ArrayList<String>();
 		this.globalIndexRangeKeyPropertyNames = new ArrayList<String>();
 		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
-			public void doWith(Method method) {
+			@Override
+            public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
 					hashKeyPropertyName = getPropertyNameForAccessorMethod(method);
 				}
@@ -95,7 +96,8 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 			}
 		});
 		ReflectionUtils.doWithFields(domainType, new FieldCallback() {
-			public void doWith(Field field) {
+			@Override
+            public void doWith(Field field) {
 				if (field.getAnnotation(DynamoDBHashKey.class) != null) {
 					hashKeyPropertyName = getPropertyNameForField(field);
 				}
@@ -129,7 +131,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.data.repository.core.EntityMetadata#getJavaType()
 	 */
@@ -138,7 +140,8 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		return domainType;
 	}
 
-	public boolean isHashKeyProperty(String propertyName) {
+	@Override
+    public boolean isHashKeyProperty(String propertyName) {
 		return hashKeyPropertyName.equals(propertyName);
 	}
 
@@ -249,7 +252,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 				return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
 			}
 		}
-		
+
 		Field field = findField(propertyName);
 		if (field != null) {
 			if (field.getAnnotation(DynamoDBAttribute.class) != null
@@ -313,7 +316,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		String remainder = propertyName.substring(1);
 		return firstLetter.toLowerCase() + remainder;
 	}
-	
+
 	protected String getPropertyNameForField(Field field) {
 		return field.getName();
 	}
@@ -344,7 +347,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		}
 
 	}
-	
+
 	private void addGlobalSecondaryIndexNames(Field field, DynamoDBIndexRangeKey dynamoDBIndexRangeKey) {
 
 		if (dynamoDBIndexRangeKey.globalSecondaryIndexNames() != null
@@ -366,7 +369,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		}
 
 	}
-	
+
 	private void addGlobalSecondaryIndexNames(Method method, DynamoDBIndexHashKey dynamoDBIndexHashKey) {
 
 		if (dynamoDBIndexHashKey.globalSecondaryIndexNames() != null
@@ -388,7 +391,7 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 		}
 	}
-	
+
 	private void addGlobalSecondaryIndexNames(Field field, DynamoDBIndexHashKey dynamoDBIndexHashKey) {
 
 		if (dynamoDBIndexHashKey.globalSecondaryIndexNames() != null
