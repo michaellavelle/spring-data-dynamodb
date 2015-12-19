@@ -14,6 +14,10 @@ The primary goal of the [Spring Data](http://www.springsource.org/spring-data) p
 For a demo of spring-data-dynamodb, using spring-data-rest to showcase DynamoDB repositories exposed with REST,
 please see <a href="https://github.com/michaellavelle/spring-data-dynamodb-demo">spring-data-dynamodb-demo
 
+Version
+
+The major and minor number of this library refers to the compatible Spring framework compatibility: 4.2.n is compatible with Spring framework 4.2.0.
+
 ## Quick Start ##
 
 Download the jar though Maven:
@@ -30,7 +34,7 @@ Download the jar though Maven:
 <dependency>
   <groupId>org.socialsignin</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>1.0.2.RELEASE</version>
+  <version>4.2.1</version>
 </dependency>
 ```
 
