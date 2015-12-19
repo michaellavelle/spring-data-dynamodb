@@ -13,10 +13,10 @@ The primary goal of the [Spring Data](http://www.springsource.org/spring-data) p
 
 For a demo of spring-data-dynamodb, using spring-data-rest to showcase DynamoDB repositories exposed with REST,
 please see <a href="https://github.com/michaellavelle/spring-data-dynamodb-demo">spring-data-dynamodb-demo
+## Version
 
-Version
-
-The major and minor number of this library refers to the compatible Spring framework compatibility: 4.2.n is compatible with Spring framework 4.2.0.
+The major and minor number of this library refers to the compatible Spring framework compatibility:
+`4.2.n` is compatible with Spring framework `4.2.0`.
 
 ## Quick Start ##
 
