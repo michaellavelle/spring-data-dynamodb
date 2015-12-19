@@ -32,7 +32,7 @@ import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 /**
  * Annotation to enable DynamoDB repositories. Will scan the package of the
  * annotated configuration class for Spring Data repositories by default.
- * 
+ *
  * @author Michael Lavelle
  */
 @Target(ElementType.TYPE)
@@ -85,7 +85,7 @@ public @interface EnableDynamoDBRepositories {
 	 * implementations. Defaults to {@literal Impl}. So for a repository named
 	 * {@code PersonRepository} the corresponding implementation class will be
 	 * looked up scanning for {@code PersonRepositoryImpl}.
-	 * 
+	 *
 	 * @return
 	 */
 	String repositoryImplementationPostfix() default "Impl";
@@ -94,7 +94,7 @@ public @interface EnableDynamoDBRepositories {
 	 * Configures the location of where to find the Spring Data named queries
 	 * properties file. Will default to
 	 * {@code META-INFO/jpa-named-queries.properties}.
-	 * 
+	 *
 	 * @return
 	 */
 	String namedQueriesLocation() default "";
@@ -102,7 +102,7 @@ public @interface EnableDynamoDBRepositories {
 	/**
 	 * Returns the key of the {@link QueryLookupStrategy} to be used for lookup
 	 * queries for query methods. Defaults to {@link Key#CREATE_IF_NOT_FOUND}.
-	 * 
+	 *
 	 * @return
 	 */
 	Key queryLookupStrategy() default Key.CREATE_IF_NOT_FOUND;
@@ -110,7 +110,7 @@ public @interface EnableDynamoDBRepositories {
 	/**
 	 * Returns the {@link FactoryBean} class to be used for each repository
 	 * instance. Defaults to {@link DynamoDBRepositoryFactoryBean}.
-	 * 
+	 *
 	 * @return
 	 */
 	Class<?> repositoryFactoryBeanClass() default DynamoDBRepositoryFactoryBean.class;
@@ -118,25 +118,25 @@ public @interface EnableDynamoDBRepositories {
 	// DynamoDB sepcific configuration
 
 	/**
-	 * Returns the {@link AmazonDynamoDB } reference to be used for each
+	 * Returns the {@link com.amazonaws.services.dynamodbv2.AmazonDynamoDB } reference to be used for each
 	 * repository instance
-	 * 
+	 *
 	 * @return
 	 */
 	String amazonDynamoDBRef() default "";
 
 	/**
-	 * Returns the {@link DynamoDBMapperConfig } reference to be used for to
+	 * Returns the {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig } reference to be used for to
 	 * configure AmazonDynamoDB
-	 * 
+	 *
 	 * @return
 	 */
 	String dynamoDBMapperConfigRef() default "";
-	
+
 	/**
 	 * Returns the {@link javax.validation.Validator } reference to be used for to
 	 * validate DynamoDB entities
-	 * 
+	 *
 	 * @return
 	 */
 	String dynamoDBOperationsRef() default "";

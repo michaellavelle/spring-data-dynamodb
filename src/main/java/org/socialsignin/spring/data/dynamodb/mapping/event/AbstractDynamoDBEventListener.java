@@ -23,7 +23,7 @@ import org.springframework.core.GenericTypeResolver;
 
 /**
  * Base class to implement domain class specific {@link ApplicationListener}s.
- * 
+ *
  * @author Michael Lavelle
  */
 public abstract class AbstractDynamoDBEventListener<E> implements
@@ -34,7 +34,7 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 	private final Class<?> domainClass;
 
 	/**
-	 * Creates a new {@link AbstractMongoEventListener}.
+	 * Creates a new {@link AbstractDynamoDBEventListener}.
 	 */
 	public AbstractDynamoDBEventListener() {
 		Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(
@@ -44,12 +44,13 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.context.ApplicationListener#onApplicationEvent(org
 	 * .springframework.context.ApplicationEvent)
 	 */
-	public void onApplicationEvent(DynamoDBMappingEvent<?> event) {
+	@Override
+    public void onApplicationEvent(DynamoDBMappingEvent<?> event) {
 
 		@SuppressWarnings("unchecked")
 		E source = (E) event.getSource();

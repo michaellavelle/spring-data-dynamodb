@@ -1,0 +1,8 @@
+language:
+  java
+
+before_script:
+  - pip install --user codecov
+
+after_success:
+  - codecov

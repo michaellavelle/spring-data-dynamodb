@@ -21,12 +21,11 @@ import java.util.List;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 public abstract class AbstractSingleEntityQuery<T> extends AbstractQuery<T> implements Query<T> {
-	
+
 	public AbstractSingleEntityQuery(DynamoDBOperations dynamoDBOperations,Class<T> clazz) {
 		super(dynamoDBOperations,clazz);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> getResultList() {
 		return Arrays.asList(getSingleResult());

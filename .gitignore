@@ -8,3 +8,5 @@ target
 *.jar
 *.war
 *.ear
+.settings
+.classpath

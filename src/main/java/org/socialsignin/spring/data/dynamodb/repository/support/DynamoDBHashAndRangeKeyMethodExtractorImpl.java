@@ -39,9 +39,9 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 	private Field rangeKeyField;
 
 	/**
-	 * Creates a new {@link DefaultJpaEntityMetadata} for the given domain type.
+	 * Creates a new {@link DynamoDBHashAndRangeKeyMethodExtractor} for the given domain type.
 	 *
-	 * @param domainType
+	 * @param idType
 	 *            must not be {@literal null}.
 	 */
 	public DynamoDBHashAndRangeKeyMethodExtractorImpl(final Class<T> idType) {
