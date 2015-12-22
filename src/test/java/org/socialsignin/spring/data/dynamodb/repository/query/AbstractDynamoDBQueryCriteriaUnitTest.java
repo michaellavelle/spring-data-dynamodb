@@ -14,7 +14,7 @@ import org.junit.Test;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 
-public abstract class AbstractDynamoDBQueryCriteriaUnitTests<C extends AbstractDynamoDBQueryCriteria<?,?>> {
+public abstract class AbstractDynamoDBQueryCriteriaUnitTest<C extends AbstractDynamoDBQueryCriteria<?,?>> {
 
 	protected C criteria;
 

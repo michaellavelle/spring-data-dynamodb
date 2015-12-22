@@ -34,7 +34,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
  * @author Michael Lavelle
  */
 @RunWith(MockitoJUnitRunner.class)
-public class DynamoDBPersistentPropertyImplUnitTests {
+public class DynamoDBPersistentPropertyImplUnitTest {
 
 	DynamoDBMappingContext context;
 	DynamoDBPersistentEntity<?> entity;

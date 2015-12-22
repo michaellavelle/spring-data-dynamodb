@@ -24,11 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.ReflectionUtils.MethodCallback;
+import org.springframework.util.StringUtils;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
@@ -194,27 +194,27 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 		if (method != null) {
 			if (method.getAnnotation(DynamoDBAttribute.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {
 				return method.getAnnotation(DynamoDBAttribute.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBHashKey.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBHashKey.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBRangeKey.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBRangeKey.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBIndexHashKey.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBIndexHashKey.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBVersionAttribute.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
 				return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
 			}
 		}
@@ -228,27 +228,27 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		Method method = findMethod(propertyName);
 		if (method != null) {
 			if (method.getAnnotation(DynamoDBAttribute.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {
 				return method.getAnnotation(DynamoDBAttribute.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBHashKey.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBHashKey.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBRangeKey.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBRangeKey.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBIndexHashKey.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
 				return method.getAnnotation(DynamoDBIndexHashKey.class).attributeName();
 			}
 			if (method.getAnnotation(DynamoDBVersionAttribute.class) != null
-					&& StringUtils.isNotEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
+					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
 				return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
 			}
 		}
@@ -256,27 +256,27 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		Field field = findField(propertyName);
 		if (field != null) {
 			if (field.getAnnotation(DynamoDBAttribute.class) != null
-					&& StringUtils.isNotEmpty(field.getAnnotation(DynamoDBAttribute.class).attributeName())) {
+					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBAttribute.class).attributeName())) {
 				return field.getAnnotation(DynamoDBAttribute.class).attributeName();
 			}
 			if (field.getAnnotation(DynamoDBHashKey.class) != null
-					&& StringUtils.isNotEmpty(field.getAnnotation(DynamoDBHashKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBHashKey.class).attributeName())) {
 				return field.getAnnotation(DynamoDBHashKey.class).attributeName();
 			}
 			if (field.getAnnotation(DynamoDBRangeKey.class) != null
-					&& StringUtils.isNotEmpty(field.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
 				return field.getAnnotation(DynamoDBRangeKey.class).attributeName();
 			}
 			if (field.getAnnotation(DynamoDBIndexRangeKey.class) != null
-					&& StringUtils.isNotEmpty(field.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
 				return field.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
 			}
 			if (field.getAnnotation(DynamoDBIndexHashKey.class) != null
-					&& StringUtils.isNotEmpty(field.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
+					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
 				return field.getAnnotation(DynamoDBIndexHashKey.class).attributeName();
 			}
 			if (field.getAnnotation(DynamoDBVersionAttribute.class) != null
-					&& StringUtils.isNotEmpty(field.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
+					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
 				return field.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
 			}
 		}

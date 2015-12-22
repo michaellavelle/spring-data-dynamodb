@@ -57,7 +57,6 @@ public class PartTreeDynamoDBQueryUnitTest {
 	@Mock
 	private DynamoDBOperations mockDynamoDBOperations;
 
-
 	@Mock
 	private DynamoDBQueryMethod<User, String> mockDynamoDBUserQueryMethod;
 

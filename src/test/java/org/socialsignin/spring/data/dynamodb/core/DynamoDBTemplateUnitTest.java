@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -18,7 +17,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DynamoDBTemplateUnitTests {
+public class DynamoDBTemplateUnitTest {
 	
 	@Mock
 	private DynamoDBMapper dynamoDBMapper;

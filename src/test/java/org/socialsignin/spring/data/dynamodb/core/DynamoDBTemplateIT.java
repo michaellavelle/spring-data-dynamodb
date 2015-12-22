@@ -1,16 +1,15 @@
 package org.socialsignin.spring.data.dynamodb.core;
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-
-import org.socialsignin.spring.data.dynamodb.domain.sample.User;
-
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.socialsignin.spring.data.dynamodb.domain.sample.User;
+
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 
 /**
  * Integration test that interacts with DynamoDB Local instance.
