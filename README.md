@@ -2,7 +2,7 @@
 
 Due to external time and project commitments, I'm no longer able to continue active development of this project as of January 2016.  Thank you to everyone involved in shaping the project over the past few years and thanks to all those who have raised issues and submitted pull requests over the time.
 
-@derjust has kindly offered to continue managing the progressing of spring-data-dynamodb going forward - the latest version of the project can be found at the following fork:
+@derjust has kindly offered to continue managing the progression of spring-data-dynamodb going forward - the latest version of the project can be found at the following fork:
 
 https://github.com/derjust/spring-data-dynamodb
 
