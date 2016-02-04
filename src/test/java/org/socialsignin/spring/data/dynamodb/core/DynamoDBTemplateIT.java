@@ -3,7 +3,6 @@ package org.socialsignin.spring.data.dynamodb.core;
 import java.util.UUID;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
@@ -14,7 +13,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 /**
  * Integration test that interacts with DynamoDB Local instance.
  */
-@Ignore
 public class DynamoDBTemplateIT {
 
     private static final String PORT = System.getProperty("dynamodb.port");
