@@ -1,5 +1,11 @@
+# No fancyness - we can use the new build infrastructure
+sudo: false
+
 language:
-  java
+  - java
+
+jdk:
+  - oraclejdk8
 
 before_script:
   - pip install --user codecov
