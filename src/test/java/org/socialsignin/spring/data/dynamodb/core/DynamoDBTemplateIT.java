@@ -4,27 +4,28 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 
 /**
  * Integration test that interacts with DynamoDB Local instance.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes={ConfigurationTI.class})
 public class DynamoDBTemplateIT {
 
-    private static final String PORT = System.getProperty("dynamodb.port");
-
+    @Autowired
+    private AmazonDynamoDB amazonDynamoDB;
     private DynamoDBTemplate dynamoDBTemplate;
 
     @Before
     public void setUp() {
-        AmazonDynamoDB dynamoDB = new AmazonDynamoDBClient(new BasicAWSCredentials("AWS-Key", ""));
-        dynamoDB.setEndpoint(String.format("http://localhost:%s", DynamoDBTemplateIT.PORT));
-
-        this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB);
+        this.dynamoDBTemplate = new DynamoDBTemplate(amazonDynamoDB);
     }
 
     @Test
@@ -60,7 +61,6 @@ public class DynamoDBTemplateIT {
 
         // Get again.
         assert dynamoDBTemplate.load(User.class, user.getId()) == null;
-
     }
 
 }
