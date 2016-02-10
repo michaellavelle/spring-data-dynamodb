@@ -6,22 +6,17 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.socialsignin.spring.data.dynamodb.core.ConfigurationTI;
-import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+/**
+ * Show the usage of Hash+Range key as also how to use
+ * XML based configuration
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ConfigurationTI.class, RangeHashKeyIT.TestAppConfig.class})
-public class RangeHashKeyIT {
-
-	@Configuration
-	@EnableDynamoDBRepositories(
-	basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
-	public static class TestAppConfig {
-	}
+@ContextConfiguration(locations = {"classpath:META-INF/context/HashRangeKeyIT-context.xml"})
+public class HashRangeKeyIT {
 
 	@Autowired
 	PlaylistRepository playlistRepository;
