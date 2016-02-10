@@ -10,3 +10,4 @@ target
 *.ear
 .settings
 .classpath
+.checkstyle

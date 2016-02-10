@@ -282,7 +282,8 @@
                 <version>0.7.1</version>
                 <configuration>
                     <tables>
-                        <table>src/test/resources/usertable.json</table>
+                        <table>src/test/resources/user_table.json</table>
+                        <table>src/test/resources/playlist_table.json</table>
                     </tables>
                     <port>${dynamodblocal.port}</port>
                     <dist>${project.build.directory}/dynamodb-dist</dist>
