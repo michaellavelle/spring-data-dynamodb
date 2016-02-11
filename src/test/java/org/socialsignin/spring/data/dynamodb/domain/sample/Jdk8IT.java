@@ -2,6 +2,9 @@ package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import static org.junit.Assert.*;
 
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,30 +26,50 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = {ConfigurationTI.class, Jdk8IT.TestAppConfig.class})
 public class Jdk8IT {
 
-    @Configuration
-    @EnableDynamoDBRepositories(
-    basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
-    public static class TestAppConfig {
-    }
+	@Configuration
+	@EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
+	public static class TestAppConfig {
+	}
 
-    @Autowired
-    UserRepository userRepository;
+	@Autowired
+	UserRepository userRepository;
 
-    @Test
-    public void testOptional() {
-        final String id = "testOptional";
-        Optional<User> result = userRepository.findOne(id);
+	@Test
+	public void testOptional() {
+		final Date joinDate = new Date(1000);
+		final String id = "testOptional";
+		Optional<User> result = userRepository.findOne(id);
 
-        assertNotNull(result);
-        assertEquals(result, Optional.empty());
+		assertNotNull(result);
+		assertEquals(result, Optional.empty());
 
-        User newUser = new User();
-        newUser.setId(id);
-        newUser.setName(UUID.randomUUID().toString());
-        User savedEntity = userRepository.save(newUser);
+		User newUser = new User();
+		newUser.setId(id);
+		newUser.setName(UUID.randomUUID().toString());
+		newUser.setJoinDate(joinDate);
 
-        result = userRepository.findOne(id);
-        assertNotNull(result);
-        assertEquals(savedEntity, result.get());
-    }
+		User savedEntity = userRepository.save(newUser);
+
+		result = userRepository.findOne(id);
+		assertNotNull(result);
+		assertEquals(savedEntity, result.get());
+		assertEquals(joinDate, result.get().getJoinDate());
+	}
+
+	@Test
+	public void testInstantQuery() {
+		final Instant leaveDate = Instant.ofEpochMilli(2000);
+
+		User newUser = new User();
+		newUser.setId(UUID.randomUUID().toString());
+		newUser.setLeaveDate(leaveDate);
+		userRepository.save(newUser);
+		
+		List<User> results = userRepository.findByLeaveDate(leaveDate);
+		assertEquals(1, results.size());
+		
+		User result = results.get(0);
+		assertNotNull(result.getId());
+		assertEquals(leaveDate, result.getLeaveDate());
+	}
 }

@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +28,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
-import org.socialsignin.spring.data.dynamodb.mapping.DefaultDynamoDBDateMarshaller;
+import org.socialsignin.spring.data.dynamodb.marshaller.Date2IsoDynamoDBMarshaller;
+import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.springframework.data.domain.Sort;
@@ -499,7 +501,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 	}
 
 	private List<String> getDateListAsStringList(List<Date> dateList) {
-		DynamoDBMarshaller<Date> marshaller = new DefaultDynamoDBDateMarshaller();
+		DynamoDBMarshaller<Date> marshaller = new Date2IsoDynamoDBMarshaller();
 		List<String> list = new ArrayList<String>();
 		for (Date date : dateList) {
 			if (date != null) {
@@ -511,6 +513,19 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		return list;
 	}
 
+	private List<String> getInstantListAsStringList(List<Instant> dateList) {
+		DynamoDBMarshaller<Instant> marshaller = new Instant2IsoDynamoDBMarshaller();
+		List<String> list = new ArrayList<String>();
+		for (Instant date : dateList) {
+			if (date != null) {
+				list.add(marshaller.marshall(date));
+			} else {
+				list.add(null);
+			}
+		}
+		return list;
+	}
+	
 	private List<String> getBooleanListAsStringList(List<Boolean> booleanList) {
 		List<String> list = new ArrayList<String>();
 		for (Boolean booleanValue : booleanList) {
@@ -574,7 +589,17 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 				attributeValueObject.withSS(attributeValueAsStringList);
 			} else {
 				Date date = (Date) attributeValue;
-				String marshalledDate = new DefaultDynamoDBDateMarshaller().marshall(date);
+				String marshalledDate = new Date2IsoDynamoDBMarshaller().marshall(date);
+				attributeValueObject.withS(marshalledDate);
+			}
+		} else if (ClassUtils.isAssignable(Instant.class, propertyType)) {
+			List<Instant> attributeValueAsList = getAttributeValueAsList(attributeValue);
+			if (expandCollectionValues && attributeValueAsList != null) {
+				List<String> attributeValueAsStringList = getInstantListAsStringList(attributeValueAsList);
+				attributeValueObject.withSS(attributeValueAsStringList);
+			} else {
+				Instant date = (Instant) attributeValue;
+				String marshalledDate = new Instant2IsoDynamoDBMarshaller().marshall(date);
 				attributeValueObject.withS(marshalledDate);
 			}
 		} else {

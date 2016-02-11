@@ -15,8 +15,11 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
+
+import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
@@ -34,6 +37,8 @@ public class User {
 	private Date joinDate;
 	
 	private Date joinYear;
+	
+	private Instant leaveDate;
 	
 	private String postCode;
 	
@@ -63,6 +68,15 @@ public class User {
 
 	public void setJoinYear(Date joinYear) {
 		this.joinYear = joinYear;
+	}
+	
+	@DynamoDBMarshalling(marshallerClass=Instant2IsoDynamoDBMarshaller.class)
+	public Instant getLeaveDate() {
+		return leaveDate;
+	}
+	
+	public void setLeaveDate(Instant leaveDate) {
+		this.leaveDate = leaveDate;
 	}
 	
 	public String getPostCode() {
@@ -107,6 +121,8 @@ public class User {
 		        : joinDate.hashCode());
 		result = prime * result + ((joinYear == null) ? 0
 		        : joinYear.hashCode());
+		result = prime * result + ((leaveDate == null) ? 0
+		        : leaveDate.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((numberOfPlaylists == null) ? 0
 		        : numberOfPlaylists.hashCode());
@@ -139,6 +155,10 @@ public class User {
 			if (other.joinYear != null)
 				return false;
 		} else if (!joinYear.equals(other.joinYear))
+		if (leaveDate == null) {
+			if (other.leaveDate != null)
+				return false;
+		} else if (!leaveDate.equals(other.leaveDate))
 			return false;
 		if (name == null) {
 			if (other.name != null)
