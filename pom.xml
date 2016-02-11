@@ -18,6 +18,7 @@
 
     <properties>
         <spring.version>4.2.0.RELEASE</spring.version>
+        <spring-data.version>Gosling-SR1</spring-data.version>
         <hibernate-validator.version>5.2.2.Final</hibernate-validator.version>
         <aws-java-sdk.version>1.10.39</aws-java-sdk.version>
         <mockito.version>1.10.19</mockito.version>
@@ -43,7 +44,7 @@
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-releasetrain</artifactId>
-                <version>Gosling-SR1</version>
+                <version>${spring-data.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
