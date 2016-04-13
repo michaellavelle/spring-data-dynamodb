@@ -15,6 +15,8 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.TableNameResolver;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBTemplateUnitTest {
@@ -56,17 +58,30 @@ public class DynamoDBTemplateUnitTest {
 	@Test
 	public void testGetOverriddenTableName_WhenConfigIsNull()
 	{
-		String overriddenTableName = dynamoDBTemplate.getOverriddenTableName("someTableName");
+		String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(Object.class, "someTableName");
 		Assert.assertEquals("someTableName", overriddenTableName);
 	}
 	
-	@Test
-	public void testGetOverriddenTableName()
-	{
-		String overriddenTableName = dynamoDBTemplate.getOverriddenTableName("someTableName");
-		Assert.assertEquals("someTableName", overriddenTableName);
-	}
-	
+    @Test
+    public void testGetOverriddenTableName()
+    {
+        String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(Object.class, "someTableName");
+        Assert.assertEquals("someTableName", overriddenTableName);
+    }
+
+    @Test
+    public void testGetOverriddenTableName_WithTableNameResolver()
+    {
+        DynamoDBMapperConfig dynamoDBMapperConfig = Mockito.mock(DynamoDBMapperConfig.class);
+        TableNameResolver tableNameResolver = Mockito.mock(TableNameResolver.class);
+        Mockito.when(tableNameResolver.getTableName(Object.class, dynamoDBMapperConfig)).thenReturn(
+            "someOtherTableName");
+        Mockito.when(dynamoDBMapperConfig.getTableNameResolver()).thenReturn(tableNameResolver);
+        dynamoDBTemplate.setDynamoDBMapperConfig(dynamoDBMapperConfig);
+        String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(Object.class, "someTableName");
+        Assert.assertEquals("someOtherTableName", overriddenTableName);
+    }
+
 	@Test
 	public void testLoadByHashKey_WhenDynamoDBMapperReturnsNull()
 	{

@@ -194,13 +194,15 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	}
 
 	@Override
-	public String getOverriddenTableName(String tableName) {
+	public <T> String getOverriddenTableName(Class<T> domainClass, String tableName) {
 		if (dynamoDBMapperConfig.getTableNameOverride() != null) {
 			if (dynamoDBMapperConfig.getTableNameOverride().getTableName() != null) {
 				tableName = dynamoDBMapperConfig.getTableNameOverride().getTableName();
 			} else {
 				tableName = dynamoDBMapperConfig.getTableNameOverride().getTableNamePrefix() + tableName;
 			}
+		} else if (dynamoDBMapperConfig.getTableNameResolver() != null) {
+		  tableName = dynamoDBMapperConfig.getTableNameResolver().getTableName(domainClass, dynamoDBMapperConfig);
 		}
 
 		return tableName;

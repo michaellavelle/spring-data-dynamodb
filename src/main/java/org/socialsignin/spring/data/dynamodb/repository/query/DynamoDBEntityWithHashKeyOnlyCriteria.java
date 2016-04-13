@@ -58,7 +58,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID extends Serializable> e
 		if (isApplicableForGlobalSecondaryIndex()) {
 
 			List<Condition> hashKeyConditions = getHashKeyConditions();
-			QueryRequest queryRequest = buildQueryRequest(dynamoDBOperations.getOverriddenTableName(entityInformation.getDynamoDBTableName()),
+			QueryRequest queryRequest = buildQueryRequest(dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName()),
 					getGlobalSecondaryIndexName(), getHashKeyAttributeName(), null, null, hashKeyConditions, null);
 			return new MultipleEntityQueryRequestQuery<T>(dynamoDBOperations,entityInformation.getJavaType(), queryRequest);
 		} else {
@@ -70,7 +70,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID extends Serializable> e
 		if (isApplicableForGlobalSecondaryIndex()) {
 
 			List<Condition> hashKeyConditions = getHashKeyConditions();
-			QueryRequest queryRequest = buildQueryRequest(dynamoDBOperations.getOverriddenTableName(entityInformation.getDynamoDBTableName()),
+			QueryRequest queryRequest = buildQueryRequest(dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName()),
 					getGlobalSecondaryIndexName(), getHashKeyAttributeName(), null, null, hashKeyConditions, null);
 			return new QueryRequestCountQuery<T>(dynamoDBOperations, entityInformation.getJavaType(), queryRequest);
 
