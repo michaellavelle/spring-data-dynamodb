@@ -57,7 +57,6 @@ public class PartTreeDynamoDBQueryUnitTest {
 	@Mock
 	private DynamoDBOperations mockDynamoDBOperations;
 
-
 	@Mock
 	private DynamoDBQueryMethod<User, String> mockDynamoDBUserQueryMethod;
 
@@ -2155,7 +2154,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 		Mockito.when(mockUserQueryResults.size()).thenReturn(1);
 		Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 		.thenReturn(mockUserQueryResults);
-		Mockito.when(mockDynamoDBOperations.getOverriddenTableName("user")).thenReturn("user");
+		Mockito.when(mockDynamoDBOperations.getOverriddenTableName(User.class, "user")).thenReturn("user");
 
 
 		// Execute the query
@@ -2233,7 +2232,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 			Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 			.thenReturn(mockUserQueryResults);
 			Mockito.when(mockUserEntityMetadata.getDynamoDBTableName()).thenReturn("user");
-			Mockito.when(mockDynamoDBOperations.getOverriddenTableName("user")).thenReturn("user");
+			Mockito.when(mockDynamoDBOperations.getOverriddenTableName(User.class, "user")).thenReturn("user");
 
 
 			// Execute the query
@@ -2311,7 +2310,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 			Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 			Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 			.thenReturn(mockPlaylistQueryResults);
-			Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+			Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 			// Execute the query
@@ -2381,7 +2380,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -2456,7 +2455,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -2537,7 +2536,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -2622,7 +2621,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -2706,7 +2705,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -2790,7 +2789,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -2872,7 +2871,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -2953,7 +2952,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -3038,7 +3037,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -3122,7 +3121,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockPlaylistQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockPlaylistQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("playlist")).thenReturn("playlist");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(Playlist.class, "playlist")).thenReturn("playlist");
 
 
 					// Execute the query
@@ -3207,7 +3206,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockUserQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockUserQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("user")).thenReturn("user");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(User.class, "user")).thenReturn("user");
 
 
 					// Execute the query
@@ -3295,7 +3294,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockUserQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockUserQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("user")).thenReturn("user");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(User.class, "user")).thenReturn("user");
 
 
 					// Execute the query
@@ -3371,7 +3370,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 					Mockito.when(mockUserQueryResults.size()).thenReturn(1);
 					Mockito.when(mockDynamoDBOperations.query(classCaptor.capture(), queryCaptor.capture()))
 					.thenReturn(mockUserQueryResults);
-					Mockito.when(mockDynamoDBOperations.getOverriddenTableName("user")).thenReturn("user");
+					Mockito.when(mockDynamoDBOperations.getOverriddenTableName(User.class, "user")).thenReturn("user");
 
 
 					// Execute the query

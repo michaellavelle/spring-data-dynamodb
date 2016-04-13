@@ -15,8 +15,11 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
+
+import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
@@ -34,6 +37,8 @@ public class User {
 	private Date joinDate;
 	
 	private Date joinYear;
+	
+	private Instant leaveDate;
 	
 	private String postCode;
 	
@@ -63,6 +68,15 @@ public class User {
 
 	public void setJoinYear(Date joinYear) {
 		this.joinYear = joinYear;
+	}
+	
+	@DynamoDBMarshalling(marshallerClass=Instant2IsoDynamoDBMarshaller.class)
+	public Instant getLeaveDate() {
+		return leaveDate;
+	}
+	
+	public void setLeaveDate(Instant leaveDate) {
+		this.leaveDate = leaveDate;
 	}
 	
 	public String getPostCode() {
@@ -98,9 +112,75 @@ public class User {
 		this.numberOfPlaylists = numberOfPlaylists;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((joinDate == null) ? 0
+		        : joinDate.hashCode());
+		result = prime * result + ((joinYear == null) ? 0
+		        : joinYear.hashCode());
+		result = prime * result + ((leaveDate == null) ? 0
+		        : leaveDate.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((numberOfPlaylists == null) ? 0
+		        : numberOfPlaylists.hashCode());
+		result = prime * result + ((postCode == null) ? 0
+		        : postCode.hashCode());
+		result = prime * result + ((testSet == null) ? 0 : testSet.hashCode());
+		return result;
+	}
 
-	
-	
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (joinDate == null) {
+			if (other.joinDate != null)
+				return false;
+		} else if (!joinDate.equals(other.joinDate))
+			return false;
+		if (joinYear == null) {
+			if (other.joinYear != null)
+				return false;
+		} else if (!joinYear.equals(other.joinYear))
+		if (leaveDate == null) {
+			if (other.leaveDate != null)
+				return false;
+		} else if (!leaveDate.equals(other.leaveDate))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (numberOfPlaylists == null) {
+			if (other.numberOfPlaylists != null)
+				return false;
+		} else if (!numberOfPlaylists.equals(other.numberOfPlaylists))
+			return false;
+		if (postCode == null) {
+			if (other.postCode != null)
+				return false;
+		} else if (!postCode.equals(other.postCode))
+			return false;
+		if (testSet == null) {
+			if (other.testSet != null)
+				return false;
+		} else if (!testSet.equals(other.testSet))
+			return false;
+		return true;
+	}
 
 }

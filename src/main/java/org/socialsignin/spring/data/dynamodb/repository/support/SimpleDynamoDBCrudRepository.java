@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
@@ -92,7 +91,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
 			}
 		}
 		keyPairsMap.put(domainType, keyPairs);
-		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(dynamoDBOperations.getOverriddenTableName(entityInformation.getDynamoDBTableName()));
+		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(dynamoDBOperations.getOverriddenTableName(domainType, entityInformation.getDynamoDBTableName()));
 	}
 
 	protected T load(ID id) {

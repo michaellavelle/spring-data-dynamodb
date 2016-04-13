@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+          "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+          "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<module name="Checker">
+    <module name="TreeWalker">
+        <module name="ModifierOrder" />
+        <module name="EmptyBlock" />
+        <module name="AvoidStarImport" />
+        <module name="UnusedImports" />
+
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="System\.out(?:\.|::)println"/>
+        </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="System\.err(?:\.|::)println"/>
+        </module>
+        <module name="RegexpSinglelineJava">
+            <!-- com.amazonaws.services.dynamodbv2.model.QueryRequest -->
+            <property name="format" value="\.getQueryFilter" />
+            <property name="format" value="\.setQueryFilter" />
+            <property name="format" value="\.withQueryFilter" />
+
+            <property name="format" value="\.getConditionalOperator" />
+            <property name="format" value="\.setConditionalOperator" />
+            <property name="format" value="\.withConditionalOperator" />
+
+            <property name="format" value="\.getKeyConditions" />
+            <property name="format" value="\.setKeyConditions" />
+            <property name="format" value="\.withKeyConditions" />
+
+            <property name="format" value="\.getAttributesToGet" />
+            <property name="format" value="\.setAttributesToGet" />
+            <property name="format" value="\.withAttributesToGet" />
+        </module>
+        <module name="RegexpSinglelineJava">
+            <!-- com.amazonaws.services.dynamodbv2.model.ScanRequest -->
+            <property name="format" value="\.getScanFilter" />
+            <property name="format" value="\.setScanFilter" />
+            <property name="format" value="\.withScanFilter" />
+
+            <property name="format" value="\.getConditionalOperator" />
+            <property name="format" value="\.setConditionalOperator" />
+            <property name="format" value="\.withConditionalOperator" />
+
+
+            <property name="format" value="\.getAttributesToGet" />
+            <property name="format" value="\.setAttributesToGet" />
+            <property name="format" value="\.withAttributesToGet" />
+        </module>
+    </module>
+</module>

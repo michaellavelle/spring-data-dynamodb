@@ -31,7 +31,7 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.User;
  * @author Michael Lavelle
  */
 @RunWith(MockitoJUnitRunner.class)
-public class DynamoDBMappingContextUnitTests {
+public class DynamoDBMappingContextUnitTest {
 
 	DynamoDBMappingContext context;
 

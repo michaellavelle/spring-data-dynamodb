@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
@@ -31,6 +30,7 @@ import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
@@ -87,7 +87,7 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R>
 			Object in = iterator.next();
 			Assert.notNull(in, "Creating conditions on null parameters not supported: please specify a value for '"
 					+ leafNodePropertyName + "'");
-			boolean isIterable = ClassUtils.isAssignable(in.getClass(), Iterable.class);
+			boolean isIterable = ClassUtils.isAssignable(Iterable.class, in.getClass());
 			boolean isArray = ObjectUtils.isArray(in);
 			Assert.isTrue(isIterable || isArray, "In criteria can only operate with Iterable or Array parameters");
 			Iterable<?> iterable = isIterable ? ((Iterable<?>) in) : Arrays.asList(ObjectUtils.toObjectArray(in));
