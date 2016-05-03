@@ -200,7 +200,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 	protected Query<T> buildFinderQuery(DynamoDBOperations dynamoDBOperations) {
 		if (isApplicableForQuery()) {
 			if (isApplicableForGlobalSecondaryIndex()) {
-				String tableName = dynamoDBOperations.getOverriddenTableName(entityInformation.getDynamoDBTableName());
+				String tableName = dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName());
 				QueryRequest queryRequest = buildQueryRequest(tableName, getGlobalSecondaryIndexName(),
 						getHashKeyAttributeName(), getRangeKeyAttributeName(), this.getRangeKeyPropertyName(),
 						getHashKeyConditions(), getRangeKeyConditions());
@@ -218,7 +218,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 	protected Query<Long> buildFinderCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
 		if (isApplicableForQuery()) {
 			if (isApplicableForGlobalSecondaryIndex()) {
-				String tableName = dynamoDBOperations.getOverriddenTableName(entityInformation.getDynamoDBTableName());
+				String tableName = dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName());
 				QueryRequest queryRequest = buildQueryRequest(tableName, getGlobalSecondaryIndexName(),
 						getHashKeyAttributeName(), getRangeKeyAttributeName(), this.getRangeKeyPropertyName(),
 						getHashKeyConditions(), getRangeKeyConditions());
