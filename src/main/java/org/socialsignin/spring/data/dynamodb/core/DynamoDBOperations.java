@@ -27,9 +27,11 @@ public interface DynamoDBOperations {
 
 	public void save(Object entity);
 	public void batchSave(List<?> entities);
+	public void batchSave(Iterable<?> entities);
 
 	public void delete(Object entity);
 	public void batchDelete(List<?> entities);
+        public void batchDelete(Iterable<?> entities);
 
 	public <T> String getOverriddenTableName(Class<T> domainClass, String tableName);
 

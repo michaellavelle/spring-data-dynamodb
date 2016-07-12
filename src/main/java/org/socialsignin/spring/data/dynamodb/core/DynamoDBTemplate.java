@@ -1,5 +1,6 @@
 package org.socialsignin.spring.data.dynamodb.core;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -135,17 +136,24 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	}
 
 	@Override
+	@Deprecated
 	public void batchSave(List<?> entities) {
-		for (Object entity : entities)
-		{
-			maybeEmitEvent(new BeforeSaveEvent<Object>(entity));
-		}
-		dynamoDBMapper.batchSave(entities);
-		for (Object entity : entities)
-		{
-			maybeEmitEvent(new AfterSaveEvent<Object>(entity));
-		}
+		Iterable<?> iterableEntities = entities;
+		batchSave(iterableEntities);
 	}
+	
+	@Override
+        public void batchSave(Iterable<?> entities) {
+	        Iterator<?> iteratorBefore = entities.iterator();
+	        while( iteratorBefore.hasNext() ){
+	            maybeEmitEvent(new BeforeSaveEvent<Object>(iteratorBefore.next()));
+	        }
+                dynamoDBMapper.batchSave(entities);
+                Iterator<?> iteratorAfter = entities.iterator();
+                while( iteratorAfter.hasNext() ){
+                    maybeEmitEvent(new BeforeSaveEvent<Object>(iteratorAfter.next()));
+                }
+        }
 
 	@Override
 	public void delete(Object entity) {
@@ -156,17 +164,23 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	}
 
 	@Override
+	@Deprecated
 	public void batchDelete(List<?> entities) {
-		for (Object entity : entities)
-		{
-			maybeEmitEvent(new BeforeDeleteEvent<Object>(entity));
-		}
-		dynamoDBMapper.batchDelete(entities);
-		for (Object entity : entities)
-		{
-			maybeEmitEvent(new AfterDeleteEvent<Object>(entity));
-		}
-		
+	        Iterable<?> iterableEntities = entities;
+	        batchDelete(iterableEntities);
+	}
+	
+	@Override
+	public void batchDelete(Iterable<?> entities) {
+	    Iterator<?> iteratorBefore = entities.iterator();
+            while( iteratorBefore.hasNext() ){
+                maybeEmitEvent(new BeforeDeleteEvent<Object>(iteratorBefore.next()));
+            }
+	    dynamoDBMapper.batchDelete(entities);
+	    Iterator<?> iteratorAfter = entities.iterator();
+            while( iteratorAfter.hasNext() ){
+                maybeEmitEvent(new AfterDeleteEvent<Object>(iteratorAfter.next()));
+            }
 	}
 
 	@Override

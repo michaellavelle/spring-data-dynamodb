@@ -132,13 +132,9 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
 	}
 
 	@Override
-	public <S extends T> List<S> save(Iterable<S> entities) {
-		final List<S> entityList = new ArrayList<S>();
-		for (S entity : entities) {
-			entityList.add(entity);
-		}
-		dynamoDBOperations.batchSave(entityList);
-		return entityList;
+	public <S extends T> Iterable<S> save(Iterable<S> entities) {
+		dynamoDBOperations.batchSave(entities);
+		return entities;
 	}
 
 	@Override
@@ -201,12 +197,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
 	public void delete(Iterable<? extends T> entities) {
 
 		Assert.notNull(entities, "The given Iterable of entities not be null!");
-
-		List<T> entityList = new ArrayList<T>();
-		for (T entity : entities) {
-			entityList.add(entity);
-		}
-		dynamoDBOperations.batchDelete(entityList);
+		dynamoDBOperations.batchDelete(entities);
 	}
 
 	@Override
