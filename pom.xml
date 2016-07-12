@@ -301,11 +301,12 @@
             <plugin>
                 <groupId>com.jcabi</groupId>
                 <artifactId>jcabi-dynamodb-maven-plugin</artifactId>
-                <version>0.7.1</version>
+                <version>0.8</version>
                 <configuration>
                     <tables>
                         <table>src/test/resources/user_table.json</table>
                         <table>src/test/resources/playlist_table.json</table>
+                        <table>src/test/resources/feeduser_table.json</table>
                     </tables>
                     <port>${dynamodblocal.port}</port>
                     <dist>${project.build.directory}/dynamodb-dist</dist>
