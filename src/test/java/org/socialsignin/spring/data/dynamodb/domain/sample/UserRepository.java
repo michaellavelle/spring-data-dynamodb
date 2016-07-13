@@ -15,5 +15,8 @@ public interface UserRepository extends Repository<User, String> {
 	@EnableScan
 	List<User> findByLeaveDate(Instant leaveDate);
 
+	@EnableScan
+	Optional<User> findByName(String name);
+
 	<T extends User> User save(T entity);
 }

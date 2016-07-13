@@ -18,7 +18,6 @@ package org.socialsignin.spring.data.dynamodb.query;
 import java.util.List;
 
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 /**
@@ -38,8 +37,11 @@ public abstract class AbstractMultipleEntityQuery<T> extends AbstractQuery<T> im
 			throw new IncorrectResultSizeDataAccessException("result returns more than one elements", 1, results.size());
 		}
 		if (results.size() == 0) {
-			throw new EmptyResultDataAccessException("No results found", 1);
+		// return null here as Spring will convert that to Optional if nessassary
+		// https://jira.spring.io/browse/DATACMNS-483
+			return null;
+		} else {
+			return results.get(0);
 		}
-		return results.get(0);
 	}
 }

@@ -35,9 +35,9 @@ public class Jdk8IT {
 	UserRepository userRepository;
 
 	@Test
-	public void testOptional() {
+	public void testOptionalKey() {
 		final Date joinDate = new Date(1000);
-		final String id = "testOptional";
+		final String id = "testOptionalKey";
 		Optional<User> result = userRepository.findOne(id);
 
 		assertNotNull(result);
@@ -54,6 +54,29 @@ public class Jdk8IT {
 		assertNotNull(result);
 		assertEquals(savedEntity, result.get());
 		assertEquals(joinDate, result.get().getJoinDate());
+	}
+	
+	@Test
+	public void testOptionalFilter() {
+        final Date joinDate = new Date(2000);
+        final String id = "testOptionalFilter";
+        final String name = UUID.randomUUID().toString();
+        Optional<User> result = userRepository.findByName(name);
+
+        assertNotNull(result);
+        assertEquals(result, Optional.empty());
+
+        User newUser = new User();
+        newUser.setId(id);
+        newUser.setName(name);
+        newUser.setJoinDate(joinDate);
+
+        User savedEntity = userRepository.save(newUser);
+
+        result = userRepository.findByName(name);
+        assertNotNull(result);
+        assertEquals(savedEntity, result.get());
+        assertEquals(joinDate, result.get().getJoinDate());
 	}
 
 	@Test
