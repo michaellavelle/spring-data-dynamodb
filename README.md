@@ -258,3 +258,17 @@ And finally write a test client
 ## Advanced topics ##
 Advanced topics can be found in the [wiki](https://github.com/derjust/spring-data-dynamodb/wiki).
 
+## Release process ##
+
+Check `pom.xml` for the proper `<version />`, afterwards execute
+
+```
+  $ mvn release:prepare && mvn release:perform
+```
+
+which will tag, build, test and upload the artifacts to Sonatype's OSS staging area.
+
+Then visit
+https://oss.sonatype.org/#stagingRepositories
+and close 'your' staging repository. This will sync with Maven Central (give it some hours to become visible via http://search.maven.org/).
+
