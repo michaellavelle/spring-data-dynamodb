@@ -270,5 +270,7 @@ which will tag, build, test and upload the artifacts to Sonatype's OSS staging a
 
 Then visit
 https://oss.sonatype.org/#stagingRepositories
-and close 'your' staging repository. This will sync with Maven Central (give it some hours to become visible via http://search.maven.org/).
+and _close_ the staging repository.
+
+Afterwards _release_ the staging repository. This will sync with Maven Central (give it some hours to become visible via http://search.maven.org/).
 
