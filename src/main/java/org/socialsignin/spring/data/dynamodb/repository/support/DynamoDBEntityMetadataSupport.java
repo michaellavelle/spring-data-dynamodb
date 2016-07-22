@@ -286,11 +286,23 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 	@Override
 	public DynamoDBMarshaller<?> getMarshallerForProperty(final String propertyName) {
+		DynamoDBMarshalling annotation = null;
 
 		Method method = findMethod(propertyName);
-		if (method != null && method.getAnnotation(DynamoDBMarshalling.class) != null) {
+		if (method != null) {
+			annotation = method.getAnnotation(DynamoDBMarshalling.class);
+		}
+
+		if(annotation == null) {
+			Field field = findField(propertyName);
+			if(field != null) {
+				annotation = field.getAnnotation(DynamoDBMarshalling.class);
+			}
+		}
+
+		if(annotation != null) {
 			try {
-				return method.getAnnotation(DynamoDBMarshalling.class).marshallerClass().newInstance();
+				return annotation.marshallerClass().newInstance();
 			} catch (InstantiationException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalAccessException e) {
