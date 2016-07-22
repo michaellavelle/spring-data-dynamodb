@@ -35,7 +35,8 @@ public class User {
 	private Integer numberOfPlaylists;
 	
 	private Date joinDate;
-	
+
+	@DynamoDBMarshalling(marshallerClass=DynamoDBYearMarshaller.class)
 	private Date joinYear;
 	
 	private Instant leaveDate;
@@ -61,7 +62,6 @@ public class User {
 		this.joinDate = joinDate;
 	}
 	
-	@DynamoDBMarshalling(marshallerClass=DynamoDBYearMarshaller.class)
 	public Date getJoinYear() {
 		return joinYear;
 	}
