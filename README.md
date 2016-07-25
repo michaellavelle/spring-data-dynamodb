@@ -36,14 +36,28 @@ Spring-Boot projects.
 
 ## Quick Start ##
 
-Download the jar though [Maven](http://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb):
+Download the JAR though [Maven](http://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb):
 
 ```xml
 <dependency>
   <groupId>com.github.derjust</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>4.3.0</version>
+  <version>4.3.1</version>
 </dependency>
+```
+
+or via Gradle
+
+```yml
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile group: 'com.github.derjust',
+  name: 'spring-data-dynamodb',
+  version: '4.3.1'
+}
 ```
 
 Setup DynamoDB configuration as well as enabling Spring Data DynamoDB repository support.
