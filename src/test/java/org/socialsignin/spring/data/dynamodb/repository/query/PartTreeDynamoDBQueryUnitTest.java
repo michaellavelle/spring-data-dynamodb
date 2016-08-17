@@ -72,7 +72,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 	@Mock
 	@SuppressWarnings("rawtypes")
 	private Parameters mockParameters;
-
+	
 	@Mock
 	private User mockUser;
 
@@ -150,6 +150,8 @@ public class PartTreeDynamoDBQueryUnitTest {
 		Class returnedObjectClass = clazz;
 		Mockito.when(mockDynamoDBQueryMethod.getEntityType()).thenReturn(clazz);
 		Mockito.when(mockDynamoDBQueryMethod.getName()).thenReturn(repositoryMethodName);
+		Mockito.when(mockDynamoDBQueryMethod.getParameters()).thenReturn(mockParameters);
+		Mockito.when(mockParameters.getBindableParameters()).thenReturn(mockParameters);
 		Mockito.when(mockParameters.getNumberOfParameters()).thenReturn(numberOfParameters);
 		Mockito.when(mockDynamoDBQueryMethod.getReturnedObjectType()).thenReturn(returnedObjectClass);
 		if (hashKeyProperty != null) {

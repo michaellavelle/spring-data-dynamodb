@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryLookupStrategy;
@@ -62,13 +63,13 @@ public class DynamoDBQueryLookupStrategy {
 		 * org.springframework.data.repository.core.NamedQueries)
 		 */
 		@Override
-        public final RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, NamedQueries namedQueries) {
+        public final RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory, NamedQueries namedQueries) {
 
-			return createDynamoDBQuery(method, metadata, metadata.getDomainType(), metadata.getIdType(), namedQueries);
+			return createDynamoDBQuery(method, metadata, factory, metadata.getDomainType(), metadata.getIdType(), namedQueries);
 		}
 
 		protected abstract <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method,
-				RepositoryMetadata metadata, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries);
+				RepositoryMetadata metadata, ProjectionFactory factory, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries);
 	}
 
 	/**
@@ -84,10 +85,10 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		@Override
-		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
 				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			try {
-				return new PartTreeDynamoDBQuery<T, ID>(dynamoDBOperations, new DynamoDBQueryMethod<T, ID>(method, metadata));
+				return new PartTreeDynamoDBQuery<T, ID>(dynamoDBOperations, new DynamoDBQueryMethod<T, ID>(method, metadata, factory));
 			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(String.format("Could not create query metamodel for method %s!",
 						method.toString()), e);
@@ -110,7 +111,7 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		@Override
-		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
 				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			throw new UnsupportedOperationException("Declared Queries not supported at this time");
 		}
@@ -137,14 +138,14 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		@Override
-		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
 				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			try {
-				return strategy.createDynamoDBQuery(method, metadata, entityClass, idClass, namedQueries);
+				return strategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
 			} catch (IllegalStateException e) {
-				return createStrategy.createDynamoDBQuery(method, metadata, entityClass, idClass, namedQueries);
+				return createStrategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
 			} catch (UnsupportedOperationException e) {
-				return createStrategy.createDynamoDBQuery(method, metadata, entityClass, idClass, namedQueries);
+				return createStrategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
 			}
 
 		}

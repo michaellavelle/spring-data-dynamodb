@@ -23,13 +23,14 @@ The major and minor number of this library refers to the compatible Spring frame
 
 API changes will follow SEMVER and loosly the Spring Framework releases.
 
-| `spring-data-dynamodb` version  | Spring Framework compatibility |
-| ------------- | ------------- |
-| 1.0.x  | >= 3.1 && < 4.2  |
-| 4.2.x  | >= 4.2 && < 4.3  |
-| 4.3.x  | >= 4.3 |
+| `spring-data-dynamodb` version  | Spring Framework compatibility | Spring Data compatibility |
+| ------------- | ------------- | -------- |
+| 1.0.x  | >= 3.1 && < 4.2  |            |
+| 4.2.x  | >= 4.2 && < 4.3  | Gosling-SR1|
+| 4.3.x  | >= 4.3           | Gosling-SR1|
+| 4.4.x  | >= 4.3           | Hopper-SR2 |
 
-`spring-data-dynamodb` depends directly on `spring-context`, `spring-data` and `spring-tx`.
+`spring-data-dynamodb` depends directly on `spring-data` as also `spring-context`, `spring-data` and `spring-tx`.
 
 `compile` and `runtime` dependencies are kept to a minimum to allow easy integartion, for example into 
 Spring-Boot projects.

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>4.3.2-SNAPSHOT</version>
+    <version>4.4.0-SNAPSHOT</version>
     <name>Spring Data DynamoDb</name>
     <description>Spring Data module providing support for DynamoDb repositories.</description>
     <url>http://github.com/michaellavelle/spring-data-dynamodb</url>
@@ -16,10 +16,11 @@
     </licenses>
 
     <properties>
-        <spring.version>4.3.1.RELEASE</spring.version>
-        <spring-data.version>Gosling-SR1</spring-data.version>
+        <spring.version>4.3.2.RELEASE</spring.version>
+        <spring-data.version>Hopper-SR2</spring-data.version>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <aws-java-sdk.version>1.11.15</aws-java-sdk.version>
+        <aws-java-sdk.version>1.11.27</aws-java-sdk.version>
+        <junit.version>4.12</junit.version>
         <mockito.version>1.10.19</mockito.version>
 
         <cdi.version>1.2</cdi.version>
@@ -53,6 +54,13 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.mockito</groupId>
