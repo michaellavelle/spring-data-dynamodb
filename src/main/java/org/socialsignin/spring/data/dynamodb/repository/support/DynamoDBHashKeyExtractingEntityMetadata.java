@@ -20,13 +20,14 @@ import java.util.Map;
 import org.springframework.data.repository.core.EntityMetadata;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 
 /**
  * Obtains basic hash key-related metadata about a DynamoDBEntity, such as
  * whether properties have overridden attribute names or have custom marshallers
  * assigned, whether a property is a hash key property or a composite id
  * property, and generates a hash key prototype entity given a hash key.
- * 
+ *
  * @author Michael Lavelle
  */
 public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetadata<T> {
@@ -35,6 +36,8 @@ public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetada
 
 	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName);
 
+	public DynamoDBTypeConverter<?, ?> getTypeConverterForProperty(String propertyName);
+
 	public boolean isHashKeyProperty(String propertyName);
 
 	public String getHashKeyPropertyName();
@@ -42,7 +45,7 @@ public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetada
 	public String getDynamoDBTableName();
 
 	Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName();
-	
+
 	boolean isGlobalIndexHashKeyProperty(String propertyName);
 
 	boolean isGlobalIndexRangeKeyProperty(String propertyName);

@@ -23,6 +23,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 
 /**
  * Encapsulates minimal information needed to load DynamoDB entities that have
@@ -84,6 +85,11 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Seri
 	@Override
 	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
 		return metadata.getMarshallerForProperty(propertyName);
+	}
+
+	@Override
+	public DynamoDBTypeConverter<?, ?> getTypeConverterForProperty(String propertyName) {
+		return metadata.getTypeConverterForProperty(propertyName);
 	}
 
 	@Override

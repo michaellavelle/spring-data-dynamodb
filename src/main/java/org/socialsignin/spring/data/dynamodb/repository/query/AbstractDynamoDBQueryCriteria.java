@@ -42,6 +42,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
@@ -472,6 +473,12 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 
 	@SuppressWarnings("unchecked")
 	protected <V> Object getPropertyAttributeValue(String propertyName, Object value) {
+		DynamoDBTypeConverter<Object, V> converter = (DynamoDBTypeConverter<Object, V>) entityInformation.getTypeConverterForProperty(propertyName);
+
+		if (converter != null) {
+			return converter.convert((V) value);
+		}
+
 		DynamoDBMarshaller<V> marshaller = (DynamoDBMarshaller<V>) entityInformation.getMarshallerForProperty(propertyName);
 
 		if (marshaller != null) {
@@ -525,7 +532,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		}
 		return list;
 	}
-	
+
 	private List<String> getBooleanListAsStringList(List<Boolean> booleanList) {
 		List<String> list = new ArrayList<String>();
 		for (Boolean booleanValue : booleanList) {
