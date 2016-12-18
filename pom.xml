@@ -19,7 +19,7 @@
         <spring.version>4.3.2.RELEASE</spring.version>
         <spring-data.version>Hopper-SR2</spring-data.version>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <aws-java-sdk.version>1.11.27</aws-java-sdk.version>
+        <aws-java-sdk.version>1.11.68</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
         <mockito.version>1.10.19</mockito.version>
 
