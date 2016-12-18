@@ -109,6 +109,15 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 				}
 			}
 
+            if (sort != null) {
+                for (Order order : sort) {
+                    final String sortProperty = order.getProperty();
+                    if (entityInformation.isGlobalIndexRangeKeyProperty(sortProperty)) {
+                        allowedSortProperties.add(sortProperty);
+                    }
+                }
+            }
+
 			queryRequest.setKeyConditions(keyConditions);
 			queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);
 			applySortIfSpecified(queryRequest, new ArrayList<String>(new HashSet<String>(allowedSortProperties)));
