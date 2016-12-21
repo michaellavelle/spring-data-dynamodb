@@ -43,3 +43,5 @@ DynamoDB comes with a lot of features. Therefore new supported features should a
 
 That means that it should have an `...IT.java` test class that uses the local DynamoDB to demonstrate how the feature is used.
 This serves as proove that it is working (test case succeeds) and also as documentation and 'how-to'.
+But an Integration Test should always be present _next to_ regular Unit Tests that follow common, good practise to test a single class without requiring existence of external dependencies.
+
