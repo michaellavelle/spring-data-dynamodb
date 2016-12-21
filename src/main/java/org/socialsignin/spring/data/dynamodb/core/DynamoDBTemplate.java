@@ -31,39 +31,42 @@ import com.amazonaws.services.dynamodbv2.model.Select;
 
 public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAware {
 
-	protected DynamoDBMapper dynamoDBMapper;
-	private AmazonDynamoDB amazonDynamoDB;
-	private DynamoDBMapperConfig dynamoDBMapperConfig;
+	private final DynamoDBMapper dynamoDBMapper;
+	private final AmazonDynamoDB amazonDynamoDB;
+	private final DynamoDBMapperConfig dynamoDBMapperConfig;
 	private ApplicationEventPublisher eventPublisher;
 	
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB,DynamoDBMapperConfig dynamoDBMapperConfig)
+	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig)
 	{
-		this.amazonDynamoDB = amazonDynamoDB;
-		setDynamoDBMapperConfig(dynamoDBMapperConfig);
+	    this(amazonDynamoDB, dynamoDBMapperConfig, null);
 	}
 	
 	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB)
 	{
-		this.amazonDynamoDB = amazonDynamoDB;
-		setDynamoDBMapperConfig(null);
+        this(amazonDynamoDB, null, null);
 	}
+	
+	DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig, DynamoDBMapper dynamoDBMapper) {
+       this.amazonDynamoDB = amazonDynamoDB;
+        if (dynamoDBMapperConfig == null) {
+            this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
+            this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
+            // Mapper must be null as it could not have been constructed without a Config
+            assert dynamoDBMapper == null;
+        } else {
+            this.dynamoDBMapperConfig = dynamoDBMapperConfig;
+            if (dynamoDBMapper == null) {
+                this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
+            } else {
+                this.dynamoDBMapper = dynamoDBMapper;
+            }
+        }
+    }
 	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.eventPublisher = applicationContext;
-	}
-
-	
-	public void setDynamoDBMapperConfig(DynamoDBMapperConfig dynamoDBMapperConfig)
-	{
-		this.dynamoDBMapperConfig = dynamoDBMapperConfig;
-		dynamoDBMapper = dynamoDBMapperConfig == null ? new DynamoDBMapper(amazonDynamoDB) : new DynamoDBMapper(
-				amazonDynamoDB, dynamoDBMapperConfig);
-		if (dynamoDBMapperConfig == null)
-		{
-			this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
-		}
 	}
 	
 	@Override

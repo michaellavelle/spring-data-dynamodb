@@ -23,18 +23,16 @@ public class DynamoDBTemplateUnitTest {
 	
 	@Mock
 	private DynamoDBMapper dynamoDBMapper;
-	
 	@Mock
 	private AmazonDynamoDB dynamoDB;
+	@Mock
+	private DynamoDBMapperConfig dynamoDBMapperConfig;
 	
 	private DynamoDBTemplate dynamoDBTemplate;
 	
 	@Before
 	public void setUp() {
-		
-		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB);
-		this.dynamoDBTemplate.dynamoDBMapper = dynamoDBMapper;
-		
+		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapperConfig, dynamoDBMapper);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -58,26 +56,24 @@ public class DynamoDBTemplateUnitTest {
 	@Test
 	public void testGetOverriddenTableName_WhenConfigIsNull()
 	{
-		String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(Object.class, "someTableName");
+	    String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(User.class, "someTableName");
 		Assert.assertEquals("someTableName", overriddenTableName);
 	}
 	
     @Test
     public void testGetOverriddenTableName()
     {
-        String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(Object.class, "someTableName");
+        String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(User.class, "someTableName");
         Assert.assertEquals("someTableName", overriddenTableName);
     }
 
     @Test
     public void testGetOverriddenTableName_WithTableNameResolver()
     {
-        DynamoDBMapperConfig dynamoDBMapperConfig = Mockito.mock(DynamoDBMapperConfig.class);
         TableNameResolver tableNameResolver = Mockito.mock(TableNameResolver.class);
         Mockito.when(tableNameResolver.getTableName(Object.class, dynamoDBMapperConfig)).thenReturn(
             "someOtherTableName");
         Mockito.when(dynamoDBMapperConfig.getTableNameResolver()).thenReturn(tableNameResolver);
-        dynamoDBTemplate.setDynamoDBMapperConfig(dynamoDBMapperConfig);
         String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(Object.class, "someTableName");
         Assert.assertEquals("someOtherTableName", overriddenTableName);
     }
@@ -85,14 +81,14 @@ public class DynamoDBTemplateUnitTest {
 	@Test
 	public void testLoadByHashKey_WhenDynamoDBMapperReturnsNull()
 	{
-		User user = dynamoDBTemplate.load(User.class, "someHashKey");	
+		User user = dynamoDBTemplate.load(User.class, "someHashKey");
 		Assert.assertNull(user);
 	}
 	
 	@Test
 	public void testLoadByHashKeyAndRangeKey_WhenDynamoDBMapperReturnsNull()
 	{
-		Playlist playlist = dynamoDBTemplate.load(Playlist.class, "someHashKey","someRangeKey");	
+		Playlist playlist = dynamoDBTemplate.load(Playlist.class, "someHashKey","someRangeKey");
 		Assert.assertNull(playlist);
 	}
 
