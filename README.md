@@ -35,6 +35,22 @@ API changes will follow SEMVER and loosly the Spring Framework releases.
 `compile` and `runtime` dependencies are kept to a minimum to allow easy integartion, for example into 
 Spring-Boot projects.
 
+### Workaround for Spring Boot >= 1.5.x w/ Spring Framework Version >= 4.3.6 ###
+
+As with Spring Boot 1.5.x the `Ingalls` releasetrain of Spring Data is used, this leads to startup failures with the current version of this library. A possible workaround is to lock the use Spring Data releasetrain to `Hopper` like this (add to your `pom.xml`):
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-releasetrain</artifactId>
+                <version>Gosling-SR1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 ## Quick Start ##
 
 Download the JAR though [Maven](http://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb):
