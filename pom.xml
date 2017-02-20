@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>4.4.2-SNAPSHOT</version>
+    <version>4.5.0-SNAPSHOT</version>
     <name>Spring Data DynamoDb</name>
     <description>Spring Data module providing support for DynamoDb repositories.</description>
-    <url>http://github.com/michaellavelle/spring-data-dynamodb</url>
+    <url>http://github.com/derjust/spring-data-dynamodb</url>
 
     <licenses>
         <license>
@@ -16,10 +16,10 @@
     </licenses>
 
     <properties>
-        <spring.version>4.3.2.RELEASE</spring.version>
-        <spring-data.version>Hopper-SR2</spring-data.version>
+        <spring.version>4.3.6.RELEASE</spring.version>
+        <spring-data.version>Ingalls-RELEASE</spring-data.version>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <aws-java-sdk.version>1.11.68</aws-java-sdk.version>
+        <aws-java-sdk.version>1.11.93</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
         <mockito.version>1.10.19</mockito.version>
 

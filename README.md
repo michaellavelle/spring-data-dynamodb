@@ -24,32 +24,17 @@ The major and minor number of this library refers to the compatible Spring frame
 API changes will follow SEMVER and loosly the Spring Framework releases.
 
 | `spring-data-dynamodb` version  | Spring Framework compatibility | Spring Data compatibility |
-| ------------- | ------------- | -------- |
-| 1.0.x  | >= 3.1 && < 4.2  |            |
-| 4.2.x  | >= 4.2 && < 4.3  | Gosling-SR1|
-| 4.3.x  | >= 4.3           | Gosling-SR1|
-| 4.4.x  | >= 4.3           | Hopper-SR2 |
+| ------------------------------- | ------------------------------ | ------------------------- |
+| 1.0.x                           | >= 3.1 && < 4.2                |                           |
+| 4.2.x                           | >= 4.2 && < 4.3                | Gosling-SR1               |
+| 4.3.x                           | >= 4.3                         | Gosling-SR1               |
+| 4.4.x                           | >= 4.3                         | Hopper-SR2                |
+| 4.5.x                           | >= 4.3                         | Ingalls                   |
 
 `spring-data-dynamodb` depends directly on `spring-data` as also `spring-context`, `spring-data` and `spring-tx`.
 
 `compile` and `runtime` dependencies are kept to a minimum to allow easy integartion, for example into 
 Spring-Boot projects.
-
-### Workaround for Spring Boot >= 1.5.x w/ Spring Framework Version >= 4.3.6 ###
-
-As with Spring Boot 1.5.x the `Ingalls` releasetrain of Spring Data is used, this leads to startup failures with the current version of this library. A possible workaround is to lock the use Spring Data releasetrain to `Hopper` like this (add to your `pom.xml`):
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-releasetrain</artifactId>
-                <version>Gosling-SR1</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 ## Quick Start ##
 
@@ -59,7 +44,7 @@ Download the JAR though [Maven](http://mvnrepository.com/artifact/com.github.der
 <dependency>
   <groupId>com.github.derjust</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>4.3.1</version>
+  <version>4.5.0</version>
 </dependency>
 ```
 
@@ -73,7 +58,7 @@ repositories {
 dependencies {
   compile group: 'com.github.derjust',
   name: 'spring-data-dynamodb',
-  version: '4.3.1'
+  version: '4.5.0'
 }
 ```
 
