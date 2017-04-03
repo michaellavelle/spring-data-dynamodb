@@ -40,6 +40,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -56,6 +58,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 	protected Class<T> clazz;
 	private DynamoDBEntityInformation<T, ID> entityInformation;
 	private Map<String, String> attributeNamesByPropertyName;
+	private final DynamoDBMapperTableModel<T> tableModel;
 	private String hashKeyPropertyName;
 
 	protected MultiValueMap<String, Condition> attributeConditions;
@@ -211,14 +214,15 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		return hashKeyConditions;
 	}
 
-	public AbstractDynamoDBQueryCriteria(DynamoDBEntityInformation<T, ID> dynamoDBEntityInformation) {
+	public AbstractDynamoDBQueryCriteria(DynamoDBEntityInformation<T, ID> dynamoDBEntityInformation, final DynamoDBMapperTableModel<T> tableModel) {
 		this.clazz = dynamoDBEntityInformation.getJavaType();
 		this.attributeConditions = new LinkedMultiValueMap<String, Condition>();
 		this.propertyConditions = new LinkedMultiValueMap<String, Condition>();
 		this.hashKeyPropertyName = dynamoDBEntityInformation.getHashKeyPropertyName();
 		this.entityInformation = dynamoDBEntityInformation;
 		this.attributeNamesByPropertyName = new HashMap<String, String>();
-
+		// TODO consider adding the DynamoDBMapper table model to DynamoDBEntityInformation instead
+		this.tableModel = tableModel;
 	}
 
 	private String getFirstDeclaredIndexNameForAttribute(Map<String,String[]> indexNamesByAttributeName,List<String> indexNamesToCheck,String attributeName)
@@ -479,16 +483,22 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected <V> Object getPropertyAttributeValue(String propertyName, Object value) {
-		DynamoDBMarshaller<V> marshaller = (DynamoDBMarshaller<V>) entityInformation.getMarshallerForProperty(propertyName);
+    @SuppressWarnings({"deprecation", "unchecked"})
+    protected <V extends Object> Object getPropertyAttributeValue(final String propertyName, final V value) {
+        // TODO consider removing DynamoDBMarshaller code altogether as table model will handle accordingly
+        final DynamoDBMarshaller<V> marshaller = (DynamoDBMarshaller<V>) entityInformation.getMarshallerForProperty(propertyName);
 
-		if (marshaller != null) {
-			return marshaller.marshall((V) value);
-		} else {
-			return value;
-		}
-	}
+        if (marshaller != null) {
+            return marshaller.marshall(value);
+        } else if (tableModel != null) {  // purely here for testing as DynamoDBMapperTableModel cannot be mocked using Mockito
+            DynamoDBMapperFieldModel<T,Object> fieldModel = tableModel.field(propertyName);
+            if (fieldModel != null) {
+                return fieldModel.convert(value);
+            }
+        }
+
+        return value;
+    }
 
 	protected <V> Condition createNoValueCondition(String propertyName, ComparisonOperator comparisonOperator) {
 
@@ -626,16 +636,19 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		Assert.notNull(o, "Creating conditions on null property values not supported: please specify a value for '"
 				+ propertyName + "'");
 
-		Object attributeValue = !alreadyMarshalledIfRequired ? getPropertyAttributeValue(propertyName, o) : o;
-
-		boolean marshalled = !alreadyMarshalledIfRequired && attributeValue != o
-				&& !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);
-
-		Class<?> targetPropertyType = marshalled ? String.class : propertyType;
 		List<AttributeValue> attributeValueList = new ArrayList<AttributeValue>();
-		attributeValueList = addAttributeValue(attributeValueList, attributeValue, propertyName, targetPropertyType, true);
-		return new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(attributeValueList);
+		Object attributeValue = !alreadyMarshalledIfRequired ? getPropertyAttributeValue(propertyName, o) : o;
+		if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {
+		    attributeValueList.add((AttributeValue) attributeValue);
+		} else {
+		    boolean marshalled = !alreadyMarshalledIfRequired && attributeValue != o
+		        && !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);
 
+		    Class<?> targetPropertyType = marshalled ? String.class : propertyType;
+		    attributeValueList = addAttributeValue(attributeValueList, attributeValue, propertyName, targetPropertyType, true);
+		}
+
+		return new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(attributeValueList);
 	}
 
 	protected Condition createCollectionCondition(String propertyName, ComparisonOperator comparisonOperator, Iterable<?> o,
@@ -647,12 +660,15 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		boolean marshalled = false;
 		for (Object object : o) {
 			Object attributeValue = getPropertyAttributeValue(propertyName, object);
-			if (attributeValue != null) {
-				marshalled = attributeValue != object && !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);
-			}
-			Class<?> targetPropertyType = marshalled ? String.class : propertyType;
-			attributeValueList = addAttributeValue(attributeValueList, attributeValue, propertyName, targetPropertyType, false);
-
+	        if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {
+	            attributeValueList.add((AttributeValue) attributeValue);
+	        } else {
+	            if (attributeValue != null) {
+	                marshalled = attributeValue != object && !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);
+	            }
+	            Class<?> targetPropertyType = marshalled ? String.class : propertyType;
+	            attributeValueList = addAttributeValue(attributeValueList, attributeValue, propertyName, targetPropertyType, false);
+	        }
 		}
 
 		return new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(attributeValueList);

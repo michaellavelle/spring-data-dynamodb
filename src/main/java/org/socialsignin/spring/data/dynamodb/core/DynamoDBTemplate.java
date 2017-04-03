@@ -21,6 +21,7 @@ import org.springframework.util.Assert;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
@@ -239,7 +240,15 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 
 		return tableName;
 	}
-	
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> DynamoDBMapperTableModel<T> getTableModel(Class<T> domainClass) {
+        return dynamoDBMapper.getTableModel(domainClass, dynamoDBMapperConfig);
+    }
+
 	protected <T> void maybeEmitEvent(DynamoDBMappingEvent<T> event) {
 		if (null != eventPublisher) {
 			eventPublisher.publishEvent(event);
