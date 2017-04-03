@@ -22,7 +22,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteriaUnitTest extends AbstractD
 	{
 		Mockito.when(entityInformation.getHashKeyPropertyName()).thenReturn("userName");
 		Mockito.when(entityInformation.getRangeKeyPropertyName()).thenReturn("playlistName");
-		criteria = new DynamoDBEntityWithHashAndRangeKeyCriteria<Playlist,String>(entityInformation);
+		criteria = new DynamoDBEntityWithHashAndRangeKeyCriteria<Playlist,String>(entityInformation, null);
 	}
 	
 	@Test

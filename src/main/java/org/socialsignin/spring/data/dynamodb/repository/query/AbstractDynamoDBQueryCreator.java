@@ -33,6 +33,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 
 /**
@@ -60,10 +61,10 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R>
 
 	@Override
 	protected DynamoDBQueryCriteria<T, ID> create(Part part, Iterator<Object> iterator) {
-
+        final DynamoDBMapperTableModel<T> tableModel = dynamoDBOperations.getTableModel(entityMetadata.getJavaType());
 		DynamoDBQueryCriteria<T, ID> criteria = entityMetadata.isRangeKeyAware() ? new DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID>(
-				(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID>) entityMetadata)
-				: new DynamoDBEntityWithHashKeyOnlyCriteria<T, ID>(entityMetadata);
+				(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID>) entityMetadata, tableModel)
+				: new DynamoDBEntityWithHashKeyOnlyCriteria<T, ID>(entityMetadata, tableModel);
 		return addCriteria(criteria, part, iterator);
 	}
 
