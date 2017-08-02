@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,10 +21,10 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
  * {@link org.socialsignin.spring.data.dynamodb.mapping.DynamoDBPersistentProperty} implementation
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public abstract class AbstractQuery<T> implements Query<T> {
 
-	//protected DynamoDBMapper dynamoDBMapper;
 	protected DynamoDBOperations dynamoDBOperations;
 	protected Class<T> clazz;
 	protected boolean scanEnabled = false;
@@ -51,7 +51,6 @@ public abstract class AbstractQuery<T> implements Query<T> {
 	}
 
 	public AbstractQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
-		//this.dynamoDBMapper = dynamoDBMapper;
 		this.dynamoDBOperations = dynamoDBOperations;
 		this.clazz = clazz;
 	}

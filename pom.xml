@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
     <version>4.5.5-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
+    <inceptionYear>2013</inceptionYear>
+
     <description>The primary goal of the Spring® Data project is to make it easier to build Spring-powered applications
         that use data access technologies.
         This module deals with enhanced support for a data access layer built on AWS DynamoDB.</description>
@@ -20,13 +39,15 @@
     <properties>
         <spring.version>4.3.6.RELEASE</spring.version>
         <spring-data.version>Ingalls-RELEASE</spring-data.version>
+
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
         <aws-java-sdk.version>1.11.232</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
-        <mockito.version>1.10.19</mockito.version>
+        <mockito.version>2.13.0</mockito.version>
 
         <cdi.version>1.2</cdi.version>
-        <logback.version>1.2.3</logback.version>
+        <slf4j-test.version>1.2.0</slf4j-test.version>
+        <sqlite4java.version>1.0.392</sqlite4java.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -79,9 +100,15 @@
             </dependency>
 
             <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>DynamoDBLocal</artifactId>
+                <version>[1.11,2.0)</version>
+            </dependency>
+
+            <dependency>
+                <groupId>uk.org.lidalia</groupId>
+                <artifactId>slf4j-test</artifactId>
+                <version>${slf4j-test.version}</version>
             </dependency>
 
             <!-- AWS SDK comes with dependencies to 1.2 and 1.1.3 therefore locking down on 1.2 -->
@@ -125,13 +152,18 @@
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>${cdi.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
         <!-- TEST -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>DynamoDBLocal</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -145,8 +177,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>uk.org.lidalia</groupId>
+            <artifactId>slf4j-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -189,16 +221,71 @@
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.1</version>
-                    <configuration>
-                        <compilerArgs>
-                             <compilerArg>-Xlint:unchecked</compilerArg>
-                             <compilerArg>-Xlint:deprecation</compilerArg>
-                        </compilerArgs>
-                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.20.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
                 </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Specification-Title>Spring Data</Specification-Title>
+                            <Specification-Version>2.0</Specification-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <compilerArg>-Xlint:unchecked</compilerArg>
+                        <compilerArg>-Xlint:deprecation</compilerArg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
+                    <properties>
+                        <owner>spring-data-dynamodb</owner>
+                        <email>https://github.com/derjust/spring-data-dynamodb</email>
+                    </properties>
+                    <excludes>
+                        <exclude>**/README.md</exclude>
+                        <exclude>**/DONATION.md</exclude>
+                        <exclude>**/CONTRIBUTING.md</exclude>
+                        <exclude>**/LICENSE</exclude>
+                        <exclude>src/test/resources/**</exclude>
+                        <exclude>src/main/resources/**</exclude>
+                        <exclude>**/*.psd</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -241,12 +328,12 @@
                                             <limit>
                                                 <counter>BRANCH</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.39</minimum>
+                                                <minimum>0.47</minimum>
                                             </limit>
                                             <limit>
                                                 <counter>LINE</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.40</minimum>
+                                                <minimum>0.55</minimum>
                                             </limit>
                                         </limits>
                                     </rule>
@@ -289,6 +376,7 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
+                        <!-- Prepare standalone DynamoDB instance (Integration testing) -->
                         <id>unpack-dynamodb-local</id>
                         <goals>
                             <goal>unpack</goal>
@@ -303,6 +391,26 @@
                                     <type>zip</type>
                                     <outputDirectory>${project.build.directory}/dynamodb-dist</outputDirectory>
                                     <overWrite>false</overWrite>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- Prepare SQLite for in-memory DynamoDB instance (Unit testing) -->
+                        <id>copy</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.almworks.sqlite4java</groupId>
+                                    <artifactId>${sqlite4java.artifactId}</artifactId>
+                                    <version>${sqlite4java.version}</version>
+                                    <type>${sqlite4java.type}</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -338,6 +446,7 @@
                         <table>src/test/resources/feeduser_table.json</table>
                         <table>src/test/resources/customerhistory_table.json</table>
                         <table>src/test/resources/installation_table.json</table>
+                        <table>src/test/resources/auditable_user_table.json</table>
                     </tables>
                     <port>${dynamodblocal.port}</port>
                     <dist>${project.build.directory}/dynamodb-dist</dist>
@@ -361,6 +470,18 @@
                         <phase>post-integration-test</phase>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>sqlite4java.library.path</name>
+                            <value>${project.build.directory}/lib</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -395,6 +516,11 @@
             <id>spring-libs-snapshot</id>
             <url>http://repo.springsource.org/libs-snapshot</url>
         </repository>
+        <repository>
+            <id>dynamodb-local-oregon</id>
+            <name>DynamoDB Local Release Repository</name>
+            <url>https://s3-us-west-2.amazonaws.com/dynamodb-local/release</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -408,6 +534,70 @@
     </pluginRepositories>
 
     <profiles>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-osx</sqlite4java.artifactId>
+                <sqlite4java.type>dylib</sqlite4java.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-x32</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <arch>i386</arch>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-linux-i386</sqlite4java.artifactId>
+                <sqlite4java.type>so</sqlite4java.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-x64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-linux-amd64</sqlite4java.artifactId>
+                <sqlite4java.type>so</sqlite4java.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows-x86</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>x86</arch>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-win32-x86</sqlite4java.artifactId>
+                <sqlite4java.type>dll</sqlite4java.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows-x64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>x64</arch>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-win32-x64</sqlite4java.artifactId>
+                <sqlite4java.type>dll</sqlite4java.type>
+            </properties>
+        </profile>
         <profile>
             <id>release</id>
             <build>
@@ -465,7 +655,7 @@
 					    <!-- Deploy the web site -->
 					    <groupId>com.github.github</groupId>
 					    <artifactId>site-maven-plugin</artifactId>
-					    <version>0.9</version>
+					    <version>0.12</version>
 					    <executions>
 					        <execution>
 					            <goals>
@@ -521,10 +711,17 @@
             <name>Alex Arana</name>
             <url>https://github.com/alexarana</url>
         </contributor>
+        <contributor>
+            <name>Davin</name>
+            <url>https://github.com/Davinpidoto</url>
+        </contributor>
     </contributors>
 
 
     <distributionManagement>
+        <relocation>
+            <groupId>com.github.spring-data-dynamodb</groupId>
+        </relocation>
         <site>
             <id>website</id>
             <url>https://github.com/derjust/spring-data-dynamodb/</url>

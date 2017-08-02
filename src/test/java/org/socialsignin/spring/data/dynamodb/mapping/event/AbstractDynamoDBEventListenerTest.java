@@ -1,3 +1,18 @@
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.socialsignin.spring.data.dynamodb.mapping.event;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
@@ -7,12 +22,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -27,6 +43,9 @@ public class AbstractDynamoDBEventListenerTest {
     @Mock
     private PaginatedScanList<User> sampleScanList;
 
+    @Mock
+    private DynamoDBMappingEvent<User> brokenEvent;
+
     private AbstractDynamoDBEventListener<User> underTest;
 
     @Before
@@ -38,6 +57,31 @@ public class AbstractDynamoDBEventListenerTest {
         queryList.add(sampleEntity);
         when(sampleQueryList.iterator()).thenReturn(queryList.iterator());
         when(sampleScanList.iterator()).thenReturn(queryList.iterator());
+    }
+
+    @Test(expected =  AssertionError.class)
+    public void testNullArgument() {
+        // This is impossible but let's be sure that it is covered
+        when(brokenEvent.getSource()).thenReturn(null);
+
+        underTest.onApplicationEvent(brokenEvent);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testUnknownEvent() {
+        // Simulate an unknown event
+        when(brokenEvent.getSource()).thenReturn(new User());
+
+        underTest.onApplicationEvent(brokenEvent);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testRawType() {
+        underTest = Mockito.spy(new AbstractDynamoDBEventListener() {
+        });
+
+        assertSame(Object.class, underTest.getDomainClass());
     }
 
     @Test
@@ -130,8 +174,5 @@ public class AbstractDynamoDBEventListenerTest {
         verify(underTest, never()).onBeforeDelete(any(User.class));
         verify(underTest).onBeforeSave(sampleEntity);
     }
-
-
-
 
 }

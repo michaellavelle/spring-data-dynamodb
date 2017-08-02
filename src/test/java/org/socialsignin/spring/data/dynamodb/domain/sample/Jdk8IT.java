@@ -1,6 +1,28 @@
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.Instant;
 import java.util.Date;
@@ -8,14 +30,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.socialsignin.spring.data.dynamodb.core.ConfigurationTI;
-import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests JDK8 features of spring-data
@@ -23,7 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * github.com/spring-projects/spring-data-examples/master/jpa/java8</a>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ConfigurationTI.class, Jdk8IT.TestAppConfig.class})
+@ContextConfiguration(classes = {DynamoDBResource.class, Jdk8IT.TestAppConfig.class})
 public class Jdk8IT {
 
 	@Configuration
@@ -38,7 +54,7 @@ public class Jdk8IT {
 	public void testOptionalKey() {
 		final Date joinDate = new Date(1000);
 		final String id = "testOptionalKey";
-		Optional<User> result = userRepository.findOne(id);
+		Optional<User> result = userRepository.findById(id);
 
 		assertNotNull(result);
 		assertEquals(result, Optional.empty());
@@ -50,7 +66,7 @@ public class Jdk8IT {
 
 		User savedEntity = userRepository.save(newUser);
 
-		result = userRepository.findOne(id);
+		result = userRepository.findById(id);
 		assertNotNull(result);
 		assertEquals(savedEntity, result.get());
 		assertEquals(joinDate, result.get().getJoinDate());

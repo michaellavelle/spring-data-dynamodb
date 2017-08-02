@@ -1,15 +1,26 @@
 [![codecov.io](https://codecov.io/github/derjust/spring-data-dynamodb/coverage.svg?branch=master)](https://codecov.io/github/derjust/spring-data-dynamodb?branch=master) [![Build Status](https://travis-ci.org/derjust/spring-data-dynamodb.svg?branch=master)](https://travis-ci.org/derjust/spring-data-dynamodb) 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb)
+[![Donation badge](https://img.shields.io/badge/Donate-%F0%9F%92%B8-DAA520.svg)](DONATION.md)
 
-# Spring Data DynamoDB #
+# ⚠ Planing to [transfer](https://help.github.com/articles/transferring-a-repository-owned-by-your-personal-account/) this repository to the [spring-data-dynamodb](https://github.com/spring-data-dynamodb) organization by the end of the month! ⚠ #
+Everything should stay the same for links/browsing - just Git `remote`s must be updated
 
-The primary goal of the [Spring Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies. This module deals with enhanced support for [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) based data access layers.
+
+# Spring  Data DynamoDB #
+
+<img align="left" src="https://derjust.github.io/spring-data-dynamodb/banner/spring-data-dynamodb.png">
+
+The primary goal of the [Spring® Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies.
+
+This module deals with enhanced support for a data access layer built on [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
+
+Technical infos can be found on the [project page](https://derjust.github.io/spring-data-dynamodb/).
 
 ## Supported Features ##
 
 * Implementation of CRUD methods for DynamoDB Entities
 * Dynamic query generation from query method names  (Only a limited number of keywords and comparison operators currently supported)
-* Possibility to integrate [custom repository code](http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.single-repository-behaviour)
+* Possibility to integrate [custom repository code](https://github.com/derjust/spring-data-dynamodb/wiki/Custom-repository-implementations)
 * Easy Spring annotation based integration
 
 ## Demo application ##
@@ -23,13 +34,14 @@ The major and minor number of this library refers to the compatible Spring frame
 
 API changes will follow SEMVER and loosly the Spring Framework releases.
 
-| `spring-data-dynamodb` version  | Spring Framework compatibility | Spring Data compatibility |
-| ------------------------------- | ------------------------------ | ------------------------- |
-| 1.0.x                           | >= 3.1 && < 4.2                |                           |
-| 4.2.x                           | >= 4.2 && < 4.3                | Gosling-SR1               |
-| 4.3.x                           | >= 4.3                         | Gosling-SR1               |
-| 4.4.x                           | >= 4.3                         | Hopper-SR2                |
-| 4.5.x                           | >= 4.3                         | Ingalls                   |
+| `spring-data-dynamodb` version  | Spring Boot compatibility      |Spring Framework compatibility  | Spring Data compatibility |
+| ------------------------------- | ------------------------------ | ------------------------------ | ------------------------- |
+| 1.0.x                           |                                | >= 3.1 && < 4.2                |                           |
+| 4.2.x                           | >= 1.3.0 && < 1.4.0            | >= 4.2 && < 4.3                | Gosling-SR1               |
+| 4.3.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Gosling-SR1               |
+| 4.4.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Hopper-SR2                |
+| 4.5.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Ingalls                   |
+| 5.0.x                           | >= 2.0                         | >= 5.0                         | Kay-SR1                   |
 
 `spring-data-dynamodb` depends directly on `spring-data` as also `spring-context`, `spring-data` and `spring-tx`.
 
@@ -44,7 +56,7 @@ Download the JAR though [Maven](http://mvnrepository.com/artifact/com.github.der
 <dependency>
   <groupId>com.github.derjust</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>4.5.1</version>
+  <version>4.5.5</version>
 </dependency>
 ```
 
@@ -58,7 +70,7 @@ repositories {
 dependencies {
   compile group: 'com.github.derjust',
   name: 'spring-data-dynamodb',
-  version: '4.5.1'
+  version: '4.5.5'
 }
 ```
 
@@ -138,6 +150,11 @@ public class User {
   private String lastName;
 
   public User() {
+  }
+  
+  public User(String firstName, String lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
   }
 
   @DynamoDBHashKey
@@ -273,20 +290,3 @@ And finally write a test client
  
 ## Advanced topics ##
 Advanced topics can be found in the [wiki](https://github.com/derjust/spring-data-dynamodb/wiki).
-
-## Release process ##
-
-Check `pom.xml` for the proper `<version />`, afterwards execute
-
-```
-  $ mvn release:prepare && mvn release:perform
-```
-
-which will tag, build, test and upload the artifacts to Sonatype's OSS staging area.
-
-Then visit
-https://oss.sonatype.org/#stagingRepositories
-and _close_ the staging repository.
-
-Afterwards _release_ the staging repository. This will sync with Maven Central (give it some hours to become visible via http://search.maven.org/).
-

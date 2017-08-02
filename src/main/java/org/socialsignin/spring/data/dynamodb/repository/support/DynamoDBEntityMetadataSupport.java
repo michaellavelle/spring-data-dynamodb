@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
-
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
-import org.springframework.util.ReflectionUtils.MethodCallback;
-import org.springframework.util.StringUtils;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
@@ -39,9 +24,25 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBVersionAttribute;
+import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.FieldCallback;
+import org.springframework.util.ReflectionUtils.MethodCallback;
+import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implements DynamoDBHashKeyExtractingEntityMetadata<T> {
 
@@ -72,9 +73,9 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		DynamoDBTable table = this.domainType.getAnnotation(DynamoDBTable.class);
 		Assert.notNull(table, "Domain type must by annotated with DynamoDBTable!");
 		this.dynamoDBTableName = table.tableName();
-		this.globalSecondaryIndexNames = new HashMap<String, String[]>();
-		this.globalIndexHashKeyPropertyNames = new ArrayList<String>();
-		this.globalIndexRangeKeyPropertyNames = new ArrayList<String>();
+		this.globalSecondaryIndexNames = new HashMap<>();
+		this.globalIndexHashKeyPropertyNames = new ArrayList<>();
+		this.globalIndexRangeKeyPropertyNames = new ArrayList<>();
 		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
 			@Override
             public void doWith(Method method) {
@@ -123,9 +124,9 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 		if (hasRangeKey) {
 			DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> metadata = new DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID>(
 					domainType);
-			return new DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID>(domainType, metadata);
+			return new DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<>(domainType, metadata);
 		} else {
-			return new DynamoDBIdIsHashKeyEntityInformationImpl<T, ID>(domainType, this);
+			return new DynamoDBIdIsHashKeyEntityInformationImpl<>(domainType, this);
 		}
 	}
 
@@ -302,12 +303,9 @@ public class DynamoDBEntityMetadataSupport<T, ID extends Serializable> implement
 
 		if(annotation != null) {
 			try {
-				return annotation.marshallerClass().newInstance();
-			} catch (InstantiationException e) {
+				return annotation.marshallerClass().getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-
 			}
 		}
 

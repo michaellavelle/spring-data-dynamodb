@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.AbstractEntityInformation;
 import org.springframework.util.Assert;
@@ -27,11 +22,17 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 /**
  * {@link org.springframework.data.repository.core.EntityInformation} implementation that inspects getters for an
  * annotation and invokes this getter's value to retrieve the id.
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class FieldAndGetterReflectionEntityInformation<T, ID extends Serializable> extends AbstractEntityInformation<T, ID> {
 
@@ -63,11 +64,11 @@ public class FieldAndGetterReflectionEntityInformation<T, ID extends Serializabl
 	public FieldAndGetterReflectionEntityInformation(Class<T> domainClass, final Class<? extends Annotation> annotation) {
 
 		super(domainClass);
-		Assert.notNull(annotation);
+		Assert.notNull(annotation, "annotation must not be null!");
 
 		ReflectionUtils.doWithMethods(domainClass, new MethodCallback() {
 			@Override
-            public void doWith(Method method) {
+			public void doWith(Method method) {
 				if (method.getAnnotation(annotation) != null) {
 					FieldAndGetterReflectionEntityInformation.this.method = method;
 					return;
@@ -79,7 +80,7 @@ public class FieldAndGetterReflectionEntityInformation<T, ID extends Serializabl
 		{
 			ReflectionUtils.doWithFields(domainClass, new FieldCallback() {
 				@Override
-                public void doWith(Field field) {
+				public void doWith(Field field) {
 					if (field.getAnnotation(annotation) != null) {
 						FieldAndGetterReflectionEntityInformation.this.field = field;
 						return;

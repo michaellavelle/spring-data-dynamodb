@@ -1,9 +1,33 @@
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.socialsignin.spring.data.dynamodb.core;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper.FailedBatch;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
+import com.amazonaws.services.dynamodbv2.model.Select;
 import org.socialsignin.spring.data.dynamodb.mapping.event.AfterDeleteEvent;
 import org.socialsignin.spring.data.dynamodb.mapping.event.AfterLoadEvent;
 import org.socialsignin.spring.data.dynamodb.mapping.event.AfterQueryEvent;
@@ -18,20 +42,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
-import com.amazonaws.services.dynamodbv2.model.QueryResult;
-import com.amazonaws.services.dynamodbv2.model.Select;
+import java.util.List;
+import java.util.Map;
 
-public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAware {
+public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextAware {
 
 	private final DynamoDBMapper dynamoDBMapper;
 	private final AmazonDynamoDB amazonDynamoDB;
@@ -45,7 +59,6 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	}
     
 	/** Convenient constructor to use the {@link DynamoDBMapperConfig#DEFAULT} */
-
     public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper)
     {
         this(amazonDynamoDB, null, dynamoDBMapper);
@@ -95,7 +108,12 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	public <T> PaginatedQueryList<T> query(Class<T> domainClass,
 			DynamoDBQueryExpression<T> queryExpression) {
 		PaginatedQueryList<T> results = dynamoDBMapper.query(domainClass, queryExpression);
-		maybeEmitEvent(new AfterQueryEvent<T>(results));
+		maybeEmitEvent(results, new DynamoDBMappingEventFactory<PaginatedQueryList<T>>() {
+			@Override
+			public DynamoDBMappingEvent<PaginatedQueryList<T>> apply(PaginatedQueryList<T> source) {
+				return new AfterQueryEvent(source);
+			}
+		});
 		return results;
 	}
 
@@ -108,20 +126,26 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey, Object rangeKey) {
 		T entity =  dynamoDBMapper.load(domainClass, hashKey,rangeKey);
-		if (entity != null)
-		{
-			maybeEmitEvent(new AfterLoadEvent<Object>(entity));
-		}
+		maybeEmitEvent(entity, new DynamoDBMappingEventFactory<T>() {
+			@Override
+			public DynamoDBMappingEvent<T> apply(T source) {
+				return new AfterLoadEvent(source);
+			}
+		});
+
 		return entity;
 	}
 
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey) {
 		T entity =  dynamoDBMapper.load(domainClass, hashKey);
-		if (entity != null)
-		{
-			maybeEmitEvent(new AfterLoadEvent<Object>(entity));
-		}
+		maybeEmitEvent(entity, new DynamoDBMappingEventFactory<T>() {
+			@Override
+			public DynamoDBMappingEvent<T> apply(T source) {
+				return new AfterLoadEvent(source);
+			}
+		});
+
 		return entity;
 	}
 
@@ -129,7 +153,12 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	public <T> PaginatedScanList<T> scan(Class<T> domainClass,
 			DynamoDBScanExpression scanExpression) {
 		PaginatedScanList<T> results = dynamoDBMapper.scan(domainClass, scanExpression);
-		maybeEmitEvent(new AfterScanEvent<T>(results));
+		maybeEmitEvent(results, new DynamoDBMappingEventFactory<PaginatedScanList<T>>() {
+			@Override
+			public DynamoDBMappingEvent<PaginatedScanList<T>> apply(PaginatedScanList<T> source) {
+				return new AfterScanEvent(source);
+			}
+		});
 		return results;
 	}
 
@@ -140,7 +169,12 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 		{
 			for (Object entity : resultList)
 			{
-				maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+				maybeEmitEvent(entity, new DynamoDBMappingEventFactory<Object>() {
+					@Override
+					public DynamoDBMappingEvent<Object> apply(Object source) {
+						return new AfterLoadEvent(source);
+					}
+				});
 			}
 		}
 		return results;
@@ -148,58 +182,77 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 
 	@Override
 	public void save(Object entity) {
-		maybeEmitEvent(new BeforeSaveEvent<Object>(entity));
+		maybeEmitEvent(entity, new DynamoDBMappingEventFactory<Object>() {
+			@Override
+			public DynamoDBMappingEvent<Object> apply(Object source) {
+				return new BeforeSaveEvent(source);
+			}
+		});
 		dynamoDBMapper.save(entity);
-		maybeEmitEvent(new AfterSaveEvent<Object>(entity));
-
-	}
-
-	@Override
-	@Deprecated
-	public void batchSave(List<?> entities) {
-		Iterable<?> iterableEntities = entities;
-		batchSave(iterableEntities);
+		maybeEmitEvent(entity, new DynamoDBMappingEventFactory<Object>() {
+			@Override
+			public DynamoDBMappingEvent<Object> apply(Object source) {
+				return new AfterSaveEvent(source);
+			}
+		});
 	}
 	
 	@Override
-        public void batchSave(Iterable<?> entities) {
-	        Iterator<?> iteratorBefore = entities.iterator();
-	        while( iteratorBefore.hasNext() ){
-	            maybeEmitEvent(new BeforeSaveEvent<Object>(iteratorBefore.next()));
-	        }
-                dynamoDBMapper.batchSave(entities);
-                Iterator<?> iteratorAfter = entities.iterator();
-                while( iteratorAfter.hasNext() ){
-                    maybeEmitEvent(new BeforeSaveEvent<Object>(iteratorAfter.next()));
-                }
-        }
+	public List<FailedBatch> batchSave(Iterable<?> entities) {
+		for(Object it : entities) maybeEmitEvent(it, new DynamoDBMappingEventFactory<Object>() {
+			@Override
+			public DynamoDBMappingEvent<Object> apply(Object source) {
+				return new BeforeSaveEvent(source);
+			}
+		});
+
+		List<FailedBatch> result = dynamoDBMapper.batchSave(entities);
+
+		for(Object it : entities) maybeEmitEvent(it, new DynamoDBMappingEventFactory<Object>() {
+			@Override
+			public DynamoDBMappingEvent<Object> apply(Object source) {
+				return new AfterSaveEvent(source);
+			}
+		});
+        return result;
+    }
 
 	@Override
 	public void delete(Object entity) {
-		maybeEmitEvent(new BeforeDeleteEvent<Object>(entity));
+		maybeEmitEvent(entity, new DynamoDBMappingEventFactory<Object>() {
+			@Override
+			public DynamoDBMappingEvent<Object> apply(Object source) {
+				return new BeforeDeleteEvent(source);
+			}
+		});
 		dynamoDBMapper.delete(entity);
-		maybeEmitEvent(new AfterDeleteEvent<Object>(entity));
+		maybeEmitEvent(entity, new DynamoDBMappingEventFactory<Object>() {
+			@Override
+			public DynamoDBMappingEvent<Object> apply(Object source) {
+				return new AfterDeleteEvent(source);
+			}
+		});
 
-	}
-
-	@Override
-	@Deprecated
-	public void batchDelete(List<?> entities) {
-	        Iterable<?> iterableEntities = entities;
-	        batchDelete(iterableEntities);
 	}
 	
 	@Override
-	public void batchDelete(Iterable<?> entities) {
-	    Iterator<?> iteratorBefore = entities.iterator();
-            while( iteratorBefore.hasNext() ){
-                maybeEmitEvent(new BeforeDeleteEvent<Object>(iteratorBefore.next()));
-            }
-	    dynamoDBMapper.batchDelete(entities);
-	    Iterator<?> iteratorAfter = entities.iterator();
-            while( iteratorAfter.hasNext() ){
-                maybeEmitEvent(new AfterDeleteEvent<Object>(iteratorAfter.next()));
-            }
+	public List<FailedBatch> batchDelete(Iterable<?> entities) {
+		for(Object it : entities) maybeEmitEvent(it, new DynamoDBMappingEventFactory<Object>() {
+			@Override
+			public DynamoDBMappingEvent<Object> apply(Object source) {
+				return new BeforeDeleteEvent(source);
+			}
+		});
+
+	    List<FailedBatch> result = dynamoDBMapper.batchDelete(entities);
+
+		for(Object it : entities) maybeEmitEvent(it, new DynamoDBMappingEventFactory<Object>() {
+			@Override
+			public DynamoDBMappingEvent<Object> apply(Object source) {
+				return new AfterDeleteEvent(source);
+			}
+		});
+		return result;
 	}
 
 	@Override
@@ -249,11 +302,18 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
         return dynamoDBMapper.getTableModel(domainClass, dynamoDBMapperConfig);
     }
 
-	protected <T> void maybeEmitEvent(DynamoDBMappingEvent<T> event) {
-		if (null != eventPublisher) {
-			eventPublisher.publishEvent(event);
-		}
-}
+    protected interface DynamoDBMappingEventFactory<T> {
+		DynamoDBMappingEvent<T> apply(T source);
+	}
 
-	
+    protected <T> void maybeEmitEvent(T source, DynamoDBMappingEventFactory<T> factory) {
+    	if (eventPublisher != null) {
+    		if (source != null) {
+				DynamoDBMappingEvent<T> event = factory.apply(source);
+
+				eventPublisher.publishEvent(event);
+			}
+		}
+
+	}
 }

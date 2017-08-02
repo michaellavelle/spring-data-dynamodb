@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,15 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.Select;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.marshaller.Date2IsoDynamoDBMarshaller;
 import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
@@ -40,18 +37,21 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
-import com.amazonaws.services.dynamodbv2.model.Condition;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
-import com.amazonaws.services.dynamodbv2.model.Select;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> implements DynamoDBQueryCriteria<T, ID> {
 
@@ -67,7 +67,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 	protected Object hashKeyAttributeValue;
 	protected Object hashKeyPropertyValue;
 	protected String globalSecondaryIndexName;
-	protected Sort sort;
+	protected Sort sort = null;
 
 	public abstract boolean isApplicableForLoad();
 
@@ -81,7 +81,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		queryRequest.setIndexName(theIndexName);
 
 		if (isApplicableForGlobalSecondaryIndex()) {
-			List<String> allowedSortProperties = new ArrayList<String>();
+			List<String> allowedSortProperties = new ArrayList<>();
 
 			for (Entry<String, List<Condition>> singlePropertyCondition : propertyConditions.entrySet()) {
 				if (entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet()
@@ -90,7 +90,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 				}
 			}
 
-			HashMap<String, Condition> keyConditions = new HashMap<String, Condition>();
+			HashMap<String, Condition> keyConditions = new HashMap<>();
 
 			if (hashKeyConditions != null && hashKeyConditions.size() > 0) {
 				for (Condition hashKeyCondition : hashKeyConditions) {
@@ -112,18 +112,17 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 				}
 			}
 
-            if (sort != null) {
-                for (Order order : sort) {
-                    final String sortProperty = order.getProperty();
-                    if (entityInformation.isGlobalIndexRangeKeyProperty(sortProperty)) {
-                        allowedSortProperties.add(sortProperty);
-                    }
-                }
-            }
+			if (sort != null) for (Order order : sort) {
+				final String sortProperty = order.getProperty();
+				if (entityInformation.isGlobalIndexRangeKeyProperty(sortProperty)) {
+					allowedSortProperties.add(sortProperty);
+				}
+			}
+
 
 			queryRequest.setKeyConditions(keyConditions);
 			queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);
-			applySortIfSpecified(queryRequest, new ArrayList<String>(new HashSet<String>(allowedSortProperties)));
+			applySortIfSpecified(queryRequest, new ArrayList<>(new HashSet<>(allowedSortProperties)));
 		}
 		return queryRequest;
 	}
@@ -133,20 +132,19 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 			throw new UnsupportedOperationException("Can only sort by at most a single range or index range key");
 
 		}
-		if (sort != null) {
-			boolean sortAlreadySet = false;
-			for (Order order : sort) {
-				if (permittedPropertyNames.contains(order.getProperty())) {
-					if (sortAlreadySet) {
-						throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
 
-					}
-					queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
-					sortAlreadySet = true;
-				} else {
-					throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyNames
-							+ " for the criteria specified");
+		boolean sortAlreadySet = false;
+		if (sort != null) for (Order order : sort) {
+			if (permittedPropertyNames.contains(order.getProperty())) {
+				if (sortAlreadySet) {
+					throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
+
 				}
+				queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
+				sortAlreadySet = true;
+			} else {
+				throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyNames
+						+ " for the criteria specified");
 			}
 		}
 	}
@@ -156,25 +154,23 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 			throw new UnsupportedOperationException("Can only sort by at most a single global hash and range key");
 		}
 
-		if (sort != null) {
-			boolean sortAlreadySet = false;
-			for (Order order : sort) {
-				if (permittedPropertyNames.contains(order.getProperty())) {
-					if (sortAlreadySet) {
-						throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
+		boolean sortAlreadySet = false;
+		if (sort != null) for (Order order : sort) {
+			if (permittedPropertyNames.contains(order.getProperty())) {
+				if (sortAlreadySet) {
+					throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
 
-					}
-					if (queryRequest.getKeyConditions().size() > 1 && !hasIndexHashKeyEqualCondition()) {
-						throw new UnsupportedOperationException(
-								"Sorting for global index queries with criteria on both hash and range not possible");
-
-					}
-					queryRequest.setScanIndexForward(order.getDirection().equals(Direction.ASC));
-					sortAlreadySet = true;
-				} else {
-					throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyNames
-							+ " for the criteria specified");
 				}
+				if (queryRequest.getKeyConditions().size() > 1 && !hasIndexHashKeyEqualCondition()) {
+					throw new UnsupportedOperationException(
+							"Sorting for global index queries with criteria on both hash and range not possible");
+
+				}
+				queryRequest.setScanIndexForward(order.getDirection().equals(Direction.ASC));
+				sortAlreadySet = true;
+			} else {
+				throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyNames
+						+ " for the criteria specified");
 			}
 		}
 	}
@@ -216,11 +212,11 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 
 	public AbstractDynamoDBQueryCriteria(DynamoDBEntityInformation<T, ID> dynamoDBEntityInformation, final DynamoDBMapperTableModel<T> tableModel) {
 		this.clazz = dynamoDBEntityInformation.getJavaType();
-		this.attributeConditions = new LinkedMultiValueMap<String, Condition>();
-		this.propertyConditions = new LinkedMultiValueMap<String, Condition>();
+		this.attributeConditions = new LinkedMultiValueMap<>();
+		this.propertyConditions = new LinkedMultiValueMap<>();
 		this.hashKeyPropertyName = dynamoDBEntityInformation.getHashKeyPropertyName();
 		this.entityInformation = dynamoDBEntityInformation;
-		this.attributeNamesByPropertyName = new HashMap<String, String>();
+		this.attributeNamesByPropertyName = new HashMap<>();
 		// TODO consider adding the DynamoDBMapper table model to DynamoDBEntityInformation instead
 		this.tableModel = tableModel;
 	}
@@ -250,10 +246,10 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		if (globalSecondaryIndexName == null  && attributeConditions != null && !attributeConditions.isEmpty())
 		{
 			// Declare map of index names by attribute name which we will populate below - this will be used to determine which index to use if multiple indexes are applicable
-			Map<String,String[]> indexNamesByAttributeName =  new HashMap<String,String[]>();
+			Map<String, String[]> indexNamesByAttributeName =  new HashMap<>();
 
 			// Declare map of attribute lists by index name which we will populate below - this will be used to determine whether we have an exact match index for specified attribute conditions
-			MultiValueMap<String,String> attributeListsByIndexName = new LinkedMultiValueMap<String,String>();
+			MultiValueMap<String, String> attributeListsByIndexName = new LinkedMultiValueMap<>();
 
 			// Populate the above maps
 			for (Entry<String, String[]> indexNamesForPropertyNameEntry : entityInformation.getGlobalSecondaryIndexNamesByPropertyName().entrySet())
@@ -268,8 +264,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 			}
 
 			// Declare lists to store matching index names
-			List<String> exactMatchIndexNames = new ArrayList<String>();
-			List<String> partialMatchIndexNames = new ArrayList<String>();
+			List<String> exactMatchIndexNames = new ArrayList<>();
+			List<String> partialMatchIndexNames = new ArrayList<>();
 
 			// Populate matching index name lists - an index is either an exact match ( the index attributes match all the specified criteria exactly)
 			// or a partial match ( the properties for the specified criteria are contained within the property set for an index )
@@ -405,8 +401,10 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 	protected String getAttributeName(String propertyName) {
 		String attributeName = attributeNamesByPropertyName.get(propertyName);
 		if (attributeName == null) {
-			String overriddenName = entityInformation.getOverriddenAttributeName(propertyName);
-			attributeName = overriddenName != null ? overriddenName : propertyName;
+			attributeName = entityInformation.getOverriddenAttributeName(propertyName);
+			if (attributeName == null) {
+				attributeName = propertyName;
+			}
 			attributeNamesByPropertyName.put(propertyName, attributeName);
 		}
 		return attributeName;
@@ -491,7 +489,10 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
         if (marshaller != null) {
             return marshaller.marshall(value);
         } else if (tableModel != null) {  // purely here for testing as DynamoDBMapperTableModel cannot be mocked using Mockito
-            DynamoDBMapperFieldModel<T,Object> fieldModel = tableModel.field(propertyName);
+
+			String attributeName = getAttributeName(propertyName);
+
+			DynamoDBMapperFieldModel<T,Object> fieldModel = tableModel.field(attributeName);
             if (fieldModel != null) {
                 return fieldModel.convert(value);
             }
@@ -508,7 +509,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 	}
 
 	private List<String> getNumberListAsStringList(List<Number> numberList) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (Number number : numberList) {
 			if (number != null) {
 				list.add(number.toString());
@@ -534,7 +535,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 
 	private List<String> getInstantListAsStringList(List<Instant> dateList) {
 		DynamoDBMarshaller<Instant> marshaller = new Instant2IsoDynamoDBMarshaller();
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (Instant date : dateList) {
 			if (date != null) {
 				list.add(marshaller.marshall(date));
@@ -546,7 +547,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 	}
 	
 	private List<String> getBooleanListAsStringList(List<Boolean> booleanList) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (Boolean booleanValue : booleanList) {
 			if (booleanValue != null) {
 				list.add(booleanValue.booleanValue() ? "1" : "0");
@@ -560,9 +561,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 	@SuppressWarnings("unchecked")
 	private <P> List<P> getAttributeValueAsList(Object attributeValue) {
 		boolean isIterable = ClassUtils.isAssignable(Iterable.class, attributeValue.getClass());
-		List<P> attributeValueAsList = null;
 		if (isIterable) {
-			attributeValueAsList = new ArrayList<P>();
+			List<P> attributeValueAsList = new ArrayList<>();
 			Iterable<P> iterable = (Iterable<P>) attributeValue;
 			for (P attributeValueElement : iterable) {
 				attributeValueAsList.add(attributeValueElement);
@@ -611,16 +611,6 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 				String marshalledDate = new Date2IsoDynamoDBMarshaller().marshall(date);
 				attributeValueObject.withS(marshalledDate);
 			}
-		} else if (ClassUtils.isAssignable(Instant.class, propertyType)) {
-			List<Instant> attributeValueAsList = getAttributeValueAsList(attributeValue);
-			if (expandCollectionValues && attributeValueAsList != null) {
-				List<String> attributeValueAsStringList = getInstantListAsStringList(attributeValueAsList);
-				attributeValueObject.withSS(attributeValueAsStringList);
-			} else {
-				Instant date = (Instant) attributeValue;
-				String marshalledDate = new Instant2IsoDynamoDBMarshaller().marshall(date);
-				attributeValueObject.withS(marshalledDate);
-			}
 		} else {
 			throw new RuntimeException("Cannot create condition for type:" + attributeValue.getClass()
 					+ " property conditions must be String,Number or Boolean, or have a DynamoDBMarshaller configured");
@@ -636,7 +626,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 		Assert.notNull(o, "Creating conditions on null property values not supported: please specify a value for '"
 				+ propertyName + "'");
 
-		List<AttributeValue> attributeValueList = new ArrayList<AttributeValue>();
+		List<AttributeValue> attributeValueList = new ArrayList<>();
 		Object attributeValue = !alreadyMarshalledIfRequired ? getPropertyAttributeValue(propertyName, o) : o;
 		if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {
 		    attributeValueList.add((AttributeValue) attributeValue);
@@ -656,7 +646,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 
 		Assert.notNull(o, "Creating conditions on null property values not supported: please specify a value for '"
 				+ propertyName + "'");
-		List<AttributeValue> attributeValueList = new ArrayList<AttributeValue>();
+		List<AttributeValue> attributeValueList = new ArrayList<>();
 		boolean marshalled = false;
 		for (Object object : o) {
 			Object attributeValue = getPropertyAttributeValue(propertyName, object);
