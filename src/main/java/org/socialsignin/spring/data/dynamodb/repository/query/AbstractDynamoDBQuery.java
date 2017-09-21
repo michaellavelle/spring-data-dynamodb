@@ -67,6 +67,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 	protected abstract Query<T> doCreateQuery(Object[] values);
 	protected abstract Query<Long> doCreateCountQuery(Object[] values,boolean pageQuery);
 	protected abstract boolean isCountQuery();
+	protected abstract boolean isExistsQuery();
 	
 	protected abstract Integer getResultsRestrictionIfApplicable();
 	protected abstract boolean isSingleEntityResultsRestriction();
@@ -250,10 +251,18 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			{
 				return dynamoDBQuery.doCreateCountQueryWithPermissions(values,false).getSingleResult();
 			}
-			else
-			{
-				return dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
-			}
+            else
+            {
+                Object result =  dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
+                if (isExistsQuery())
+                {
+                    return result==null ? Boolean.FALSE : Boolean.TRUE;
+                }
+                else
+                {
+                    return result;
+                }
+            }
 
 		}
 	}
@@ -269,8 +278,14 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			else
 			{
 				List<T> resultList =  dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList();
-				return resultList.size() == 0 ? null : resultList.get(0);
-
+                if (isExistsQuery())
+                {
+                    return resultList.isEmpty() ? Boolean.FALSE : Boolean.TRUE;
+                }
+                else
+                {
+                    return resultList.isEmpty() ? null : resultList.get(0);
+                }
 			}
 
 		}
