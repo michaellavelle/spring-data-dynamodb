@@ -253,14 +253,13 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			}
             else
             {
-                Object result =  dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
                 if (isExistsQuery())
                 {
-                    return result==null ? Boolean.FALSE : Boolean.TRUE;
+                    return !dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList().isEmpty();
                 }
                 else
                 {
-                    return result;
+                    return dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
                 }
             }
 
@@ -278,14 +277,8 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			else
 			{
 				List<T> resultList =  dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList();
-                if (isExistsQuery())
-                {
-                    return resultList.isEmpty() ? Boolean.FALSE : Boolean.TRUE;
-                }
-                else
-                {
-                    return resultList.isEmpty() ? null : resultList.get(0);
-                }
+				return resultList.size() == 0 ? null : resultList.get(0);
+
 			}
 
 		}
