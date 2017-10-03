@@ -29,6 +29,7 @@ import org.socialsignin.spring.data.dynamodb.query.ScanExpressionCountQuery;
 import org.socialsignin.spring.data.dynamodb.query.SingleEntityLoadByHashKeyQuery;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
@@ -41,8 +42,8 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID extends Serializable> e
 
 	private DynamoDBEntityInformation<T, ID> entityInformation;
 
-	public DynamoDBEntityWithHashKeyOnlyCriteria(DynamoDBEntityInformation<T, ID> entityInformation) {
-		super(entityInformation);
+	public DynamoDBEntityWithHashKeyOnlyCriteria(DynamoDBEntityInformation<T, ID> entityInformation, DynamoDBMapperTableModel<T> tableModel) {
+		super(entityInformation, tableModel);
 		this.entityInformation = entityInformation;
 	}
 

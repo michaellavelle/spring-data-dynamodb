@@ -23,7 +23,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteriaUnitTest extends AbstractDynam
 	public void setUp()
 	{
 		Mockito.when(entityInformation.getHashKeyPropertyName()).thenReturn("id");
-		criteria = new DynamoDBEntityWithHashKeyOnlyCriteria<User,String>(entityInformation);
+		criteria = new DynamoDBEntityWithHashKeyOnlyCriteria<User,String>(entityInformation, null);
 	}
 	
 	@Test
