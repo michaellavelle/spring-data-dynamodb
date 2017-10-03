@@ -75,10 +75,15 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 
 	}
 
-	@Override
-	protected boolean isCountQuery() {
-		return tree.isCountProjection();
-	}
+    @Override
+    protected boolean isCountQuery() {
+        return tree.isCountProjection();
+    }
+
+    @Override
+    protected boolean isExistsQuery() {
+        return tree.isExistsProjection();
+    }
 
 	@Override
 	protected Integer getResultsRestrictionIfApplicable() {
