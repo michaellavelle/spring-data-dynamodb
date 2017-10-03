@@ -41,11 +41,16 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	{
 	    this(amazonDynamoDB, dynamoDBMapperConfig, null);
 	}
-	
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB)
-	{
+    
+    public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper)
+    {
+        this(amazonDynamoDB, null, dynamoDBMapper);
+    }
+    
+    public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB)
+    {
         this(amazonDynamoDB, null, null);
-	}
+    }
 	
 	DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig, DynamoDBMapper dynamoDBMapper) {
        this.amazonDynamoDB = amazonDynamoDB;
