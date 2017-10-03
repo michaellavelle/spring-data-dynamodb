@@ -33,9 +33,9 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 	private static final String DEFAULT_AMAZON_DYNAMO_DB_BEAN_NAME = "amazonDynamoDB";
 
-	private static final String DYNAMO_DB_MAPPER_CONFIG_REF = "dynamoDBMapperConfig";
+	private static final String DYNAMO_DB_MAPPER_CONFIG_REF = "dynamodb-mapper-config-ref";
 	
-	private static final String DYNAMO_DB_OPERATIONS_REF = "dynamoDBOperations";
+	private static final String DYNAMO_DB_OPERATIONS_REF = "dynamodb-operations-ref";
 
 
 	private static final String AMAZON_DYNAMODB_REF = "amazon-dynamodb-ref";
