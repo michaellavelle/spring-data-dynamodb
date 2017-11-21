@@ -22,11 +22,13 @@ import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Default implementation of the
@@ -66,6 +68,9 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 
 	@Override
 	public Optional<T> findById(ID id) {
+
+		Assert.notNull(id, "The given id must not be null!");
+
 		T result;
 		if (entityInformation.isRangeKeyAware()) {
 			result = dynamoDBOperations.load(domainType,
@@ -84,51 +89,29 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 
 	@SuppressWarnings("unchecked")
 	public List<T> findAllById(Iterable<ID> ids) {
-		Map<Class<?>, List<KeyPair>> keyPairsMap = new HashMap<>();
-		List<KeyPair> keyPairs = new ArrayList<>();
-		for (ID id : ids) {
+
+		Assert.notNull(ids, "The given ids must not be null!");
+
+		// Works only with non-parallel streams!
+		AtomicInteger idx = new AtomicInteger();
+		List<KeyPair> keyPairs = StreamSupport.stream(ids.spliterator(), false).map(id -> {
+
+			Assert.notNull(id, "The given id  at position " + idx.getAndIncrement() + " must not be null!");
+
 			if (entityInformation.isRangeKeyAware()) {
-				keyPairs.add(new KeyPair().withHashKey(
+				return new KeyPair().withHashKey(
 						entityInformation.getHashKey(id)).withRangeKey(
-						entityInformation.getRangeKey(id)));
+						entityInformation.getRangeKey(id));
 			} else {
-				keyPairs.add(new KeyPair().withHashKey(id));
+				return new KeyPair().withHashKey(id);
 			}
-		}
-		keyPairsMap.put(domainType, keyPairs);
-		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(dynamoDBOperations.getOverriddenTableName(domainType, entityInformation.getDynamoDBTableName()));
+		}).collect(Collectors.toList());
+
+		Map<Class<?>, List<KeyPair>> keyPairsMap = Collections.singletonMap(domainType, keyPairs);
+		return (List<T>)dynamoDBOperations.batchLoad(keyPairsMap)
+				.get(dynamoDBOperations.getOverriddenTableName(domainType, entityInformation.getDynamoDBTableName()));
 	}
 
-	protected T load(ID id) {
-		if (entityInformation.isRangeKeyAware()) {
-			return dynamoDBOperations.load(domainType,
-					entityInformation.getHashKey(id),
-					entityInformation.getRangeKey(id));
-		} else {
-			return dynamoDBOperations.load(domainType,
-					entityInformation.getHashKey(id));
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	protected List<T> loadBatch(Iterable<ID> ids) {
-		Map<Class<?>, List<KeyPair>> keyPairsMap = new HashMap<Class<?>, List<KeyPair>>();
-		List<KeyPair> keyPairs = new ArrayList<KeyPair>();
-		for (ID id : ids) {
-			if (entityInformation.isRangeKeyAware()) {
-				keyPairs.add(new KeyPair().withHashKey(
-						entityInformation.getHashKey(id)).withRangeKey(
-						entityInformation.getRangeKey(id)));
-			} else {
-				keyPairs.add(new KeyPair().withHashKey(id));
-
-			}
-		}
-		keyPairsMap.put(domainType, keyPairs);
-		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(domainType);
-	}
-
-	
 	@Override
 	public <S extends T> S save(S entity) {
 

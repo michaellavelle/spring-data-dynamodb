@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAware {
+public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextAware {
 
 	private final DynamoDBMapper dynamoDBMapper;
 	private final AmazonDynamoDB amazonDynamoDB;
