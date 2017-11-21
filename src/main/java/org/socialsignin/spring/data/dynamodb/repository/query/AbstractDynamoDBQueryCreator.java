@@ -15,10 +15,8 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Iterator;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
@@ -33,13 +31,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * @author Michael Lavelle
  */
-public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R> extends
+public abstract class AbstractDynamoDBQueryCreator<T, ID, R> extends
 		AbstractQueryCreator<Query<R>, DynamoDBQueryCriteria<T, ID>> {
 
 	private DynamoDBEntityInformation<T, ID> entityMetadata;
@@ -64,7 +62,7 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R>
         final DynamoDBMapperTableModel<T> tableModel = dynamoDBOperations.getTableModel(entityMetadata.getJavaType());
 		DynamoDBQueryCriteria<T, ID> criteria = entityMetadata.isRangeKeyAware() ? new DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID>(
 				(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID>) entityMetadata, tableModel)
-				: new DynamoDBEntityWithHashKeyOnlyCriteria<T, ID>(entityMetadata, tableModel);
+				: new DynamoDBEntityWithHashKeyOnlyCriteria<>(entityMetadata, tableModel);
 		return addCriteria(criteria, part, iterator);
 	}
 

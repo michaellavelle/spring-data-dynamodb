@@ -15,10 +15,10 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
-import java.util.List;
-
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+
+import java.util.List;
 
 /**
  * 

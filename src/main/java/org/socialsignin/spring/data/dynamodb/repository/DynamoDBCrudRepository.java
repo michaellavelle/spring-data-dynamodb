@@ -15,8 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository;
 
-import java.io.Serializable;
-
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -27,6 +25,6 @@ import org.springframework.data.repository.NoRepositoryBean;
  * @author Michael Lavelle
  */
 @NoRepositoryBean
-public interface DynamoDBCrudRepository<T, ID extends Serializable> extends CrudRepository<T, ID> {
+public interface DynamoDBCrudRepository<T, ID> extends CrudRepository<T, ID> {
 
 }

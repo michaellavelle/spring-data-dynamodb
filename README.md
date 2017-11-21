@@ -27,9 +27,10 @@ API changes will follow SEMVER and loosly the Spring Framework releases.
 | ------------------------------- | ------------------------------ | ------------------------- |
 | 1.0.x                           | >= 3.1 && < 4.2                |                           |
 | 4.2.x                           | >= 4.2 && < 4.3                | Gosling-SR1               |
-| 4.3.x                           | >= 4.3                         | Gosling-SR1               |
-| 4.4.x                           | >= 4.3                         | Hopper-SR2                |
-| 4.5.x                           | >= 4.3                         | Ingalls                   |
+| 4.3.x                           | >= 4.3 && < 5.0                | Gosling-SR1               |
+| 4.4.x                           | >= 4.3 && < 5.0                | Hopper-SR2                |
+| 4.5.x                           | >= 4.3 && < 5.0                | Ingalls                   |
+| 5.0.x                           | >= 5.0                         | Kay-SR1                   |
 
 `spring-data-dynamodb` depends directly on `spring-data` as also `spring-context`, `spring-data` and `spring-tx`.
 
@@ -44,7 +45,7 @@ Download the JAR though [Maven](http://mvnrepository.com/artifact/com.github.der
 <dependency>
   <groupId>com.github.derjust</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>4.5.0</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 
@@ -58,7 +59,7 @@ repositories {
 dependencies {
   compile group: 'com.github.derjust',
   name: 'spring-data-dynamodb',
-  version: '4.5.0'
+  version: '5.0.0'
 }
 ```
 

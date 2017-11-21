@@ -15,15 +15,14 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import java.time.Instant;
-import java.util.Date;
-import java.util.Set;
-
-import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.Set;
 
 @DynamoDBTable(tableName = "user")
 public class User {

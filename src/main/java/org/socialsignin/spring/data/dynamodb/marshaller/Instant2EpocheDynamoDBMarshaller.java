@@ -1,10 +1,9 @@
 package org.socialsignin.spring.data.dynamodb.marshaller;
 
-import java.time.Instant;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import org.springframework.util.StringUtils;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import java.time.Instant;
 
 public class Instant2EpocheDynamoDBMarshaller implements DynamoDBMarshaller<Instant> {
 

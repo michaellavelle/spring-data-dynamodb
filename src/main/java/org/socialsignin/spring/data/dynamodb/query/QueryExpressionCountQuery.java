@@ -15,9 +15,8 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
-import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 /**
  * @author Michael Lavelle

@@ -15,11 +15,10 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.util.Map;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import org.springframework.data.repository.core.EntityMetadata;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import java.util.Map;
 
 /**
  * Obtains basic hash key-related metadata about a DynamoDBEntity, such as

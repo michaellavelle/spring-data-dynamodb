@@ -15,21 +15,19 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.cdi;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
-
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBTemplate;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBRepositoryFactory;
 import org.springframework.data.repository.cdi.CdiRepositoryBean;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
 /**
  * A bean which represents a DynamoDB repository.
@@ -64,7 +62,7 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 		super(qualifiers, repositoryType, beanManager);
 		if (dynamoDBOperationsBean == null)
 		{
-			Assert.notNull(amazonDynamoDBBean);
+			Assert.notNull(amazonDynamoDBBean, "amazonDynamoDBBean must not be null!");
 		}
 		else
 		{

@@ -15,10 +15,10 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
+import org.socialsignin.spring.data.dynamodb.marshaller.DateDynamoDBMarshaller;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
-import org.socialsignin.spring.data.dynamodb.marshaller.DateDynamoDBMarshaller;
 
 public class DynamoDBYearMarshaller extends DateDynamoDBMarshaller {
 

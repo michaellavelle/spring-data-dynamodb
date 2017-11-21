@@ -15,13 +15,11 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import org.springframework.util.Assert;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import org.springframework.util.Assert;
+
+import java.util.Map;
 
 /**
  * Encapsulates minimal information needed to load DynamoDB entities.
@@ -39,7 +37,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
  * 
  * @author Michael Lavelle
  */
-public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable> extends
+public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
 		FieldAndGetterReflectionEntityInformation<T, ID> implements DynamoDBEntityInformation<T, ID> {
 
 	private DynamoDBHashKeyExtractingEntityMetadata<T> metadata;

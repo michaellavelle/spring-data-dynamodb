@@ -15,11 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.springframework.data.domain.Page;
@@ -32,10 +27,14 @@ import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.RepositoryQuery;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * @author Michael Lavelle
  */
-public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implements RepositoryQuery {
+public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 
 	protected final DynamoDBOperations dynamoDBOperations;
 	private final DynamoDBQueryMethod<T, ID> method;
@@ -85,8 +84,8 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 		return query;
 	}
 
-	private interface QueryExecution<T, ID extends Serializable> {
-		public Object execute(AbstractDynamoDBQuery<T, ID> query, Object[] values);
+	private interface QueryExecution<T, ID> {
+		Object execute(AbstractDynamoDBQuery<T, ID> query, Object[] values);
 	}
 
 	
@@ -129,7 +128,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			this.parameters = parameters;
 		}
 
-		private int scanThroughResults(Iterator<T> iterator, int resultsToScan) {
+		private int scanThroughResults(Iterator<T> iterator, long resultsToScan) {
 			int processed = 0;
 			while (iterator.hasNext() && processed < resultsToScan) {
 				iterator.next();
@@ -164,11 +163,10 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 
 			
 			Iterator<T> iterator = allResults.iterator();
-			int processedCount = 0;
 			if (pageable.getOffset() > 0) {
-				processedCount = scanThroughResults(iterator, pageable.getOffset());
+				int processedCount = scanThroughResults(iterator, pageable.getOffset());
 				if (processedCount < pageable.getOffset())
-					return new PageImpl<T>(new ArrayList<T>());
+					return new PageImpl<>(new ArrayList<T>());
 			}
 			List<T> results = readPageOfResultsRestrictMaxResultsIfNecessary(iterator, pageable.getPageSize());
 			
@@ -181,7 +179,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 				count = Math.min(count,getResultsRestrictionIfApplicable());
 			}
 			
-			return new PageImpl<T>(results, pageable, count);
+			return new PageImpl<>(results, pageable, count);
 
 		}
 	}
@@ -195,7 +193,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			this.parameters = parameters;
 		}
 
-		private int scanThroughResults(Iterator<T> iterator, int resultsToScan) {
+		private int scanThroughResults(Iterator<T> iterator, long resultsToScan) {
 			int processed = 0;
 			while (iterator.hasNext() && processed < resultsToScan) {
 				iterator.next();
@@ -208,7 +206,7 @@ public abstract class AbstractDynamoDBQuery<T, ID extends Serializable> implemen
 			int processed = 0;
 			int toProcess = getResultsRestrictionIfApplicable() != null ? Math.min(pageSize,getResultsRestrictionIfApplicable()) : pageSize;
 
-			List<T> resultsPage = new ArrayList<T>();
+			List<T> resultsPage = new ArrayList<>();
 			while (iterator.hasNext() && processed < toProcess) {
 				resultsPage.add(iterator.next());
 				processed++;
