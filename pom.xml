@@ -19,7 +19,7 @@
         <spring.version>5.0.1.RELEASE</spring.version>
         <spring-data.version>Kay-SR1</spring-data.version>
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <aws-java-sdk.version>1.11.93</aws-java-sdk.version>
+        <aws-java-sdk.version>1.11.232</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
         <mockito.version>1.10.19</mockito.version>
 

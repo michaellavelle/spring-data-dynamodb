@@ -39,7 +39,7 @@ public class Jdk8IT {
 	public void testOptionalKey() {
 		final Date joinDate = new Date(1000);
 		final String id = "testOptionalKey";
-		Optional<User> result = userRepository.findOne(id);
+		Optional<User> result = userRepository.findById(id);
 
 		assertNotNull(result);
 		assertEquals(result, Optional.empty());
@@ -51,7 +51,7 @@ public class Jdk8IT {
 
 		User savedEntity = userRepository.save(newUser);
 
-		result = userRepository.findOne(id);
+		result = userRepository.findById(id);
 		assertNotNull(result);
 		assertEquals(savedEntity, result.get());
 		assertEquals(joinDate, result.get().getJoinDate());

@@ -64,7 +64,7 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 	}
 
 	protected abstract Query<T> doCreateQuery(Object[] values);
-	protected abstract Query<Long> doCreateCountQuery(Object[] values,boolean pageQuery);
+	protected abstract Query<Long> doCreateCountQuery(Object[] values, boolean pageQuery);
 	protected abstract boolean isCountQuery();
 	protected abstract boolean isExistsQuery();
 	
@@ -78,7 +78,7 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 		return query;
 	}
 	
-	protected Query<Long> doCreateCountQueryWithPermissions(Object values[],boolean pageQuery) {
+	protected Query<Long> doCreateCountQueryWithPermissions(Object values[], boolean pageQuery) {
 		Query<Long> query = doCreateCountQuery(values,pageQuery);
 		query.setScanCountEnabled(method.isScanCountEnabled());
 		return query;

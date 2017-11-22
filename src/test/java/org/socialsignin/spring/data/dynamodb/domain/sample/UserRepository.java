@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface UserRepository extends Repository<User, String> {
 
 	// CRUD method using Optional
-	Optional<User> findOne(String id);
+	Optional<User> findById(String id);
 
 	@EnableScan
 	List<User> findByLeaveDate(Instant leaveDate);
