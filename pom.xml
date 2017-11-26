@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.0.0</version>
     <name>Spring Data DynamoDb</name>
     <description>Spring Data module providing support for DynamoDb repositories.</description>
     <url>http://github.com/derjust/spring-data-dynamodb</url>
@@ -366,7 +366,7 @@
         <url>https://github.com/derjust/spring-data-dynamodb</url>
         <connection>scm:git:ssh://github.com/derjust/spring-data-dynamodb.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/derjust/spring-data-dynamodb.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>spring-data-dynamodb-5.0.0</tag>
   </scm>
 
     <repositories>
