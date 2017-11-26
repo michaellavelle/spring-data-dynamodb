@@ -70,7 +70,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	public abstract boolean isApplicableForLoad();
 
 	/**
-	 * @throws UnsupportedOperationException if a {@link #sort} is initalized (non-null && not {@link Sort#unsorted()}
+	 * @throws UnsupportedOperationException if a {@link #sort} is initalized (non-null &amp;&amp; not {@link Sort#unsorted()}
 	 */
 	protected void ensureNoSort() throws UnsupportedOperationException {
 		if (sort != null && sort != Sort.unsorted()) {

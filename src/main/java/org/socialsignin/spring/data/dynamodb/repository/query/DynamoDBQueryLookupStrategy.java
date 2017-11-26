@@ -154,9 +154,9 @@ public class DynamoDBQueryLookupStrategy {
 	 * Creates a {@link QueryLookupStrategy} for the given
 	 * {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper} and {@link Key}.
 	 *
-	 * @param dynamoDBOperations
-	 * @param key
-	 * @return
+	 * @param dynamoDBOperations The current operation
+	 * @param key The key of the entity
+	 * @return The created {@link QueryLookupStrategy}
 	 */
 	public static QueryLookupStrategy create(DynamoDBOperations dynamoDBOperations, Key key) {
 

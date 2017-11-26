@@ -39,6 +39,7 @@ public interface DynamoDBOperations {
     /**
      * Provides access to the DynamoDB mapper table model of the underlying domain type.
      *
+	 * @param <T> The type of the domain type itself
      * @param domainClass A domain type
      * @return Corresponding DynamoDB table model
      */

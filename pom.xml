@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.0.1-SNAPSHOT</version>
     <name>Spring Data DynamoDb</name>
     <description>Spring Data module providing support for DynamoDb repositories.</description>
     <url>http://github.com/derjust/spring-data-dynamodb</url>
@@ -255,8 +255,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5</version>
+                <version>2.5.3</version>
                 <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
