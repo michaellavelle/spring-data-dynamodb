@@ -15,18 +15,15 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.Select;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.marshaller.Date2IsoDynamoDBMarshaller;
 import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
@@ -40,20 +37,21 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
-import com.amazonaws.services.dynamodbv2.model.Condition;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
-import com.amazonaws.services.dynamodbv2.model.Select;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author Michael Lavelle
  */
-public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> implements DynamoDBQueryCriteria<T, ID> {
+public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQueryCriteria<T, ID> {
 
 	protected Class<T> clazz;
 	private DynamoDBEntityInformation<T, ID> entityInformation;
@@ -70,6 +68,15 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 	protected Sort sort;
 
 	public abstract boolean isApplicableForLoad();
+
+	/**
+	 * @throws UnsupportedOperationException if a {@link #sort} is initalized (non-null &amp;&amp; not {@link Sort#unsorted()}
+	 */
+	protected void ensureNoSort() throws UnsupportedOperationException {
+		if (sort != null && sort != Sort.unsorted()) {
+			throw new UnsupportedOperationException("Sort not supported for scan expressions");
+		}
+	}
 
 	protected QueryRequest buildQueryRequest(String tableName, String theIndexName, String hashKeyAttributeName,
 			String rangeKeyAttributeName, String rangeKeyPropertyName, List<Condition> hashKeyConditions,
@@ -656,7 +663,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID extends Serializable> 
 
 		Assert.notNull(o, "Creating conditions on null property values not supported: please specify a value for '"
 				+ propertyName + "'");
-		List<AttributeValue> attributeValueList = new ArrayList<AttributeValue>();
+		List<AttributeValue> attributeValueList = new ArrayList<>();
 		boolean marshalled = false;
 		for (Object object : o) {
 			Object attributeValue = getPropertyAttributeValue(propertyName, object);

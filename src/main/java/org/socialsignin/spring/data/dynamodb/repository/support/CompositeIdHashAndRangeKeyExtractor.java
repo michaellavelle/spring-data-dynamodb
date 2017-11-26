@@ -15,15 +15,14 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * @author Michael Lavelle
  */
-public class CompositeIdHashAndRangeKeyExtractor<ID extends Serializable, H> implements HashAndRangeKeyExtractor<ID, H> {
+public class CompositeIdHashAndRangeKeyExtractor<ID, H> implements HashAndRangeKeyExtractor<ID, H> {
 
 	private DynamoDBHashAndRangeKeyMethodExtractor<ID> hashAndRangeKeyMethodExtractor;
 

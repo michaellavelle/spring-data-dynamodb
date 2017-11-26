@@ -15,14 +15,12 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.Set;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Encapsulates minimal information needed to load DynamoDB entities that have
@@ -33,7 +31,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
  *
  * @author Michael Lavelle
  */
-public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID extends Serializable> extends
+public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends
 		ReflectionEntityInformation<T, ID> implements DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> {
 
 	private DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata;

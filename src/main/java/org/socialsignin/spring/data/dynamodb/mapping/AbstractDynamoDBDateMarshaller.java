@@ -15,11 +15,11 @@
  */
 package org.socialsignin.spring.data.dynamodb.mapping;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
 /**
  * @author Michael Lavelle

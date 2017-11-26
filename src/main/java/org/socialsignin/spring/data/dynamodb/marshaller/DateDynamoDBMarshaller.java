@@ -1,12 +1,11 @@
 package org.socialsignin.spring.data.dynamodb.marshaller;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import org.springframework.util.StringUtils;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
-
-import org.springframework.util.StringUtils;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
 public abstract class DateDynamoDBMarshaller implements DynamoDBMarshaller<Date> {
 

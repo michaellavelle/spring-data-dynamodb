@@ -15,7 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -23,7 +22,7 @@ import java.util.Set;
  * 
  * @author Michael Lavelle
  */
-public interface DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID extends Serializable> extends
+public interface DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> extends
 		DynamoDBHashKeyExtractingEntityMetadata<T> {
 
 	public <H> HashAndRangeKeyExtractor<ID, H> getHashAndRangeKeyExtractor(Class<ID> idClass);

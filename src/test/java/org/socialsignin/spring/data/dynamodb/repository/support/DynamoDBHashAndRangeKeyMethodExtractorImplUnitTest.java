@@ -1,15 +1,14 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.lang.reflect.Method;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import java.lang.reflect.Method;
 
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unused")

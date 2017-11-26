@@ -15,8 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository;
 
-import java.io.Serializable;
-
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -27,6 +25,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  * @author Michael Lavelle
  */
 @NoRepositoryBean
-public interface DynamoDBPagingAndSortingRepository<T, ID extends Serializable> extends PagingAndSortingRepository<T, ID> {
+public interface DynamoDBPagingAndSortingRepository<T, ID> extends PagingAndSortingRepository<T, ID> {
 
 }

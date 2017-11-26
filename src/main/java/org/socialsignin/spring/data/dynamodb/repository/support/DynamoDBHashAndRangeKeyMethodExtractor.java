@@ -15,10 +15,10 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
+import org.springframework.data.repository.core.EntityMetadata;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
-import org.springframework.data.repository.core.EntityMetadata;
 
 /**
  * @author Michael Lavelle

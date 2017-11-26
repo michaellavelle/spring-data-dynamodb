@@ -1,12 +1,11 @@
 package org.socialsignin.spring.data.dynamodb.marshaller;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import org.springframework.util.StringUtils;
+
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-
-import org.springframework.util.StringUtils;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
 public class Instant2IsoDynamoDBMarshaller implements DynamoDBMarshaller<Instant> {
 

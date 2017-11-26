@@ -41,7 +41,7 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 	private static final String AMAZON_DYNAMODB_REF = "amazon-dynamodb-ref";
 
 	@Override
-	public String getRepositoryFactoryClassName() {
+	public String getRepositoryFactoryBeanClassName() {
 		return DynamoDBRepositoryFactoryBean.class.getName();
 	}
 

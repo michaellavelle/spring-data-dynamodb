@@ -1,14 +1,17 @@
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import static org.junit.Assert.*;
-
-import java.util.UUID;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Show the usage of Hash+Range key as also how to use
@@ -28,18 +31,18 @@ public class HashRangeKeyIT {
 		final String playlistName = "playlistName-" + UUID.randomUUID().toString();
 		PlaylistId id = new PlaylistId(userName, playlistName);
 
-		Playlist actual = playlistRepository.findOne(id);
-		assertNull(actual);
+		Optional<Playlist> actual = playlistRepository.findById(id);
+		assertFalse(actual.isPresent());
 
 		Playlist playlist = new Playlist(id);
 		playlist.setDisplayName(displayName);
 
 		playlistRepository.save(playlist);
 
-		actual = playlistRepository.findOne(id);
-		assertNotNull(actual);
-		assertEquals(displayName, actual.getDisplayName());
-		assertEquals(id.getPlaylistName(), actual.getPlaylistName());
-		assertEquals(id.getUserName(), actual.getUserName());
+		actual = playlistRepository.findById(id);
+		assertTrue(actual.isPresent());
+		assertEquals(displayName, actual.get().getDisplayName());
+		assertEquals(id.getPlaylistName(), actual.get().getPlaylistName());
+		assertEquals(id.getUserName(), actual.get().getUserName());
 	}
 }

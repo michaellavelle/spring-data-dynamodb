@@ -1,12 +1,12 @@
 package org.socialsignin.spring.data.dynamodb.marshaller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.time.Instant;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class Instant2EpocheDynamoDBMarshallerTest {
 

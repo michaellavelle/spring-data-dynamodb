@@ -15,19 +15,20 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Default implementation of the
@@ -40,7 +41,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
  * @param <ID>
  *            the type of the entity's identifier
  */
-public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
+public class SimpleDynamoDBCrudRepository<T, ID>
 		implements DynamoDBCrudRepository<T, ID> {
 
 	protected DynamoDBEntityInformation<T, ID> entityInformation;
@@ -55,8 +56,8 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
 			DynamoDBEntityInformation<T, ID> entityInformation,
 			DynamoDBOperations dynamoDBOperations,
 			EnableScanPermissions enableScanPermissions) {
-		Assert.notNull(entityInformation);
-		Assert.notNull(dynamoDBOperations);
+		Assert.notNull(entityInformation, "entityInformation must not be null");
+		Assert.notNull(dynamoDBOperations, "dynamoDBOperations must not be null");
 		
 		this.entityInformation = entityInformation;
 		this.dynamoDBOperations = dynamoDBOperations;
@@ -66,64 +67,51 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
 	}
 
 	@Override
-	public T findOne(ID id) {
+	public Optional<T> findById(ID id) {
+
+		Assert.notNull(id, "The given id must not be null!");
+
+		T result;
 		if (entityInformation.isRangeKeyAware()) {
-			return dynamoDBOperations.load(domainType,
+			result = dynamoDBOperations.load(domainType,
 					entityInformation.getHashKey(id),
 					entityInformation.getRangeKey(id));
 		} else {
-			return dynamoDBOperations.load(domainType,
+			result = dynamoDBOperations.load(domainType,
 					entityInformation.getHashKey(id));
+		}
+		if (result == null) {
+			return Optional.empty();
+		} else {
+			return Optional.of(result);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<T> findAll(Iterable<ID> ids) {
-		Map<Class<?>, List<KeyPair>> keyPairsMap = new HashMap<Class<?>, List<KeyPair>>();
-		List<KeyPair> keyPairs = new ArrayList<KeyPair>();
-		for (ID id : ids) {
+	public List<T> findAllById(Iterable<ID> ids) {
+
+		Assert.notNull(ids, "The given ids must not be null!");
+
+		// Works only with non-parallel streams!
+		AtomicInteger idx = new AtomicInteger();
+		List<KeyPair> keyPairs = StreamSupport.stream(ids.spliterator(), false).map(id -> {
+
+			Assert.notNull(id, "The given id  at position " + idx.getAndIncrement() + " must not be null!");
+
 			if (entityInformation.isRangeKeyAware()) {
-				keyPairs.add(new KeyPair().withHashKey(
+				return new KeyPair().withHashKey(
 						entityInformation.getHashKey(id)).withRangeKey(
-						entityInformation.getRangeKey(id)));
+						entityInformation.getRangeKey(id));
 			} else {
-				keyPairs.add(new KeyPair().withHashKey(id));
+				return new KeyPair().withHashKey(id);
 			}
-		}
-		keyPairsMap.put(domainType, keyPairs);
-		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(dynamoDBOperations.getOverriddenTableName(domainType, entityInformation.getDynamoDBTableName()));
+		}).collect(Collectors.toList());
+
+		Map<Class<?>, List<KeyPair>> keyPairsMap = Collections.singletonMap(domainType, keyPairs);
+		return (List<T>)dynamoDBOperations.batchLoad(keyPairsMap)
+				.get(dynamoDBOperations.getOverriddenTableName(domainType, entityInformation.getDynamoDBTableName()));
 	}
 
-	protected T load(ID id) {
-		if (entityInformation.isRangeKeyAware()) {
-			return dynamoDBOperations.load(domainType,
-					entityInformation.getHashKey(id),
-					entityInformation.getRangeKey(id));
-		} else {
-			return dynamoDBOperations.load(domainType,
-					entityInformation.getHashKey(id));
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	protected List<T> loadBatch(Iterable<ID> ids) {
-		Map<Class<?>, List<KeyPair>> keyPairsMap = new HashMap<Class<?>, List<KeyPair>>();
-		List<KeyPair> keyPairs = new ArrayList<KeyPair>();
-		for (ID id : ids) {
-			if (entityInformation.isRangeKeyAware()) {
-				keyPairs.add(new KeyPair().withHashKey(
-						entityInformation.getHashKey(id)).withRangeKey(
-						entityInformation.getRangeKey(id)));
-			} else {
-				keyPairs.add(new KeyPair().withHashKey(id));
-
-			}
-		}
-		keyPairsMap.put(domainType, keyPairs);
-		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap).get(domainType);
-	}
-
-	
 	@Override
 	public <S extends T> S save(S entity) {
 
@@ -132,16 +120,16 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
 	}
 
 	@Override
-	public <S extends T> Iterable<S> save(Iterable<S> entities) {
+	public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
 		dynamoDBOperations.batchSave(entities);
 		return entities;
 	}
 
 	@Override
-	public boolean exists(ID id) {
+	public boolean existsById(ID id) {
 
 		Assert.notNull(id, "The given id must not be null!");
-		return findOne(id) != null;
+		return findById(id).isPresent();
 	}
 
 	public void assertScanEnabled(boolean scanEnabled, String methodName) {
@@ -175,12 +163,12 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
 	}
 
 	@Override
-	public void delete(ID id) {
+	public void deleteById(ID id) {
 
 		Assert.notNull(id, "The given id must not be null!");
 
-		T entity = findOne(id);
-		if (entity == null) {
+		Optional<T> entity = findById(id);
+		if (!entity.isPresent()) {
 			throw new EmptyResultDataAccessException(String.format(
 					"No %s entity with id %s exists!", domainType, id), 1);
 		}
@@ -194,7 +182,7 @@ public class SimpleDynamoDBCrudRepository<T, ID extends Serializable>
 	}
 
 	@Override
-	public void delete(Iterable<? extends T> entities) {
+	public void deleteAll(Iterable<? extends T> entities) {
 
 		Assert.notNull(entities, "The given Iterable of entities not be null!");
 		dynamoDBOperations.batchDelete(entities);

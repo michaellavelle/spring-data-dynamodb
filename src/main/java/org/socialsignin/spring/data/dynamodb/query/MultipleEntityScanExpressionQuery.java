@@ -15,12 +15,11 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
-import java.util.List;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import java.util.List;
 
 public class MultipleEntityScanExpressionQuery<T> extends AbstractMultipleEntityQuery<T> {
 

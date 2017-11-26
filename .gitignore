@@ -4,6 +4,8 @@ target
 *.iml
 .idea
 
+release.properties
+
 # Package Files #
 *.jar
 *.war

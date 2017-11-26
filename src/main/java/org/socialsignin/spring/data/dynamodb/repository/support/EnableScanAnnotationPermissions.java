@@ -15,12 +15,12 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.lang.reflect.Method;
-
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
 import org.socialsignin.spring.data.dynamodb.repository.EnableScanCount;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * 

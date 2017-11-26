@@ -15,34 +15,31 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.springframework.data.domain.Sort;
 
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
-
 /**
  * @author Michael Lavelle
  */
-public interface DynamoDBQueryCriteria<T, ID extends Serializable> {
+public interface DynamoDBQueryCriteria<T, ID> {
 
-	public DynamoDBQueryCriteria<T, ID> withSingleValueCriteria(String propertyName, ComparisonOperator comparisonOperator,
+	DynamoDBQueryCriteria<T, ID> withSingleValueCriteria(String propertyName, ComparisonOperator comparisonOperator,
 			Object value, Class<?> type);
 
-	public DynamoDBQueryCriteria<T, ID> withNoValuedCriteria(String segment, ComparisonOperator null1);
+	DynamoDBQueryCriteria<T, ID> withNoValuedCriteria(String segment, ComparisonOperator null1);
 
-	public DynamoDBQueryCriteria<T, ID> withPropertyEquals(String segment, Object next, Class<?> type);
+	DynamoDBQueryCriteria<T, ID> withPropertyEquals(String segment, Object next, Class<?> type);
 
-	public DynamoDBQueryCriteria<T, ID> withPropertyIn(String segment, Iterable<?> o, Class<?> type);
+	DynamoDBQueryCriteria<T, ID> withPropertyIn(String segment, Iterable<?> o, Class<?> type);
 
-	public DynamoDBQueryCriteria<T, ID> withPropertyBetween(String segment, Object value1, Object value2, Class<?> type);
+	DynamoDBQueryCriteria<T, ID> withPropertyBetween(String segment, Object value1, Object value2, Class<?> type);
 
-	public DynamoDBQueryCriteria<T, ID> withSort(Sort sort);
+	DynamoDBQueryCriteria<T, ID> withSort(Sort sort);
 
-	public Query<T> buildQuery(DynamoDBOperations dynamoDBOperations);
+	Query<T> buildQuery(DynamoDBOperations dynamoDBOperations);
 
-	public Query<Long> buildCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery);
+	Query<Long> buildCountQuery(DynamoDBOperations dynamoDBOperations, boolean pageQuery);
 
 }

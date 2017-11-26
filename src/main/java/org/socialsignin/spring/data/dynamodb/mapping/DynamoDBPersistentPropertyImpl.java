@@ -15,25 +15,22 @@
  */
 package org.socialsignin.spring.data.dynamodb.mapping;
 
-import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBVersionAttribute;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Reference;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mapping.Association;
-import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.model.AnnotationBasedPersistentProperty;
+import org.springframework.data.mapping.model.Property;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBVersionAttribute;
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * {@link DynamoDBPersistentProperty} implementation
@@ -62,22 +59,17 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	/**
 	 * Creates a new {@link DynamoDBPersistentPropertyImpl}
 	 * 
-	 * @param field
+	 * @param property
 	 *            must not be {@literal null}.
-	 * @param propertyDescriptor
-	 *            can be {@literal null}.
 	 * @param owner
 	 *            must not be {@literal null}.
 	 * @param simpleTypeHolder
 	 *            must not be {@literal null}.
 	 */
-	public DynamoDBPersistentPropertyImpl(Field field, PropertyDescriptor propertyDescriptor,
-			PersistentEntity<?, DynamoDBPersistentProperty> owner, SimpleTypeHolder simpleTypeHolder) {
 
-		super(field, propertyDescriptor, owner, simpleTypeHolder);
+	public DynamoDBPersistentPropertyImpl(Property property, DynamoDBPersistentEntityImpl<?> owner, SimpleTypeHolder simpleTypeHolder) {
+		super(property, owner, simpleTypeHolder);
 	}
-	
-	
 
 	@Override
 	public boolean isWritable() {
