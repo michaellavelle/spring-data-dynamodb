@@ -14,7 +14,7 @@ public class DynamoDBEntityMetadataSupportUnitTest {
 	@Test
 	public void testGetMarshallerForProperty_WhenAnnotationIsOnField_AndReturnsDynamoDBMarshaller()
 	{
-		DynamoDBEntityMetadataSupport support = new DynamoDBEntityMetadataSupport(User.class);
+		DynamoDBEntityMetadataSupport support = new DynamoDBEntityMetadataSupport<>(User.class);
 		DynamoDBMarshaller fieldAnnotation = support.getMarshallerForProperty("joinYear");
 		Assert.assertNotNull(fieldAnnotation);
 	}
@@ -22,7 +22,7 @@ public class DynamoDBEntityMetadataSupportUnitTest {
 	@Test
 	public void testGetMarshallerForProperty_WhenAnnotationIsOnMethod_AndReturnsDynamoDBMarshaller()
 	{
-		DynamoDBEntityMetadataSupport support = new DynamoDBEntityMetadataSupport(User.class);
+		DynamoDBEntityMetadataSupport support = new DynamoDBEntityMetadataSupport<>(User.class);
 		DynamoDBMarshaller methodAnnotation = support.getMarshallerForProperty("leaveDate");
 		Assert.assertNotNull(methodAnnotation);
 	}
