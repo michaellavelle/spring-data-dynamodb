@@ -321,7 +321,7 @@
             <plugin>
                 <groupId>com.jcabi</groupId>
                 <artifactId>jcabi-dynamodb-maven-plugin</artifactId>
-                <version>0.8</version>
+                <version>0.9.1</version>
                 <configuration>
                     <tables>
                         <table>src/test/resources/user_table.json</table>
