@@ -1,5 +1,6 @@
 package org.socialsignin.spring.data.dynamodb.core;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper.FailedBatch;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
@@ -27,12 +28,10 @@ public interface DynamoDBOperations {
 	Map<String, List<Object>> batchLoad(Map<Class<?>, List<KeyPair>> itemsToGet);
 
 	void save(Object entity);
-	void batchSave(List<?> entities);
-	void batchSave(Iterable<?> entities);
+	List<FailedBatch> batchSave(Iterable<?> entities);
 
 	void delete(Object entity);
-	void batchDelete(List<?> entities);
-    void batchDelete(Iterable<?> entities);
+    List<FailedBatch> batchDelete(Iterable<?> entities);
 
 	<T> String getOverriddenTableName(Class<T> domainClass, String tableName);
 

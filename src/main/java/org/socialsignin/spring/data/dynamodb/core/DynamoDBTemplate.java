@@ -2,6 +2,7 @@ package org.socialsignin.spring.data.dynamodb.core;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper.FailedBatch;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
@@ -25,7 +26,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -99,7 +99,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 		T entity =  dynamoDBMapper.load(domainClass, hashKey,rangeKey);
 		if (entity != null)
 		{
-			maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+			maybeEmitEvent(new AfterLoadEvent<>(entity));
 		}
 		return entity;
 	}
@@ -109,7 +109,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 		T entity =  dynamoDBMapper.load(domainClass, hashKey);
 		if (entity != null)
 		{
-			maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+			maybeEmitEvent(new AfterLoadEvent<>(entity));
 		}
 		return entity;
 	}
@@ -137,58 +137,38 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 
 	@Override
 	public void save(Object entity) {
-		maybeEmitEvent(new BeforeSaveEvent<Object>(entity));
+		maybeEmitEvent(new BeforeSaveEvent<>(entity));
 		dynamoDBMapper.save(entity);
-		maybeEmitEvent(new AfterSaveEvent<Object>(entity));
+		maybeEmitEvent(new AfterSaveEvent<>(entity));
 
-	}
-
-	@Override
-	@Deprecated
-	public void batchSave(List<?> entities) {
-		Iterable<?> iterableEntities = entities;
-		batchSave(iterableEntities);
 	}
 	
 	@Override
-        public void batchSave(Iterable<?> entities) {
-	        Iterator<?> iteratorBefore = entities.iterator();
-	        while( iteratorBefore.hasNext() ){
-	            maybeEmitEvent(new BeforeSaveEvent<Object>(iteratorBefore.next()));
-	        }
-                dynamoDBMapper.batchSave(entities);
-                Iterator<?> iteratorAfter = entities.iterator();
-                while( iteratorAfter.hasNext() ){
-                    maybeEmitEvent(new BeforeSaveEvent<Object>(iteratorAfter.next()));
-                }
-        }
+	public List<FailedBatch> batchSave(Iterable<?> entities) {
+		entities.forEach(it -> maybeEmitEvent(new BeforeSaveEvent<>(it)));
+
+		List<FailedBatch> result = dynamoDBMapper.batchSave(entities);
+
+		entities.forEach(it -> maybeEmitEvent(new AfterSaveEvent<>(it)));
+        return result;
+    }
 
 	@Override
 	public void delete(Object entity) {
-		maybeEmitEvent(new BeforeDeleteEvent<Object>(entity));
+		maybeEmitEvent(new BeforeDeleteEvent<>(entity));
 		dynamoDBMapper.delete(entity);
-		maybeEmitEvent(new AfterDeleteEvent<Object>(entity));
+		maybeEmitEvent(new AfterDeleteEvent<>(entity));
 
-	}
-
-	@Override
-	@Deprecated
-	public void batchDelete(List<?> entities) {
-	        Iterable<?> iterableEntities = entities;
-	        batchDelete(iterableEntities);
 	}
 	
 	@Override
-	public void batchDelete(Iterable<?> entities) {
-	    Iterator<?> iteratorBefore = entities.iterator();
-            while( iteratorBefore.hasNext() ){
-                maybeEmitEvent(new BeforeDeleteEvent<Object>(iteratorBefore.next()));
-            }
-	    dynamoDBMapper.batchDelete(entities);
-	    Iterator<?> iteratorAfter = entities.iterator();
-            while( iteratorAfter.hasNext() ){
-                maybeEmitEvent(new AfterDeleteEvent<Object>(iteratorAfter.next()));
-            }
+	public List<FailedBatch> batchDelete(Iterable<?> entities) {
+		entities.forEach(it -> maybeEmitEvent(new BeforeDeleteEvent<>(it)));
+		
+	    List<FailedBatch> result = dynamoDBMapper.batchDelete(entities);
+
+		entities.forEach(it -> maybeEmitEvent(new AfterDeleteEvent<>(it)));
+		return result;
 	}
 
 	@Override

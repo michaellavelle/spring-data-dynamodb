@@ -15,17 +15,23 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper.FailedBatch;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
+
+import org.socialsignin.spring.data.dynamodb.exception.BatchWriteException;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -33,8 +39,6 @@ import java.util.stream.StreamSupport;
 /**
  * Default implementation of the
  * {@link org.springframework.data.repository.CrudRepository} interface.
- * 
- * @author Michael Lavelle
  * 
  * @param <T>
  *            the type of the entity to handle
@@ -63,7 +67,6 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 		this.dynamoDBOperations = dynamoDBOperations;
 		this.domainType = entityInformation.getJavaType();
 		this.enableScanPermissions = enableScanPermissions;
-
 	}
 
 	@Override
@@ -119,10 +122,35 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 		return entity;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws BatchWriteException in case of an error during saving
+	 */
 	@Override
-	public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
-		dynamoDBOperations.batchSave(entities);
-		return entities;
+	public <S extends T> Iterable<S> saveAll(Iterable<S> entities) throws BatchWriteException, IllegalArgumentException {
+		
+		Assert.notNull(entities, "The given Iterable of entities not be null!");
+		List<FailedBatch> failedBatches = dynamoDBOperations.batchSave(entities);
+		
+		if (failedBatches.isEmpty()) {
+			// Happy path
+			return entities;
+		} else {
+			// Error handling:
+			Queue<Exception> allExceptions = failedBatches.stream()
+					.map(it ->it.getException())
+					.collect(Collectors.toCollection(LinkedList::new));
+
+			// The first exception is hopefully the cause
+			Exception cause = allExceptions.poll();
+			DataAccessException e = new BatchWriteException("Saving of entities failed!", cause);
+			// and all other exceptions are 'just' follow-up exceptions
+			allExceptions.stream()
+				.forEach(e::addSuppressed);
+			
+			throw e;
+		}
 	}
 
 	@Override
