@@ -15,10 +15,10 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository;
 
-import java.io.Serializable;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+
+import java.io.Serializable;
 
 /**
  * Default implementation of a DynamoDB composite key, comprising of both a hash

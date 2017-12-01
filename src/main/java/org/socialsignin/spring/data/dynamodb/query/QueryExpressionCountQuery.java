@@ -15,14 +15,10 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
-import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
-import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBPersistentProperty;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 /**
- * {@link DynamoDBPersistentProperty} implementation
- * 
  * @author Michael Lavelle
  */
 public class QueryExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long> {
@@ -31,7 +27,7 @@ public class QueryExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long
 
 	private Class<T> domainClass;
 
-	
+
 	public QueryExpressionCountQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz,
 			DynamoDBQueryExpression<T> queryExpression) {
 		super(dynamoDBOperations, Long.class);

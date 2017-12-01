@@ -15,30 +15,28 @@
  */
 package org.socialsignin.spring.data.dynamodb.mapping;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import org.springframework.data.mapping.context.AbstractMappingContext;
-import org.springframework.data.mapping.context.MappingContext;
-import org.springframework.data.mapping.model.SimpleTypeHolder;
-import org.springframework.data.util.TypeInformation;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import org.springframework.data.mapping.context.AbstractMappingContext;
+import org.springframework.data.mapping.model.Property;
+import org.springframework.data.mapping.model.SimpleTypeHolder;
+import org.springframework.data.util.TypeInformation;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
- * Default implementation of a {@link MappingContext} for DynamoDB using
+ * Default implementation of a {@link org.springframework.data.mapping.context.MappingContext} for DynamoDB using
  * {@link DynamoDBPersistentEntityImpl} and {@link DynamoDBPersistentProperty}
  * as primary abstractions.
- * 
+ *
  * @author Michael Lavelle
  */
 public class DynamoDBMappingContext extends AbstractMappingContext<DynamoDBPersistentEntityImpl<?>, DynamoDBPersistentProperty> {
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.data.mapping.context.AbstractMappingContext#
 	 * shouldCreatePersistentEntityFor
 	 * (org.springframework.data.util.TypeInformation)
@@ -51,23 +49,23 @@ public class DynamoDBMappingContext extends AbstractMappingContext<DynamoDBPersi
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.data.mapping.AbstractMappingContext#
 	 * createPersistentProperty(java.lang.reflect.Field,
 	 * java.beans.PropertyDescriptor,
 	 * org.springframework.data.mapping.MutablePersistentEntity,
 	 * org.springframework.data.mapping.SimpleTypeHolder)
 	 */
-	@Override
-	protected DynamoDBPersistentProperty createPersistentProperty(Field field, PropertyDescriptor descriptor,
-			DynamoDBPersistentEntityImpl<?> owner, SimpleTypeHolder simpleTypeHolder) {
-		return new DynamoDBPersistentPropertyImpl(field, descriptor, owner, simpleTypeHolder);
 
+	@Override
+	protected DynamoDBPersistentProperty createPersistentProperty(Property property,
+		    DynamoDBPersistentEntityImpl<?> owner, SimpleTypeHolder simpleTypeHolder) {
+		return new DynamoDBPersistentPropertyImpl(property, owner, simpleTypeHolder);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.data.mapping.context.AbstractMappingContext#
 	 * shouldCreatePersistentEntityFor
 	 * (org.springframework.data.util.TypeInformation)

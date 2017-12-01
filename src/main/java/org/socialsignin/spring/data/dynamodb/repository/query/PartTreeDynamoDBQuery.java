@@ -15,8 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.springframework.data.repository.query.Parameters;
@@ -27,7 +25,7 @@ import org.springframework.data.repository.query.parser.PartTree;
 /**
  * @author Michael Lavelle
  */
-public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
+public class PartTreeDynamoDBQuery<T, ID> extends AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 
 	private DynamoDBQueryMethod<T, ID> queryMethod;
 	private final Parameters<?, ?> parameters;
@@ -47,11 +45,11 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 	}
 
 	protected DynamoDBQueryCreator<T, ID> createQueryCreator(ParametersParameterAccessor accessor) {
-		return new DynamoDBQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations);
+		return new DynamoDBQueryCreator<>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations);
 	}
 	
 	protected DynamoDBCountQueryCreator<T, ID> createCountQueryCreator(ParametersParameterAccessor accessor,boolean pageQuery) {
-		return new DynamoDBCountQueryCreator<T, ID>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations,
+		return new DynamoDBCountQueryCreator<>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations,
 				pageQuery);
 	}
 	
@@ -75,10 +73,15 @@ public class PartTreeDynamoDBQuery<T, ID extends Serializable> extends AbstractD
 
 	}
 
-	@Override
-	protected boolean isCountQuery() {
-		return tree.isCountProjection();
-	}
+    @Override
+    protected boolean isCountQuery() {
+        return tree.isCountProjection();
+    }
+
+    @Override
+    protected boolean isExistsQuery() {
+        return tree.isExistsProjection();
+    }
 
 	@Override
 	protected Integer getResultsRestrictionIfApplicable() {

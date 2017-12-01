@@ -15,28 +15,28 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
 import org.socialsignin.spring.data.dynamodb.repository.EnableScanCount;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityMetadataSupport;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryMethod;
+
+import java.lang.reflect.Method;
 
 /**
  * @author Michael Lavelle
  */
-public class DynamoDBQueryMethod<T, ID extends Serializable> extends QueryMethod {
+public class DynamoDBQueryMethod<T, ID> extends QueryMethod {
 
 	private final Method method;
 	private final boolean scanEnabledForRepository;
 	private final boolean scanCountEnabledForRepository;
 
 	
-	public DynamoDBQueryMethod(Method method, RepositoryMetadata metadata) {
-		super(method, metadata);
+	public DynamoDBQueryMethod(Method method, RepositoryMetadata metadata, ProjectionFactory factory) {
+		super(method, metadata, factory);
 		this.method = method;
 		this.scanEnabledForRepository = metadata.getRepositoryInterface().isAnnotationPresent(EnableScan.class);
 		this.scanCountEnabledForRepository = metadata.getRepositoryInterface().isAnnotationPresent(EnableScanCount.class);

@@ -15,10 +15,9 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.springframework.util.Assert;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 
 public class ScanExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long> implements Query<Long>{
 

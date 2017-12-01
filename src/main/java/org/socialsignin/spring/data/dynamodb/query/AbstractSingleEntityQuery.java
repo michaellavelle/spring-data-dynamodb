@@ -15,10 +15,10 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+
 import java.util.Arrays;
 import java.util.List;
-
-import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 public abstract class AbstractSingleEntityQuery<T> extends AbstractQuery<T> implements Query<T> {
 

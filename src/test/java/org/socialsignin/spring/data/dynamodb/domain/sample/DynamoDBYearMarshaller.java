@@ -15,13 +15,17 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
+import org.socialsignin.spring.data.dynamodb.marshaller.DateDynamoDBMarshaller;
+
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import org.socialsignin.spring.data.dynamodb.mapping.AbstractDynamoDBDateMarshaller;
+public class DynamoDBYearMarshaller extends DateDynamoDBMarshaller {
 
-public class DynamoDBYearMarshaller extends AbstractDynamoDBDateMarshaller {
-
-	public DynamoDBYearMarshaller() {
-		super(new SimpleDateFormat("yyyy"));
+	private static final String PATTERN = "yyyy";
+	
+	@Override
+	public DateFormat getDateFormat() {
+		return new SimpleDateFormat(PATTERN);
 	}
 }

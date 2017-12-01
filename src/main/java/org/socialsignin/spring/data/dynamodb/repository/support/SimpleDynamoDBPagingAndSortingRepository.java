@@ -15,11 +15,8 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBPagingAndSortingRepository;
 import org.springframework.data.domain.Page;
@@ -28,8 +25,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Default implementation of the
@@ -54,7 +52,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
  * @param <ID>
  *            the type of the entity's identifier
  */
-public class SimpleDynamoDBPagingAndSortingRepository<T, ID extends Serializable> extends SimpleDynamoDBCrudRepository<T, ID>
+public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynamoDBCrudRepository<T, ID>
 		implements DynamoDBPagingAndSortingRepository<T, ID> {
 
 	public SimpleDynamoDBPagingAndSortingRepository(DynamoDBEntityInformation<T, ID> entityInformation,
@@ -78,11 +76,12 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID extends Serializable
 
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		// Scan to the end of the page after the requested page
-		int scanTo = pageable.getOffset() + (2 * pageable.getPageSize());
-		scanExpression.setLimit(scanTo);
+		long scanTo = pageable.getOffset() + (2 * pageable.getPageSize());
+		//TODO Spring5: Fix downcast
+		scanExpression.setLimit((int)scanTo);
 		PaginatedScanList<T> paginatedScanList = dynamoDBOperations.scan(domainType, scanExpression);
 		Iterator<T> iterator = paginatedScanList.iterator();
-		int processedCount = 0;
+		long processedCount = 0;
 		if (pageable.getOffset() > 0) {
 			processedCount = scanThroughResults(iterator, pageable.getOffset());
 			if (processedCount < pageable.getOffset())
@@ -100,7 +99,7 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID extends Serializable
 
 	}
 
-	private int scanThroughResults(Iterator<T> paginatedScanListIterator, int resultsToScan) {
+	private int scanThroughResults(Iterator<T> paginatedScanListIterator, long resultsToScan) {
 		int processed = 0;
 		while (paginatedScanListIterator.hasNext() && processed < resultsToScan) {
 			paginatedScanListIterator.next();

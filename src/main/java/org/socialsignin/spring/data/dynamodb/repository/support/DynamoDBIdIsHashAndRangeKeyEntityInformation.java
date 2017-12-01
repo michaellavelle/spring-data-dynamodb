@@ -15,12 +15,10 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-
 /**
  * @author Michael Lavelle
  */
-public interface DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID extends Serializable> extends
+public interface DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> extends
 		DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID>, DynamoDBEntityInformation<T, ID> {
 
 }

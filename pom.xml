@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.socialsignin</groupId>
+    <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>4.2.2-SNAPSHOT</version>
+    <version>5.0.1-SNAPSHOT</version>
     <name>Spring Data DynamoDb</name>
     <description>Spring Data module providing support for DynamoDb repositories.</description>
-    <url>http://github.com/michaellavelle/spring-data-dynamodb</url>
+    <url>http://github.com/derjust/spring-data-dynamodb</url>
 
     <licenses>
         <license>
@@ -17,16 +16,20 @@
     </licenses>
 
     <properties>
-        <spring.version>4.2.0.RELEASE</spring.version>
-        <hibernate-validator.version>5.2.2.Final</hibernate-validator.version>
-        <aws-java-sdk.version>1.10.39</aws-java-sdk.version>
+        <spring.version>5.0.1.RELEASE</spring.version>
+        <spring-data.version>Kay-SR1</spring-data.version>
+        <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
+        <aws-java-sdk.version>1.11.232</aws-java-sdk.version>
+        <junit.version>4.12</junit.version>
         <mockito.version>1.10.19</mockito.version>
 
-        <cdi>1.2</cdi>
-        <commons.lang>3.4</commons.lang>
+        <cdi.version>1.2</cdi.version>
+        <logback.version>1.1.7</logback.version>
 
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencyManagement>
@@ -41,7 +44,7 @@
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-releasetrain</artifactId>
-                <version>Gosling-SR1</version>
+                <version>${spring-data.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -51,6 +54,13 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -67,9 +77,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons.lang}</version>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -95,12 +105,6 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
-        <!-- APACHE -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        
         <!-- DynamoDB -->
         <dependency>
             <groupId>com.amazonaws</groupId>
@@ -111,7 +115,7 @@
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>${cdi}</version>
+            <version>${cdi.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -131,19 +135,140 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>enforce-java</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireJavaVersion>
+                                        <version>1.8.0</version>
+                                    </requireJavaVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.10</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>2.17</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <compilerArgs>
+                             <compilerArg>-Xlint:unchecked</compilerArg>
+                             <compilerArg>-Xlint:deprecation</compilerArg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.9</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-check</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <rule>
+                                        <element>BUNDLE</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>BRANCH</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.39</minimum>
+                                            </limit>
+                                            <limit>
+                                                <counter>LINE</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.40</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
+                                </rules>
+                            </configuration>
+                        </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>verify-style</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <configLocation>checkstyle.xml</configLocation>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5</version>
+                <version>2.5.3</version>
                 <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
@@ -159,12 +284,13 @@
                         <goals>
                             <goal>unpack</goal>
                         </goals>
+                        <phase>pre-integration-test</phase>
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>com.jcabi</groupId>
                                     <artifactId>DynamoDBLocal</artifactId>
-                                    <version>2015-04-27</version>
+                                    <version>2015-07-16</version>
                                     <type>zip</type>
                                     <outputDirectory>${project.build.directory}/dynamodb-dist</outputDirectory>
                                     <overWrite>false</overWrite>
@@ -174,7 +300,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -184,11 +309,47 @@
                         <goals>
                             <goal>reserve-network-port</goal>
                         </goals>
+                        <phase>pre-integration-test</phase>
                         <configuration>
                             <portNames>
                                 <portName>dynamodblocal.port</portName>
                             </portNames>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.jcabi</groupId>
+                <artifactId>jcabi-dynamodb-maven-plugin</artifactId>
+                <version>0.9.1</version>
+                <configuration>
+                    <tables>
+                        <table>src/test/resources/user_table.json</table>
+                        <table>src/test/resources/playlist_table.json</table>
+                        <table>src/test/resources/feeduser_table.json</table>
+                        <table>src/test/resources/customerhistory_table.json</table>
+                        <table>src/test/resources/installation_table.json</table>
+                    </tables>
+                    <port>${dynamodblocal.port}</port>
+                    <dist>${project.build.directory}/dynamodb-dist</dist>
+                    <arguments>
+                        <argument>-inMemory</argument>
+                    </arguments>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pre-integration-test</id>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>create-tables</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>post-integration-test</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <phase>post-integration-test</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -210,28 +371,14 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.1</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
 
     <scm>
-        <url>https://github.com/michaellavelle/spring-data-dynamodb</url>
-        <connection>scm:git:ssh://github.com/michaellavelle/spring-data-dynamodb.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/michaellavelle/spring-data-dynamodb.git</developerConnection>
-      <tag>spring-data-dynamodb-1.0.5</tag>
+        <url>https://github.com/derjust/spring-data-dynamodb</url>
+        <connection>scm:git:ssh://github.com/derjust/spring-data-dynamodb.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/derjust/spring-data-dynamodb.git</developerConnection>
+    <tag>HEAD</tag>
   </scm>
 
     <repositories>
@@ -308,6 +455,7 @@
         <developer>
             <name>Sebastian Just</name>
             <email>zeeman@zeeman.de</email>
+            <timezone>America/New_York</timezone>
         </developer>
     </developers>
 

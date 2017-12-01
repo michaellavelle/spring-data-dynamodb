@@ -1,7 +1,5 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.util.Date;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,9 +10,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 
+import java.util.Date;
+
 @RunWith(MockitoJUnitRunner.class)
-public class DynamoDBEntityWithHashKeyOnlyCriteriaUnitTest extends AbstractDynamoDBQueryCriteriaUnitTests<DynamoDBEntityWithHashKeyOnlyCriteria<User,String>> {
-	
+public class DynamoDBEntityWithHashKeyOnlyCriteriaUnitTest extends AbstractDynamoDBQueryCriteriaUnitTest<DynamoDBEntityWithHashKeyOnlyCriteria<User,String>> {
+
 	@Mock
 	private DynamoDBEntityInformation<User,String> entityInformation;
 	
@@ -23,7 +23,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteriaUnitTest extends AbstractDynam
 	public void setUp()
 	{
 		Mockito.when(entityInformation.getHashKeyPropertyName()).thenReturn("id");
-		criteria = new DynamoDBEntityWithHashKeyOnlyCriteria<User,String>(entityInformation);
+		criteria = new DynamoDBEntityWithHashKeyOnlyCriteria<User,String>(entityInformation, null);
 	}
 	
 	@Test

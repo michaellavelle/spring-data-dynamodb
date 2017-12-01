@@ -15,11 +15,8 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Iterator;
-
-import org.apache.commons.lang3.ClassUtils;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
@@ -31,14 +28,16 @@ import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * @author Michael Lavelle
  */
-public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R> extends
+public abstract class AbstractDynamoDBQueryCreator<T, ID, R> extends
 		AbstractQueryCreator<Query<R>, DynamoDBQueryCriteria<T, ID>> {
 
 	private DynamoDBEntityInformation<T, ID> entityMetadata;
@@ -60,10 +59,10 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R>
 
 	@Override
 	protected DynamoDBQueryCriteria<T, ID> create(Part part, Iterator<Object> iterator) {
-
+        final DynamoDBMapperTableModel<T> tableModel = dynamoDBOperations.getTableModel(entityMetadata.getJavaType());
 		DynamoDBQueryCriteria<T, ID> criteria = entityMetadata.isRangeKeyAware() ? new DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID>(
-				(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID>) entityMetadata)
-				: new DynamoDBEntityWithHashKeyOnlyCriteria<T, ID>(entityMetadata);
+				(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID>) entityMetadata, tableModel)
+				: new DynamoDBEntityWithHashKeyOnlyCriteria<>(entityMetadata, tableModel);
 		return addCriteria(criteria, part, iterator);
 	}
 
@@ -87,7 +86,7 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R>
 			Object in = iterator.next();
 			Assert.notNull(in, "Creating conditions on null parameters not supported: please specify a value for '"
 					+ leafNodePropertyName + "'");
-			boolean isIterable = ClassUtils.isAssignable(in.getClass(), Iterable.class);
+			boolean isIterable = ClassUtils.isAssignable(Iterable.class, in.getClass());
 			boolean isArray = ObjectUtils.isArray(in);
 			Assert.isTrue(isIterable || isArray, "In criteria can only operate with Iterable or Array parameters");
 			Iterable<?> iterable = isIterable ? ((Iterable<?>) in) : Arrays.asList(ObjectUtils.toObjectArray(in));

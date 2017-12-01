@@ -15,16 +15,12 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+
 import java.util.List;
 
-import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
-import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBPersistentProperty;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-
 /**
- * {@link DynamoDBPersistentProperty} implementation
- * 
  * @author Michael Lavelle
  */
 public class MultipleEntityQueryExpressionQuery<T> extends AbstractMultipleEntityQuery<T> {

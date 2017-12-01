@@ -15,15 +15,20 @@
  */
 package org.socialsignin.spring.data.dynamodb.mapping;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
-
 /**
  * @author Michael Lavelle
+ * @deprecated According to {@code com.amazonaws.services.dynamodbv2.datamodeling.marshallers.CustomMarshaller.marshall(Object)}
+ * at some point {@link DynamoDBMarshaller} might be cached - whereas {@link DateFormat} is not thread-safe. <br>
+ * Use {@link org.socialsignin.spring.data.dynamodb.marshaller.DateDynamoDBMarshaller} instead.
+ * @see org.socialsignin.spring.data.dynamodb.marshaller.DateDynamoDBMarshaller
  */
+@Deprecated
 public class AbstractDynamoDBDateMarshaller implements DynamoDBMarshaller<Date> {
 
 	private DateFormat dateFormat;

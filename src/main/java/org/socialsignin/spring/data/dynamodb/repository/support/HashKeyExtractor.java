@@ -15,12 +15,10 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-
 /**
  * @author Michael Lavelle
  */
-public interface HashKeyExtractor<ID extends Serializable, H> {
+public interface HashKeyExtractor<ID, H> {
 
-	public H getHashKey(ID id);
+	H getHashKey(ID id);
 }

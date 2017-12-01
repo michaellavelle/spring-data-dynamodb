@@ -15,9 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +26,11 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.springframework.dao.EmptyResultDataAccessException;
+
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -101,21 +103,21 @@ public class SimpleDynamoDBCrudRepositoryUnitTest {
 	@Test(expected = EmptyResultDataAccessException.class)
 	public void throwsExceptionIfEntityOnlyHashKeyToDeleteDoesNotExist() {
 
-		repoForEntityWithOnlyHashKey.delete(4711L);
+		repoForEntityWithOnlyHashKey.deleteById(4711L);
 	}
 
 	@Test
 	public void findOneEntityWithOnlyHashKey() {
-		User user = repoForEntityWithOnlyHashKey.findOne(1l);
+		Optional<User> user = repoForEntityWithOnlyHashKey.findById(1l);
 		Mockito.verify(dynamoDBOperations).load(User.class,1l);
-		assertEquals(testUser, user);
+		assertEquals(testUser, user.get());
 	}
 	
 
 	@Test
 	public void findOneEntityWithHashAndRangeKey() {
-		Playlist playlist = repoForEntityWithHashAndRangeKey.findOne(testPlaylistId);
-		assertEquals(testPlaylist, playlist);
+		Optional<Playlist> playlist = repoForEntityWithHashAndRangeKey.findById(testPlaylistId);
+		assertEquals(testPlaylist, playlist.get());
 	}
 
 	/**
@@ -128,6 +130,6 @@ public class SimpleDynamoDBCrudRepositoryUnitTest {
 		playlistId.setUserName("someUser");
 		playlistId.setPlaylistName("somePlaylistName");
 
-		repoForEntityWithHashAndRangeKey.delete(playlistId);
+		repoForEntityWithHashAndRangeKey.deleteById(playlistId);
 	}
 }

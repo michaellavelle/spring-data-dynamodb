@@ -15,21 +15,29 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import java.io.Serializable;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 
-public class PlaylistId implements Serializable {
+import java.io.Serializable;
 
-	/**
-	 * 
-	 */
+/**
+ * Composite Key to support a HASH+RANGE key of DynamoDB in Spring-Data
+ */
+public class PlaylistId implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String userName;
 	private String playlistName;
 
+	public PlaylistId() {
+		this(null, null);
+	}
+
+	public PlaylistId(String userName, String playlistName) {
+		this.userName = userName;
+		this.playlistName = playlistName;
+	}
+	
 	@DynamoDBHashKey
 	public String getUserName() {
 		return userName;
@@ -47,5 +55,4 @@ public class PlaylistId implements Serializable {
 	public void setPlaylistName(String playlistName) {
 		this.playlistName = playlistName;
 	}
-
 }

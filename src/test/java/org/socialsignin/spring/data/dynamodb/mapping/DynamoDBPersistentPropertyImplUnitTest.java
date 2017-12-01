@@ -15,18 +15,17 @@
  */
 package org.socialsignin.spring.data.dynamodb.mapping;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for {@link DynamoDBPersistentPropertyImpl}.
@@ -34,7 +33,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
  * @author Michael Lavelle
  */
 @RunWith(MockitoJUnitRunner.class)
-public class DynamoDBPersistentPropertyImplUnitTests {
+public class DynamoDBPersistentPropertyImplUnitTest {
 
 	DynamoDBMappingContext context;
 	DynamoDBPersistentEntity<?> entity;

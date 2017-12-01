@@ -15,14 +15,12 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-
 import org.springframework.util.Assert;
 
 /**
  * @author Michael Lavelle
  */
-public class HashKeyIsIdHashKeyExtractor<ID extends Serializable> implements HashKeyExtractor<ID, ID> {
+public class HashKeyIsIdHashKeyExtractor<ID> implements HashKeyExtractor<ID, ID> {
 
 	private Class<ID> idAndHashKeyType;
 

@@ -15,16 +15,15 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * @author Michael Lavelle

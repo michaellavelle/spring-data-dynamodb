@@ -15,13 +15,13 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.cdi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+import org.springframework.data.repository.cdi.CdiRepositoryExtensionSupport;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.UnsatisfiedResolutionException;
@@ -29,15 +29,13 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.ProcessBean;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
-import org.springframework.data.repository.cdi.CdiRepositoryExtensionSupport;
-
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A portable CDI extension which registers beans for Spring Data DynamoDB

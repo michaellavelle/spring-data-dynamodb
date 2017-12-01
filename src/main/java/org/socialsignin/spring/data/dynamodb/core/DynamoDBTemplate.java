@@ -1,8 +1,17 @@
 package org.socialsignin.spring.data.dynamodb.core;
 
-import java.util.List;
-import java.util.Map;
-
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
+import com.amazonaws.services.dynamodbv2.model.Select;
 import org.socialsignin.spring.data.dynamodb.mapping.event.AfterDeleteEvent;
 import org.socialsignin.spring.data.dynamodb.mapping.event.AfterLoadEvent;
 import org.socialsignin.spring.data.dynamodb.mapping.event.AfterQueryEvent;
@@ -16,53 +25,53 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
-import com.amazonaws.services.dynamodbv2.model.QueryResult;
-import com.amazonaws.services.dynamodbv2.model.Select;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAware {
+public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextAware {
 
-	protected DynamoDBMapper dynamoDBMapper;
-	private AmazonDynamoDB amazonDynamoDB;
-	private DynamoDBMapperConfig dynamoDBMapperConfig;
+	private final DynamoDBMapper dynamoDBMapper;
+	private final AmazonDynamoDB amazonDynamoDB;
+	private final DynamoDBMapperConfig dynamoDBMapperConfig;
 	private ApplicationEventPublisher eventPublisher;
 	
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB,DynamoDBMapperConfig dynamoDBMapperConfig)
+	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig)
 	{
-		this.amazonDynamoDB = amazonDynamoDB;
-		setDynamoDBMapperConfig(dynamoDBMapperConfig);
+	    this(amazonDynamoDB, dynamoDBMapperConfig, null);
 	}
+    
+    public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper)
+    {
+        this(amazonDynamoDB, null, dynamoDBMapper);
+    }
+    
+    public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB)
+    {
+        this(amazonDynamoDB, null, null);
+    }
 	
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB)
-	{
-		this.amazonDynamoDB = amazonDynamoDB;
-		setDynamoDBMapperConfig(null);
-	}
+	DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig, DynamoDBMapper dynamoDBMapper) {
+       this.amazonDynamoDB = amazonDynamoDB;
+        if (dynamoDBMapperConfig == null) {
+            this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
+            this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
+            // Mapper must be null as it could not have been constructed without a Config
+            assert dynamoDBMapper == null;
+        } else {
+            this.dynamoDBMapperConfig = dynamoDBMapperConfig;
+            if (dynamoDBMapper == null) {
+                this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
+            } else {
+                this.dynamoDBMapper = dynamoDBMapper;
+            }
+        }
+    }
 	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.eventPublisher = applicationContext;
-	}
-
-	
-	public void setDynamoDBMapperConfig(DynamoDBMapperConfig dynamoDBMapperConfig)
-	{
-		this.dynamoDBMapperConfig = dynamoDBMapperConfig;
-		dynamoDBMapper = dynamoDBMapperConfig == null ? new DynamoDBMapper(amazonDynamoDB) : new DynamoDBMapper(
-				amazonDynamoDB, dynamoDBMapperConfig);
-		if (dynamoDBMapperConfig == null)
-		{
-			this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
-		}
 	}
 	
 	@Override
@@ -135,17 +144,24 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	}
 
 	@Override
+	@Deprecated
 	public void batchSave(List<?> entities) {
-		for (Object entity : entities)
-		{
-			maybeEmitEvent(new BeforeSaveEvent<Object>(entity));
-		}
-		dynamoDBMapper.batchSave(entities);
-		for (Object entity : entities)
-		{
-			maybeEmitEvent(new AfterSaveEvent<Object>(entity));
-		}
+		Iterable<?> iterableEntities = entities;
+		batchSave(iterableEntities);
 	}
+	
+	@Override
+        public void batchSave(Iterable<?> entities) {
+	        Iterator<?> iteratorBefore = entities.iterator();
+	        while( iteratorBefore.hasNext() ){
+	            maybeEmitEvent(new BeforeSaveEvent<Object>(iteratorBefore.next()));
+	        }
+                dynamoDBMapper.batchSave(entities);
+                Iterator<?> iteratorAfter = entities.iterator();
+                while( iteratorAfter.hasNext() ){
+                    maybeEmitEvent(new BeforeSaveEvent<Object>(iteratorAfter.next()));
+                }
+        }
 
 	@Override
 	public void delete(Object entity) {
@@ -156,17 +172,23 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	}
 
 	@Override
+	@Deprecated
 	public void batchDelete(List<?> entities) {
-		for (Object entity : entities)
-		{
-			maybeEmitEvent(new BeforeDeleteEvent<Object>(entity));
-		}
-		dynamoDBMapper.batchDelete(entities);
-		for (Object entity : entities)
-		{
-			maybeEmitEvent(new AfterDeleteEvent<Object>(entity));
-		}
-		
+	        Iterable<?> iterableEntities = entities;
+	        batchDelete(iterableEntities);
+	}
+	
+	@Override
+	public void batchDelete(Iterable<?> entities) {
+	    Iterator<?> iteratorBefore = entities.iterator();
+            while( iteratorBefore.hasNext() ){
+                maybeEmitEvent(new BeforeDeleteEvent<Object>(iteratorBefore.next()));
+            }
+	    dynamoDBMapper.batchDelete(entities);
+	    Iterator<?> iteratorAfter = entities.iterator();
+            while( iteratorAfter.hasNext() ){
+                maybeEmitEvent(new AfterDeleteEvent<Object>(iteratorAfter.next()));
+            }
 	}
 
 	@Override
@@ -194,18 +216,28 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	}
 
 	@Override
-	public String getOverriddenTableName(String tableName) {
+	public <T> String getOverriddenTableName(Class<T> domainClass, String tableName) {
 		if (dynamoDBMapperConfig.getTableNameOverride() != null) {
 			if (dynamoDBMapperConfig.getTableNameOverride().getTableName() != null) {
 				tableName = dynamoDBMapperConfig.getTableNameOverride().getTableName();
 			} else {
 				tableName = dynamoDBMapperConfig.getTableNameOverride().getTableNamePrefix() + tableName;
 			}
+		} else if (dynamoDBMapperConfig.getTableNameResolver() != null) {
+		  tableName = dynamoDBMapperConfig.getTableNameResolver().getTableName(domainClass, dynamoDBMapperConfig);
 		}
 
 		return tableName;
 	}
-	
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> DynamoDBMapperTableModel<T> getTableModel(Class<T> domainClass) {
+        return dynamoDBMapper.getTableModel(domainClass, dynamoDBMapperConfig);
+    }
+
 	protected <T> void maybeEmitEvent(DynamoDBMappingEvent<T> event) {
 		if (null != eventPublisher) {
 			eventPublisher.publishEvent(event);

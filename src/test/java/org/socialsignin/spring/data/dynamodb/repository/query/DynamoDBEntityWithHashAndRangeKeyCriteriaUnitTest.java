@@ -11,7 +11,7 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DynamoDBEntityWithHashAndRangeKeyCriteriaUnitTest extends AbstractDynamoDBQueryCriteriaUnitTests<DynamoDBEntityWithHashAndRangeKeyCriteria<Playlist,String>> {
+public class DynamoDBEntityWithHashAndRangeKeyCriteriaUnitTest extends AbstractDynamoDBQueryCriteriaUnitTest<DynamoDBEntityWithHashAndRangeKeyCriteria<Playlist,String>> {
 	
 	@Mock
 	private DynamoDBIdIsHashAndRangeKeyEntityInformation<Playlist,String> entityInformation;
@@ -22,7 +22,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteriaUnitTest extends AbstractD
 	{
 		Mockito.when(entityInformation.getHashKeyPropertyName()).thenReturn("userName");
 		Mockito.when(entityInformation.getRangeKeyPropertyName()).thenReturn("playlistName");
-		criteria = new DynamoDBEntityWithHashAndRangeKeyCriteria<Playlist,String>(entityInformation);
+		criteria = new DynamoDBEntityWithHashAndRangeKeyCriteria<Playlist,String>(entityInformation, null);
 	}
 	
 	@Test

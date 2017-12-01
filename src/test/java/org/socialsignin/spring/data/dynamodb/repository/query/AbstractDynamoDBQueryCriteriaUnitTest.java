@@ -1,5 +1,9 @@
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,13 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Assert;
-import org.junit.Test;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-
-
-public abstract class AbstractDynamoDBQueryCriteriaUnitTests<C extends AbstractDynamoDBQueryCriteria<?,?>> {
+public abstract class AbstractDynamoDBQueryCriteriaUnitTest<C extends AbstractDynamoDBQueryCriteria<?,?>> {
 
 	protected C criteria;
 
