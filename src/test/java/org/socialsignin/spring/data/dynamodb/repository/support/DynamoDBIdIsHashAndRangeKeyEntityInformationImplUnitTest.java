@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
@@ -55,25 +55,16 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImplUnitTest {
 		Mockito.when(mockHashAndRangeKeyExtractor.getHashKey(mockPlaylistId)).thenReturn(mockHashKey);
 		Mockito.when(mockHashAndRangeKeyExtractor.getRangeKey(mockPlaylistId)).thenReturn(mockRangeKey);
 		
-		Mockito.when(mockUserEntityMetadata.getHashKeyPropertyName()).thenReturn("userHashKeyPropertyName");
 		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropertyName()).thenReturn("playlistHashKeyPropertyName");
-		Mockito.when(mockUserEntityMetadata.getHashKeyPropotypeEntityForHashKey("someUserHashKey")).thenReturn(mockUserPrototype);
 		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropotypeEntityForHashKey("somePlaylistHashKey")).thenReturn(mockPlaylistPrototype);
-		Mockito.when(mockUserEntityMetadata.getMarshallerForProperty("marshalledProperty")).thenReturn(mockPropertyMarshaller);
 		Mockito.when(mockPlaylistEntityMetadata.getMarshallerForProperty("marshalledProperty")).thenReturn(mockPropertyMarshaller);
-		Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("overriddenProperty")).thenReturn("modifiedPropertyName");
 		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("overriddenProperty")).thenReturn("modifiedPropertyName");
 	
-		Mockito.when(mockUserEntityMetadata.isHashKeyProperty("hashKeyProperty")).thenReturn(true);
-		Mockito.when(mockPlaylistEntityMetadata.isHashKeyProperty("hashKeyProperty")).thenReturn(true);
-		Mockito.when(mockUserEntityMetadata.isHashKeyProperty("nonHashKeyProperty")).thenReturn(false);
 		Mockito.when(mockPlaylistEntityMetadata.isHashKeyProperty("nonHashKeyProperty")).thenReturn(false);
-		Mockito.when(mockUserEntityMetadata.isCompositeHashAndRangeKeyProperty("compositeIdProperty")).thenReturn(true);
 		Mockito.when(mockPlaylistEntityMetadata.isCompositeHashAndRangeKeyProperty("compositeIdProperty")).thenReturn(true);
-		Mockito.when(mockUserEntityMetadata.isCompositeHashAndRangeKeyProperty("nonCompositeIdProperty")).thenReturn(false);
 		Mockito.when(mockPlaylistEntityMetadata.isCompositeHashAndRangeKeyProperty("nonCompositeIdProperty")).thenReturn(false);
 		
-		dynamoDBPlaylistEntityInformation = new DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<Playlist,PlaylistId>(Playlist.class,mockPlaylistEntityMetadata);
+		dynamoDBPlaylistEntityInformation = new DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<>(Playlist.class,mockPlaylistEntityMetadata);
 
 	}
 	

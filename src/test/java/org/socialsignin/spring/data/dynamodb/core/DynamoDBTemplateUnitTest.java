@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
@@ -38,7 +38,7 @@ public class DynamoDBTemplateUnitTest {
 	@Test
 	public void testBatchDelete_CallsCorrectDynamoDBMapperMethod()
 	{
-			List<User> users = new ArrayList<User>();
+			List<User> users = new ArrayList<>();
 			dynamoDBTemplate.batchDelete(users);
 			Mockito.verify(dynamoDBMapper).batchDelete(Mockito.any(List.class));
 	}
@@ -47,7 +47,7 @@ public class DynamoDBTemplateUnitTest {
 	@Test
 	public void testBatchSave_CallsCorrectDynamoDBMapperMethod()
 	{
-			List<User> users = new ArrayList<User>();
+			List<User> users = new ArrayList<>();
 			dynamoDBTemplate.batchSave(users);
 			Mockito.verify(dynamoDBMapper).batchSave(Mockito.any(List.class));
 	}

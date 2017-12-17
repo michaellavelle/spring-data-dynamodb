@@ -13,6 +13,9 @@
       <action dev="derjust" type="add" date="2017-12-01" >
         Added maven-changes-plugin to build process
       </action>
+      <action dev="derjust" type="add" date="2017-12-17" >
+        Update Mockito and resolve dependency clashes
+      </action>
     </release>
     <release version="5.0.0" date="2017-11-27" description="Spring 5 release" >
       <action dev="derjust" type="add">

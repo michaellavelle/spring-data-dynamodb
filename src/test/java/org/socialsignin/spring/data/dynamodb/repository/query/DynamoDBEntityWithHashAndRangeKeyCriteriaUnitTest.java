@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 
@@ -22,7 +22,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteriaUnitTest extends AbstractD
 	{
 		Mockito.when(entityInformation.getHashKeyPropertyName()).thenReturn("userName");
 		Mockito.when(entityInformation.getRangeKeyPropertyName()).thenReturn("playlistName");
-		criteria = new DynamoDBEntityWithHashAndRangeKeyCriteria<Playlist,String>(entityInformation, null);
+		criteria = new DynamoDBEntityWithHashAndRangeKeyCriteria<>(entityInformation, null);
 	}
 	
 	@Test
@@ -119,7 +119,6 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteriaUnitTest extends AbstractD
 	@Test
 	public void testHasIndexRangeKeyCondition_WhenConditionCriteriaIsEqualityOnAPropertyWhichIsNotAnIndexRangeKeyButIsARangeKey()
 	{
-		Mockito.when(entityInformation.isGlobalIndexRangeKeyProperty("playlistName")).thenReturn(false);
 		criteria.withPropertyEquals("playlist name", "some playlist name", String.class);
 		boolean hasIndexRangeKeyCondition = criteria.hasIndexRangeKeyCondition();
 		Assert.assertFalse(hasIndexRangeKeyCondition);

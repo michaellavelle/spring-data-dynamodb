@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 
@@ -23,7 +23,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteriaUnitTest extends AbstractDynam
 	public void setUp()
 	{
 		Mockito.when(entityInformation.getHashKeyPropertyName()).thenReturn("id");
-		criteria = new DynamoDBEntityWithHashKeyOnlyCriteria<User,String>(entityInformation, null);
+		criteria = new DynamoDBEntityWithHashKeyOnlyCriteria<>(entityInformation, null);
 	}
 	
 	@Test

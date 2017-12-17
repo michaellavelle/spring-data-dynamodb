@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
@@ -77,19 +77,14 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTest {
 		when(entityWithOnlyHashKeyInformation.getHashKey(1l)).thenReturn(1l);
 		
 		
-		when(mockEnableScanPermissions.isFindAllUnpaginatedScanEnabled()).thenReturn(true);
-		when(mockEnableScanPermissions.isDeleteAllUnpaginatedScanEnabled()).thenReturn(true);
-		when(mockEnableScanPermissions.isCountUnpaginatedScanEnabled()).thenReturn(true);
-
-
 		when(entityWithHashAndRangeKeyInformation.getJavaType()).thenReturn(Playlist.class);
 		when(entityWithHashAndRangeKeyInformation.getHashKey(testPlaylistId)).thenReturn("michael");
 		when(entityWithHashAndRangeKeyInformation.getRangeKey(testPlaylistId)).thenReturn("playlist1");
 		when(entityWithHashAndRangeKeyInformation.isRangeKeyAware()).thenReturn(true);
 
-		repoForEntityWithOnlyHashKey = new SimpleDynamoDBPagingAndSortingRepository<User, Long>(entityWithOnlyHashKeyInformation,
+		repoForEntityWithOnlyHashKey = new SimpleDynamoDBPagingAndSortingRepository<>(entityWithOnlyHashKeyInformation,
 				dynamoDBOperations,mockEnableScanPermissions);
-		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBPagingAndSortingRepository<Playlist, PlaylistId>(
+		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBPagingAndSortingRepository<>(
 				entityWithHashAndRangeKeyInformation, dynamoDBOperations,mockEnableScanPermissions);
 
 		when(dynamoDBOperations.load(User.class, 1l)).thenReturn(testUser);

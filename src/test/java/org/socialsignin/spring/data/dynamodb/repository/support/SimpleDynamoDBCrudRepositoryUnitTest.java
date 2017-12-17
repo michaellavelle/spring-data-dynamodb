@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
@@ -77,9 +77,9 @@ public class SimpleDynamoDBCrudRepositoryUnitTest {
 		when(entityWithSimpleIdInformation.getJavaType()).thenReturn(User.class);
 		when(entityWithSimpleIdInformation.getHashKey(1l)).thenReturn(1l);
 		
-		when(mockEnableScanPermissions.isFindAllUnpaginatedScanEnabled()).thenReturn(true);
-		when(mockEnableScanPermissions.isDeleteAllUnpaginatedScanEnabled()).thenReturn(true);
-		when(mockEnableScanPermissions.isCountUnpaginatedScanEnabled()).thenReturn(true);
+//		when(mockEnableScanPermissions.isFindAllUnpaginatedScanEnabled()).thenReturn(true);
+//		when(mockEnableScanPermissions.isDeleteAllUnpaginatedScanEnabled()).thenReturn(true);
+//		when(mockEnableScanPermissions.isCountUnpaginatedScanEnabled()).thenReturn(true);
 
 		
 		when(entityWithCompositeIdInformation.getJavaType()).thenReturn(Playlist.class);

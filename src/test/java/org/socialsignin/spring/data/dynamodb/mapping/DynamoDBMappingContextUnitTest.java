@@ -18,7 +18,7 @@ package org.socialsignin.spring.data.dynamodb.mapping;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
 import static org.hamcrest.CoreMatchers.is;
