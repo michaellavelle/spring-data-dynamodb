@@ -4,8 +4,8 @@
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
     <version>5.0.1-SNAPSHOT</version>
-    <name>Spring Data DynamoDb</name>
-    <description>Spring Data module providing support for DynamoDb repositories.</description>
+    <name>Spring Data DynamoDB</name>
+    <description>The primary goal of the Spring Data project is to make it easier to build Spring-powered applications that use data access technologies. This module deals with enhanced support for Amazon DynamoDB based data access layers.</description>
     <url>http://github.com/derjust/spring-data-dynamodb</url>
 
     <licenses>
@@ -21,10 +21,10 @@
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
         <aws-java-sdk.version>1.11.232</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
-        <mockito.version>1.10.19</mockito.version>
+        <mockito.version>2.13.0</mockito.version>
 
         <cdi.version>1.2</cdi.version>
-        <logback.version>1.1.7</logback.version>
+        <logback.version>1.2.3</logback.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -80,6 +80,13 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
+            </dependency>
+
+            <!-- AWS SDK comes with dependencies to 1.2 and 1.1.3 therefore locking down on 1.2 -->
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -441,6 +448,33 @@
                             </execution>
                         </executions>
                     </plugin>
+					<plugin>
+					    <!-- Deploy the web site -->
+					    <groupId>com.github.github</groupId>
+					    <artifactId>site-maven-plugin</artifactId>
+					    <version>0.9</version>
+					    <executions>
+					        <execution>
+					            <goals>
+					                <goal>site</goal>
+					            </goals>
+					            <!-- select the Maven phase in which the plugin will be executed -->
+					            <phase>site-deploy</phase>
+					            <configuration>
+					                <!-- Plugin configuration ges here -->
+					
+					                <server>github</server>
+					
+					                <!-- The commit message -->
+					                <message>Building site</message>
+					                <!-- The location where the site is uploaded -->
+					                <path>${site.path}</path>
+					                <!-- Use merge or override the content -->
+					                <merge>true</merge>
+					            </configuration>
+					        </execution>
+					    </executions>
+					</plugin>
                 </plugins>
             </build>
         </profile>
@@ -453,11 +487,29 @@
             <timezone>0</timezone>
         </developer>
         <developer>
-            <name>Sebastian Just</name>
+        	<id>derjust</id>
+            <name>Sebastian J</name>
             <email>zeeman@zeeman.de</email>
             <timezone>America/New_York</timezone>
         </developer>
     </developers>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.12.1</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>changes-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 
     <distributionManagement>
         <snapshotRepository>
@@ -469,5 +521,9 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+    <issueManagement>
+    	<system>GitHub</system>
+    	<url>https://github.com/derjust/spring-data-dynamodb/issues</url>
+    </issueManagement>
 
 </project>
