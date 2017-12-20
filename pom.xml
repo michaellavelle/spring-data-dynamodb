@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>4.5.1</version>
+    <version>4.5.2-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
     <description>The primary goal of the Spring Data project is to make it easier to build Spring-powered applications that use data access technologies. This module deals with enhanced support for Amazon DynamoDB based data access layers.</description>
     <url>http://github.com/derjust/spring-data-dynamodb</url>
@@ -385,7 +385,7 @@
         <url>https://github.com/derjust/spring-data-dynamodb</url>
         <connection>scm:git:ssh://github.com/derjust/spring-data-dynamodb.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/derjust/spring-data-dynamodb.git</developerConnection>
-    <tag>v4.5.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
     <repositories>
