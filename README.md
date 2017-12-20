@@ -44,7 +44,7 @@ Download the JAR though [Maven](http://mvnrepository.com/artifact/com.github.der
 <dependency>
   <groupId>com.github.derjust</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>4.5.0</version>
+  <version>4.5.1</version>
 </dependency>
 ```
 
@@ -58,7 +58,7 @@ repositories {
 dependencies {
   compile group: 'com.github.derjust',
   name: 'spring-data-dynamodb',
-  version: '4.5.0'
+  version: '4.5.1'
 }
 ```
 

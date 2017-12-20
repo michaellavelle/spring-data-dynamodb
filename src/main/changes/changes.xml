@@ -1,0 +1,31 @@
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+    <properties>
+        <title>spring-data-dynamodb Changes</title>
+        <author email="zeeman@zeeman.de" >derjust</author>
+    </properties>
+    <body>
+        <release version="5.0.1" date="" description="Maintenance release" >
+            <action dev="derjust" issue="68" type="fix" date="2017-12-01" >
+                Respecting DynamoDBOperations.batchSave()'s List&lt;FailedBatch&gt; return value and turn it into a BatchWriteException
+            </action>
+            <action dev="derjust" type="add" date="2017-12-01" >
+                Added maven-changes-plugin to build process
+            </action>
+            <action dev="derjust" type="add" date="2017-12-17" >
+                Update Mockito and resolve dependency clashes
+            </action>
+        </release>
+        <release version="5.0.0" date="2017-11-27" description="Spring 5 release" >
+            <action dev="derjust" type="add">
+                Added Spring 5 / Spring-Data Kay support
+            </action>
+        </release>
+        <release version="4.5.1" date="2017-12-19">
+            <action dev="Michael Wyraz" type="fix" issue="92">
+                Add constructor to DynamoDBTemplate that takes a preconfigured DynamoDBMapper
+            </action>
+        </release>
+    </body>
+</document>
