@@ -53,7 +53,7 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	
 	DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig, DynamoDBMapper dynamoDBMapper) {
        this.amazonDynamoDB = amazonDynamoDB;
-        if (dynamoDBMapperConfig == null) {
+       if (dynamoDBMapper == null && dynamoDBMapperConfig == null)
             this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
             this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
             // Mapper must be null as it could not have been constructed without a Config
