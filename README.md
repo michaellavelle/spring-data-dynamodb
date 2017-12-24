@@ -1,9 +1,11 @@
 [![codecov.io](https://codecov.io/github/derjust/spring-data-dynamodb/coverage.svg?branch=master)](https://codecov.io/github/derjust/spring-data-dynamodb?branch=master) [![Build Status](https://travis-ci.org/derjust/spring-data-dynamodb.svg?branch=master)](https://travis-ci.org/derjust/spring-data-dynamodb) 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb)
+[![Generic badge](https://img.shields.io/badge/Donate-%F0%9F%92%B8-ffffff.svg)](DONATION.md)
 
-# Spring Data DynamoDB #
 
-The primary goal of the [Spring Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies. This module deals with enhanced support for [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) based data access layers.
+# Spring  Data DynamoDB #
+
+The primary goal of the [Spring® Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies. This module deals with enhanced support for [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) based data access layers.
 
 ## Supported Features ##
 
@@ -283,11 +285,5 @@ Check `pom.xml` for the proper `<version />`, afterwards execute
   $ mvn release:prepare && mvn release:perform
 ```
 
-which will tag, build, test and upload the artifacts to Sonatype's OSS staging area.
-
-Then visit
-https://oss.sonatype.org/#stagingRepositories
-and _close_ the staging repository.
-
-Afterwards _release_ the staging repository. This will sync with Maven Central (give it some hours to become visible via http://search.maven.org/).
-
+which will tag, build, test and upload the artifacts to Sonatype's OSS staging area & closes the staging repository.
+Maven Central synchronization usually takes ~15 minutes.

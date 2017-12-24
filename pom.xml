@@ -5,7 +5,7 @@
     <artifactId>spring-data-dynamodb</artifactId>
     <version>5.0.1-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
-    <description>The primary goal of the Spring Data project is to make it easier to build Spring-powered applications that use data access technologies. This module deals with enhanced support for Amazon DynamoDB based data access layers.</description>
+    <description>The primary goal of the Spring® Data project is to make it easier to build Spring-powered applications that use data access technologies. This module deals with enhanced support for Amazon DynamoDB based data access layers.</description>
     <url>http://github.com/derjust/spring-data-dynamodb</url>
 
     <licenses>
@@ -512,6 +512,10 @@
 	</reporting>
 
     <distributionManagement>
+        <site>
+            <id>website</id>
+            <url>https://github.com/derjust/spring-data-dynamodb/</url>
+        </site>
         <snapshotRepository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
