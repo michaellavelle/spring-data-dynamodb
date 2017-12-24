@@ -18,6 +18,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.TableNameResolver;
 
+import static org.junit.Assert.assertTrue;
+
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBTemplateUnitTest {
 	
@@ -29,12 +31,20 @@ public class DynamoDBTemplateUnitTest {
 	private DynamoDBMapperConfig dynamoDBMapperConfig;
 	
 	private DynamoDBTemplate dynamoDBTemplate;
-	
+
 	@Before
 	public void setUp() {
 		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapperConfig, dynamoDBMapper);
 	}
-	
+
+	@Test
+	public void testPreconfiguredDynamoDBMapper() {
+		// Introduced constructor via #91 should not fail its assert
+		DynamoDBTemplate usePreconfiguredDynamoDBMapper = new DynamoDBTemplate(dynamoDB, dynamoDBMapper);
+
+		assertTrue("The constructor should not fail with an assert error", true);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testBatchDelete_CallsCorrectDynamoDBMapperMethod()
