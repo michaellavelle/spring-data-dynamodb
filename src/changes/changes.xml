@@ -16,6 +16,9 @@
       <action dev="derjust" type="add" date="2017-12-17" >
         Update Mockito and resolve dependency clashes
       </action>
+      <action dev="Gaurav Rawat" type="fix" issue="91">>
+        Fixed false assertion introduced implementing #91
+      </action>
     </release>
     <release version="5.0.0" date="2017-11-27" description="Spring 5 release" >
       <action dev="derjust" type="add">
@@ -23,7 +26,7 @@
       </action>
     </release>
     <release version="4.5.1" date="2017-12-19">
-      <action dev="Michael Wyraz" type="fix" issue="92">
+      <action dev="Michael Wyraz" type="fix" issue="91">
         Add constructor to DynamoDBTemplate that takes a preconfigured DynamoDBMapper
       </action>
     </release>
