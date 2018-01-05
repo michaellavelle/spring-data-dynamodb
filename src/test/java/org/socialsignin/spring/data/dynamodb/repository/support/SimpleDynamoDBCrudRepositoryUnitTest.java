@@ -15,9 +15,11 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -28,8 +30,11 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -87,14 +92,30 @@ public class SimpleDynamoDBCrudRepositoryUnitTest {
 		when(entityWithCompositeIdInformation.getRangeKey(testPlaylistId)).thenReturn("playlist1");
 		when(entityWithCompositeIdInformation.isRangeKeyAware()).thenReturn(true);
 
-		repoForEntityWithOnlyHashKey = new SimpleDynamoDBCrudRepository<User, Long>(entityWithSimpleIdInformation,
+		repoForEntityWithOnlyHashKey = new SimpleDynamoDBCrudRepository<>(entityWithSimpleIdInformation,
 				dynamoDBOperations,mockEnableScanPermissions);
-		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBCrudRepository<Playlist, PlaylistId>(
+		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBCrudRepository<>(
 				entityWithCompositeIdInformation, dynamoDBOperations,mockEnableScanPermissions);
 
 		when(dynamoDBOperations.load(User.class, 1l)).thenReturn(testUser);
 		when(dynamoDBOperations.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);
 
+	}
+
+	@Test
+	public void deleteById() {
+		final long id = new Random().nextLong();
+		User testResult = new User();
+		testResult.setId(Long.toString(id));
+
+		when(entityWithSimpleIdInformation.getHashKey(id)).thenReturn(id);
+		when(dynamoDBOperations.load(User.class, id)).thenReturn(testResult);
+
+		repoForEntityWithOnlyHashKey.deleteById(id);
+
+		ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+		Mockito.verify(dynamoDBOperations).delete(captor.capture());
+		Assert.assertEquals(Long.toString(id), captor.getValue().getId());
 	}
 
 	/**

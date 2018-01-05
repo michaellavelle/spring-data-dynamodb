@@ -16,8 +16,11 @@
       <action dev="derjust" type="add" date="2017-12-17" >
         Update Mockito and resolve dependency clashes
       </action>
-      <action dev="Gaurav Rawat" type="fix" issue="91">>
+      <action dev="Gaurav Rawat" type="fix" issue="91">
         Fixed false assertion introduced implementing #91
+      </action>
+      <action dev="derjust" type="fix" issue="109">
+        Fix incorrect passing of an Optional into the delete method
       </action>
     </release>
     <release version="5.0.0" date="2017-11-27" description="Spring 5 release" >
