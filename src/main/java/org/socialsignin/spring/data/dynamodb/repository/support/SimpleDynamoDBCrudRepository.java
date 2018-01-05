@@ -168,11 +168,14 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 		Assert.notNull(id, "The given id must not be null!");
 
 		Optional<T> entity = findById(id);
-		if (!entity.isPresent()) {
+
+		if (entity.isPresent()) {
+			dynamoDBOperations.delete(entity.get());
+
+		} else {
 			throw new EmptyResultDataAccessException(String.format(
 					"No %s entity with id %s exists!", domainType, id), 1);
 		}
-		dynamoDBOperations.delete(entity);
 	}
 
 	@Override
