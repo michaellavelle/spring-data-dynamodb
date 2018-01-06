@@ -7,6 +7,7 @@
 
 The primary goal of the [Spring® Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies.
 This module deals with enhanced support for a data access layer built on [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
+Technical infos can be found on the [project page](https://derjust.github.io/spring-data-dynamodb/).
 
 ## Supported Features ##
 
@@ -280,7 +281,11 @@ Advanced topics can be found in the [wiki](https://github.com/derjust/spring-dat
 
 ## Release process ##
 
-Check `pom.xml` for the proper `<version />`, afterwards execute
+1. Check `pom.xml` for the proper `<version />` tag
+1. Update `src/changes/changes.xml` timestamp of the release version
+1. Update `README.md` version for the Maven/Gradle examples
+
+Then execute
 
 ```
   $ mvn release:prepare && mvn release:perform
@@ -288,3 +293,5 @@ Check `pom.xml` for the proper `<version />`, afterwards execute
 
 which will tag, build, test and upload the artifacts to Sonatype's OSS staging area & closes the staging repository.
 Maven Central synchronization usually takes ~15 minutes.
+
+Finally create a new section in `src/changes/changes.xml`.
