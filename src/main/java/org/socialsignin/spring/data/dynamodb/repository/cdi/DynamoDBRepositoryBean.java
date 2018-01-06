@@ -57,7 +57,8 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 	 *            must not be {@literal null}.
 	 */
 	DynamoDBRepositoryBean(BeanManager beanManager, Bean<AmazonDynamoDB> amazonDynamoDBBean,
-			Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean,Bean<DynamoDBOperations> dynamoDBOperationsBean, Set<Annotation> qualifiers, Class<T> repositoryType) {
+						   Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean, Bean<DynamoDBOperations> dynamoDBOperationsBean,
+						   Set<Annotation> qualifiers, Class<T> repositoryType) {
 
 		super(qualifiers, repositoryType, beanManager);
 		if (dynamoDBOperationsBean == null)
@@ -103,4 +104,5 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 		DynamoDBRepositoryFactory factory = new DynamoDBRepositoryFactory(dynamoDBOperations);
 		return factory.getRepository(repositoryType);
 	}
+
 }

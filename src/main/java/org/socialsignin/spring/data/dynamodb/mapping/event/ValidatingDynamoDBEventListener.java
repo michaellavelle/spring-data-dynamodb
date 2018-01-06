@@ -46,7 +46,7 @@ public class ValidatingDynamoDBEventListener extends AbstractDynamoDBEventListen
 	 * @param validator must not be {@literal null}.
 	 */
 	public ValidatingDynamoDBEventListener(Validator validator) {
-		Assert.notNull(validator);
+		Assert.notNull(validator, "validator must not be null!");
 		this.validator = validator;
 	}
 
@@ -59,16 +59,16 @@ public class ValidatingDynamoDBEventListener extends AbstractDynamoDBEventListen
 
 		LOG.debug("Validating object: {}", source);
 		
-		List<String> messages = new ArrayList<String>();
+		List<String> messages = new ArrayList<>();
 		Set<ConstraintViolation<Object>> violations = validator.validate(source);
-		Set<ConstraintViolation<?>> genericViolationSet = new HashSet<ConstraintViolation<?>>();
 		if (!violations.isEmpty()) {
+			Set<ConstraintViolation<?>> genericViolationSet = new HashSet<>();
 			for (ConstraintViolation<?> v : violations) {
 				genericViolationSet.add(v);
 				messages.add(v.toString());
 			}
 			LOG.info("During object: {} validation violations found: {}", source, violations);
-			throw new ConstraintViolationException(messages.toString(),genericViolationSet);
+			throw new ConstraintViolationException(messages.toString(), genericViolationSet);
 		}
 	}
 }
