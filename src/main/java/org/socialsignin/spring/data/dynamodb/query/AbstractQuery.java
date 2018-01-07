@@ -24,7 +24,6 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
  */
 public abstract class AbstractQuery<T> implements Query<T> {
 
-	//protected DynamoDBMapper dynamoDBMapper;
 	protected DynamoDBOperations dynamoDBOperations;
 	protected Class<T> clazz;
 	protected boolean scanEnabled = false;
@@ -51,7 +50,6 @@ public abstract class AbstractQuery<T> implements Query<T> {
 	}
 
 	public AbstractQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
-		//this.dynamoDBMapper = dynamoDBMapper;
 		this.dynamoDBOperations = dynamoDBOperations;
 		this.clazz = clazz;
 	}
