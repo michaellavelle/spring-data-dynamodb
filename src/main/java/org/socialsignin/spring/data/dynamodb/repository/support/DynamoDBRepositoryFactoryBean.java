@@ -20,6 +20,9 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBTemplate;
 import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -36,13 +39,15 @@ import java.io.Serializable;
  *            the type of the repository
  */
 public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable>
-    extends RepositoryFactoryBeanSupport<T, S, ID> {
+    extends RepositoryFactoryBeanSupport<T, S, ID> implements ApplicationContextAware {
 
 	private DynamoDBMapperConfig dynamoDBMapperConfig;
 
 	private AmazonDynamoDB amazonDynamoDB;
 	
 	private DynamoDBOperations dynamoDBOperations;
+
+	private ApplicationContext applicationContext;
 
 	public DynamoDBRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
         super(repositoryInterface);
@@ -55,10 +60,21 @@ public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 	}
 
 	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+
+	@Override
 	protected RepositoryFactorySupport createRepositoryFactory() {
 		if (dynamoDBOperations == null)
 		{
-			dynamoDBOperations = new DynamoDBTemplate(amazonDynamoDB,dynamoDBMapperConfig);
+			/**
+			 * The ApplicationContextAware within DynamoDBTemplate is not executed as
+			 * DynamoDBTemplate is not initialized as a bean
+			 */
+			DynamoDBTemplate dynamoDBTemplate = new DynamoDBTemplate(amazonDynamoDB,dynamoDBMapperConfig);
+			dynamoDBTemplate.setApplicationContext(applicationContext);
+			dynamoDBOperations = dynamoDBTemplate;
 		}
 		return new DynamoDBRepositoryFactory(dynamoDBOperations);
 	}

@@ -57,4 +57,30 @@
 		<xsd:union memberTypes="xsd:string" />
 	</xsd:simpleType>
 
+	<xsd:element name="auditing">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="org.socialsignin.spring.data.dynamodb.mapping.event.AuditingEventListener" />
+					<tool:exports type="org.springframework.data.auditing.IsNewAwareAuditingHandler" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attributeGroup ref="repository:auditing-attributes" />
+			<xsd:attribute name="mapping-context-ref" type="mappingContextRef" />
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="mappingContextRef">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<tool:annotation kind="ref">
+					<tool:assignable-to type="org.springframework.data.mapping.model.MappingContext"/>
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:union memberTypes="xsd:string"/>
+	</xsd:simpleType>
+
 </xsd:schema>

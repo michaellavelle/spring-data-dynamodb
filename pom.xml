@@ -241,12 +241,12 @@
                                             <limit>
                                                 <counter>BRANCH</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.39</minimum>
+                                                <minimum>0.47</minimum>
                                             </limit>
                                             <limit>
                                                 <counter>LINE</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.40</minimum>
+                                                <minimum>0.55</minimum>
                                             </limit>
                                         </limits>
                                     </rule>
@@ -338,6 +338,7 @@
                         <table>src/test/resources/feeduser_table.json</table>
                         <table>src/test/resources/customerhistory_table.json</table>
                         <table>src/test/resources/installation_table.json</table>
+                        <table>src/test/resources/auditable_user_table.json</table>
                     </tables>
                     <port>${dynamodblocal.port}</port>
                     <dist>${project.build.directory}/dynamodb-dist</dist>
@@ -514,6 +515,10 @@
         <contributor>
             <name>Michael Wyraz</name>
             <url>https://github.com/micw</url>
+        </contributor>
+        <contributor>
+            <name>Vito Limandibhrata</name>
+            <url>https://github.com/vitolimandibhrata</url>
         </contributor>
     </contributors>
 
