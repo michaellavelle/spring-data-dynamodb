@@ -26,9 +26,8 @@ public class Instant2EpocheDynamoDBMarshallerTest {
 	
 	@Test
 	public void testMarshall() {
-		String actual = underTest.marshall(Instant.ofEpochMilli(0));
-
-		assertEquals("0", actual);
+		assertEquals("0", underTest.marshall(Instant.ofEpochMilli(0)));
+		assertEquals("0", underTest.convert(Instant.ofEpochMilli(0)));
 	}
 	
 	@Test
@@ -40,9 +39,8 @@ public class Instant2EpocheDynamoDBMarshallerTest {
 	
 	@Test
 	public void testUnmarshall() {
-		Instant actual = underTest.unmarshall(Instant.class, "0");
-
-		assertEquals(Instant.ofEpochMilli(0), actual);
+		assertEquals(Instant.ofEpochMilli(0), underTest.unmarshall(Instant.class, "0"));
+		assertEquals(Instant.ofEpochMilli(0), underTest.unconvert("0"));
 	}
 
 	@Test(expected = NumberFormatException.class)

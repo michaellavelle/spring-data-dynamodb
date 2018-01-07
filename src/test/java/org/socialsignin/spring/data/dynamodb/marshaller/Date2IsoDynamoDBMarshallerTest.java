@@ -26,9 +26,8 @@ public class Date2IsoDynamoDBMarshallerTest {
 	
 	@Test
 	public void testMarshall() {
-		String actual = underTest.marshall(new Date(0));
-
-		assertEquals("1970-01-01T00:00:00.000Z", actual);
+		assertEquals("1970-01-01T00:00:00.000Z", underTest.marshall(new Date(0)));
+		assertEquals("1970-01-01T00:00:00.000Z", underTest.convert(new Date(0)));
 	}
 	
 	@Test
@@ -40,9 +39,8 @@ public class Date2IsoDynamoDBMarshallerTest {
 	
 	@Test
 	public void testUnmarshall() {
-		Date actual = underTest.unmarshall(Date.class, "1970-01-01T00:00:00.000Z");
-
-		assertEquals(new Date(0), actual);
+		assertEquals(new Date(0), underTest.unmarshall(Date.class, "1970-01-01T00:00:00.000Z"));
+		assertEquals(new Date(0), underTest.unconvert("1970-01-01T00:00:00.000Z"));
 	}
 
 	@Test(expected = RuntimeException.class)

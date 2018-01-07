@@ -1,15 +1,21 @@
 package org.socialsignin.spring.data.dynamodb.marshaller;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import org.springframework.util.StringUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
-public abstract class DateDynamoDBMarshaller implements DynamoDBMarshaller<Date> {
+public abstract class DateDynamoDBMarshaller implements DynamoDBTypeConverter<String, Date>, DynamoDBMarshaller<Date> {
 
 	public abstract DateFormat getDateFormat();
+
+	@Override
+	public String convert(Date object) {
+		return marshall(object);
+	}
 
 	@Override
 	public String marshall(Date getterReturnResult) {
@@ -18,6 +24,11 @@ public abstract class DateDynamoDBMarshaller implements DynamoDBMarshaller<Date>
 		} else {
 			return getDateFormat().format(getterReturnResult);
 		}
+	}
+
+	@Override
+	public Date unconvert(String object) {
+		return unmarshall(Date.class, object);
 	}
 
 	@Override
