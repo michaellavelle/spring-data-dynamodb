@@ -35,10 +35,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -108,8 +110,8 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 		this.auditor = auditableUserRepository.save(new AuditableUser("auditor"));
 		assertThat(this.auditor, is(notNullValue()));
 
-        AuditableUser auditorUser = auditableUserRepository.findOne(this.auditor.getId());
-        assertNotNull(auditorUser);
+        Optional<AuditableUser> auditorUser = auditableUserRepository.findById(this.auditor.getId());
+        assertTrue(auditorUser.isPresent());
 
 	}
 
