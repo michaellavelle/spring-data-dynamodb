@@ -1,5 +1,6 @@
 *.class
 .project
+.metadata
 target
 *.iml
 .idea

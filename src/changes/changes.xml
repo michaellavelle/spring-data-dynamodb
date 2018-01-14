@@ -6,7 +6,18 @@
     <author email="zeeman@zeeman.de" >derjust</author>
   </properties>
   <body>
-    <release version="5.0.1" date="" description="Maintenance release" >
+    <release version="5.0.2" date="" description="Maintenance release">
+      <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">
+        Added support for Auditing
+      </action>
+      <action dev="derjust" issue="103" type="add" date="2018-01-07">
+        Update Marshaller to use DynamoDBTypeConverter (while keeping old inheritance intact)
+      </action>
+      <action dev="derjust" issue="108" type="fix" date="2018-01-14">
+        Opened constructor and fixed NPE in case of missing DynamoDBConfig
+      </action>
+    </release>
+    <release version="5.0.1" date="2018-01-06" description="Maintenance release">
       <action dev="derjust" issue="68" type="fix" date="2017-12-01" >
         Respecting DynamoDBOperations.batchSave()'s List&lt;FailedBatch&gt; return value and turn it into a BatchWriteException
       </action>
@@ -25,14 +36,19 @@
         Added Spring 5 / Spring-Data Kay support
       </action>
     </release>
-    <release version="4.5.1" date="2017-12-19">
-      <action dev="Michael Wyraz" type="fix" issue="91">
-        Add constructor to DynamoDBTemplate that takes a preconfigured DynamoDBMapper
+    <release version="4.5.3" date="2017-01-14" description="Backport of PR #108">
+      <action dev="derjust" issue="108" type="fix" date="2018-01-14">
+        Opened constructor and fixed NPE in case of missing DynamoDBConfig
       </action>
     </release>
     <release version="4.5.2" date="2017-12-24" description="Backport of PR #106">
       <action dev="Gaurav Rawat" type="fix" issue="91">>
         Fixed false assertion introduced implementing #91
+      </action>
+    </release>
+    <release version="4.5.1" date="2017-12-19">
+      <action dev="Michael Wyraz" type="fix" issue="91">
+        Add constructor to DynamoDBTemplate that takes a preconfigured DynamoDBMapper
       </action>
     </release>
   </body>

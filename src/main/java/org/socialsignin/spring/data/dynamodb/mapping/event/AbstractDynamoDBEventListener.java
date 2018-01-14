@@ -16,10 +16,14 @@ package org.socialsignin.spring.data.dynamodb.mapping.event;
  * limitations under the License.
  */
 
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.GenericTypeResolver;
+
+import java.util.List;
 
 /**
  * Base class to implement domain class specific {@link ApplicationListener}s.
@@ -28,6 +32,10 @@ import org.springframework.core.GenericTypeResolver;
  */
 public abstract class AbstractDynamoDBEventListener<E> implements
 		ApplicationListener<DynamoDBMappingEvent<?>> {
+	// inspired by Java8
+	private interface Consumer<T> {
+		void accept(T t);
+	}
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(AbstractDynamoDBEventListener.class);
@@ -55,25 +63,54 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 		@SuppressWarnings("unchecked")
 		E source = (E) event.getSource();
 
-		// Check for matching domain type and invoke callbacks
-		if (source != null && !domainClass.isAssignableFrom(source.getClass())) {
+		if (source == null) {
 			return;
 		}
 
-		if (event instanceof BeforeSaveEvent) {
-			onBeforeSave(source);
-		} else if (event instanceof AfterSaveEvent) {
-			onAfterSave(source);
-		} else if (event instanceof BeforeDeleteEvent) {
-			onBeforeDelete(source);
-		} else if (event instanceof AfterDeleteEvent) {
-			onAfterDelete(source);
-		} else if (event instanceof AfterLoadEvent) {
-			onAfterLoad(source);
-		} else if (event instanceof AfterScanEvent) {
-			onAfterScan(source);
+		if (event instanceof AfterScanEvent) {
+			if (source instanceof PaginatedScanList) {
+				publishEachElement((PaginatedScanList<E>)source, new Consumer<E>() {
+					@Override
+					public void accept(E e) {
+						onAfterScan(e);
+					}
+				});
+			}
 		} else if (event instanceof AfterQueryEvent) {
-			onAfterQuery(source);
+			if (source instanceof PaginatedQueryList) {
+				publishEachElement((PaginatedQueryList<E>)source, new Consumer<E>() {
+					@Override
+					public void accept(E e) {
+						onAfterQuery(e);
+					}
+				});
+			}
+		}
+		// Check for matching domain type and invoke callbacks
+		else if (domainClass.isAssignableFrom(source.getClass())) {
+			if (event instanceof BeforeSaveEvent) {
+				onBeforeSave(source);
+			} else if (event instanceof AfterSaveEvent) {
+				onAfterSave(source);
+			} else if (event instanceof BeforeDeleteEvent) {
+				onBeforeDelete(source);
+			} else if (event instanceof AfterDeleteEvent) {
+				onAfterDelete(source);
+			} else if (event instanceof AfterLoadEvent) {
+				onAfterLoad(source);
+			} else {
+				assert false;
+			}
+		} else {
+			assert false;
+		}
+	}
+
+	private void publishEachElement(List<E> list, Consumer<E> publishMethod) {
+		for(E o : list) {
+			if (domainClass.isAssignableFrom(o.getClass())) {
+				publishMethod.accept(o);
+			}
 		}
 	}
 
