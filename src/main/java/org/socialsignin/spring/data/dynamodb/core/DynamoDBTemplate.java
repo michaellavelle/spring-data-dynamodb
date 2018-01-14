@@ -43,14 +43,14 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
 	    this(amazonDynamoDB, dynamoDBMapperConfig, null);
 	}
     
-	/** Convenient constructor to use the {@link DynamoDBMapperConfig.DEFAULT} */
+	/** Convenient constructor to use the {@link DynamoDBMapperConfig#DEFAULT} */
 
     public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper)
     {
         this(amazonDynamoDB, null, dynamoDBMapper);
     }
     
-    /** Convenient construcotr to thse the {@link DynamoDBMapperConfig.DEFAULT} and default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)} */
+    /** Convenient construcotr to thse the {@link DynamoDBMapperConfig#DEFAULT} and default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)} */
     public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB)
     {
         this(amazonDynamoDB, null, null);
@@ -59,7 +59,7 @@ public class DynamoDBTemplate implements DynamoDBOperations,ApplicationContextAw
     /** Initializes a new {@code DynamoDBTemplate}.
      * The following combinations are valid:
      * @param amazonDynamoDB must not be {@code null}
-     * @param dynamoDBMapperConfig can be {@code null} - {@link DynamoDBMapperConfig.DEFAULT} is used if {@code null} is passed in
+     * @param dynamoDBMapperConfig can be {@code null} - {@link DynamoDBMapperConfig#DEFAULT} is used if {@code null} is passed in
      * @param dynamoDBMapper can be {@code null} - {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB, DynamoDBMapperConfig)} is used if {@code null} is passed in */
 	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig, DynamoDBMapper dynamoDBMapper) {
        Assert.notNull(amazonDynamoDB, "amazonDynamoDB must not be null!");

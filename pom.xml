@@ -3,10 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>4.5.4-SNAPSHOT</version>
+    <version>4.5.3-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
-    <description>The primary goal of the Spring Data project is to make it easier to build Spring-powered applications that use data access technologies. This module deals with enhanced support for Amazon DynamoDB based data access layers.</description>
-    <url>http://github.com/derjust/spring-data-dynamodb</url>
+    <description>The primary goal of the Spring® Data project is to make it easier to build Spring-powered applications
+        that use data access technologies.
+        This module deals with enhanced support for a data access layer built on AWS DynamoDB.</description>
+    <url>https://github.com/derjust/spring-data-dynamodb</url>
 
     <licenses>
         <license>
@@ -279,7 +281,7 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
-                    <goals>deploy</goals>
+                    <goals>deploy site-deploy</goals>
                 </configuration>
             </plugin>
             <plugin>
@@ -413,6 +415,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.1</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -425,6 +428,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.0.0</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -448,6 +452,15 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <version>3.7</version>
+                        <configuration>
+                        <!-- Deactivate as Github plugin controls the upload -->
+                            <skipDeploy>true</skipDeploy>
+                        </configuration>
+                    </plugin>
 					<plugin>
 					    <!-- Deploy the web site -->
 					    <groupId>com.github.github</groupId>
@@ -462,9 +475,7 @@
 					            <phase>site-deploy</phase>
 					            <configuration>
 					                <!-- Plugin configuration ges here -->
-
 					                <server>github</server>
-
 					                <!-- The commit message -->
 					                <message>Building site</message>
 					                <!-- The location where the site is uploaded -->
@@ -493,25 +504,27 @@
             <timezone>America/New_York</timezone>
         </developer>
     </developers>
+    <contributors>
+        <contributor>
+            <name>Gaurav Rawat</name>
+            <url>https://github.com/gauravbrills</url>
+        </contributor>
+        <contributor>
+            <name>Michael Wyraz</name>
+            <url>https://github.com/micw</url>
+        </contributor>
+        <contributor>
+            <name>Vito Limandibhrata</name>
+            <url>https://github.com/vitolimandibhrata</url>
+        </contributor>
+    </contributors>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-changes-plugin</artifactId>
-				<version>2.12.1</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>changes-report</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
 
     <distributionManagement>
+        <site>
+            <id>website</id>
+            <url>https://github.com/derjust/spring-data-dynamodb/</url>
+        </site>
         <snapshotRepository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -525,5 +538,29 @@
     	<system>GitHub</system>
     	<url>https://github.com/derjust/spring-data-dynamodb/issues</url>
     </issueManagement>
+
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changes-plugin</artifactId>
+                <version>2.12.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>changes-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.9</version>
+            </plugin>
+        </plugins>
+    </reporting>
+
 
 </project>
