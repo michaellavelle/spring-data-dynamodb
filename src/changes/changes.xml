@@ -39,6 +39,11 @@
         Added Spring 5 / Spring-Data Kay support
       </action>
     </release>
+    <release version="4.5.3" date="2017-01-14" description="Backport of PR #108">
+      <action dev="derjust" issue="108" type="fix" date="2018-01-14">
+        Opened constructor and fixed NPE in case of missing DynamoDBConfig
+      </action>
+    </release>
     <release version="4.5.2" date="2017-12-24" description="Backport of PR #106">
       <action dev="Gaurav Rawat" type="fix" issue="91">
         Fixed false assertion introduced implementing #91
