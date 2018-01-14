@@ -1,9 +1,5 @@
 package org.socialsignin.spring.data.dynamodb.mapping.event;
 
-import com.amazonaws.services.dynamodbv2.document.Expected;
-import net.bytebuddy.pool.TypePool;
-import org.hamcrest.core.CombinableMatcher;
-import org.hamcrest.core.StringContains;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,13 +11,10 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
 import javax.validation.Validator;
-import javax.validation.metadata.ConstraintDescriptor;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;

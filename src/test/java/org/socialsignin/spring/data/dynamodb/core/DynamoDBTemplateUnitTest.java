@@ -4,40 +4,66 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.TableNameResolver;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
+import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBTemplateUnitTest {
-	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	@Mock
 	private DynamoDBMapper dynamoDBMapper;
 	@Mock
 	private AmazonDynamoDB dynamoDB;
 	@Mock
 	private DynamoDBMapperConfig dynamoDBMapperConfig;
+	@Mock
+	private ApplicationContext applicationContext;
 	
 	private DynamoDBTemplate dynamoDBTemplate;
 
 	@Before
 	public void setUp() {
 		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapperConfig, dynamoDBMapper);
+		this.dynamoDBTemplate.setApplicationContext(applicationContext);
+	}
+	
+	@Test
+	public void testConstructorMandatory() {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("must not be null!");
+		new DynamoDBTemplate(null);
 	}
 
 	@Test
-	public void testPreconfiguredDynamoDBMapper() {
+	public void testConstructorOptionalAllNull() {
+		dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, null, null);
+		
+		// check that the defaults are properly initialized - #108
+		String userTableName = dynamoDBTemplate.getOverriddenTableName(User.class, "UserTable");
+		assertEquals("user", userTableName);
+	}
+
+	@Test
+	public void testConstructorOptionalPreconfiguredDynamoDBMapper() {
 		// Introduced constructor via #91 should not fail its assert
 		DynamoDBTemplate usePreconfiguredDynamoDBMapper = new DynamoDBTemplate(dynamoDB, dynamoDBMapper);
 

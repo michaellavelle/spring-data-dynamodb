@@ -27,7 +27,7 @@ public class AbstractDynamoDBEventListenerTest {
     @Mock
     private PaginatedScanList<User> sampleScanList;
 
-    private AbstractDynamoDBEventListener underTest;
+    private AbstractDynamoDBEventListener<User> underTest;
 
     @Before
     public void setUp() {
@@ -42,7 +42,7 @@ public class AbstractDynamoDBEventListenerTest {
 
     @Test
     public void testAfterDelete() {
-        underTest.onApplicationEvent(new AfterDeleteEvent(sampleEntity));
+        underTest.onApplicationEvent(new AfterDeleteEvent<User>(sampleEntity));
 
         verify(underTest).onAfterDelete(sampleEntity);
         verify(underTest, never()).onAfterLoad(any());
@@ -55,7 +55,7 @@ public class AbstractDynamoDBEventListenerTest {
 
     @Test
     public void testAfterLoad() {
-        underTest.onApplicationEvent(new AfterLoadEvent(sampleEntity));
+        underTest.onApplicationEvent(new AfterLoadEvent<>(sampleEntity));
 
         verify(underTest, never()).onAfterDelete(any());
         verify(underTest).onAfterLoad(sampleEntity);
@@ -68,7 +68,7 @@ public class AbstractDynamoDBEventListenerTest {
 
     @Test
     public void testAfterQuery() {
-        underTest.onApplicationEvent(new AfterQueryEvent(sampleQueryList));
+        underTest.onApplicationEvent(new AfterQueryEvent<User>(sampleQueryList));
 
         verify(underTest, never()).onAfterDelete(any());
         verify(underTest, never()).onAfterLoad(any());
@@ -81,7 +81,7 @@ public class AbstractDynamoDBEventListenerTest {
 
     @Test
     public void testAfterSave() {
-        underTest.onApplicationEvent(new AfterSaveEvent(sampleEntity));
+        underTest.onApplicationEvent(new AfterSaveEvent<>(sampleEntity));
 
         verify(underTest, never()).onAfterDelete(any());
         verify(underTest, never()).onAfterLoad(any());
@@ -94,7 +94,7 @@ public class AbstractDynamoDBEventListenerTest {
 
     @Test
     public void testAfterScan() {
-        underTest.onApplicationEvent(new AfterScanEvent(sampleScanList));
+        underTest.onApplicationEvent(new AfterScanEvent<>(sampleScanList));
 
         verify(underTest, never()).onAfterDelete(any());
         verify(underTest, never()).onAfterLoad(any());
@@ -107,7 +107,7 @@ public class AbstractDynamoDBEventListenerTest {
 
     @Test
     public void testBeforeDelete() {
-        underTest.onApplicationEvent(new BeforeDeleteEvent(sampleEntity));
+        underTest.onApplicationEvent(new BeforeDeleteEvent<>(sampleEntity));
 
         verify(underTest, never()).onAfterDelete(any());
         verify(underTest, never()).onAfterLoad(any());
@@ -120,7 +120,7 @@ public class AbstractDynamoDBEventListenerTest {
 
     @Test
     public void testBeforeSave() {
-        underTest.onApplicationEvent(new BeforeSaveEvent(sampleEntity));
+        underTest.onApplicationEvent(new BeforeSaveEvent<>(sampleEntity));
 
         verify(underTest, never()).onAfterDelete(any());
         verify(underTest, never()).onAfterLoad(any());

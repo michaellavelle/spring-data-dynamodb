@@ -25,6 +25,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
@@ -36,36 +37,45 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	private final DynamoDBMapperConfig dynamoDBMapperConfig;
 	private ApplicationEventPublisher eventPublisher;
 	
+	/** Convenient constructor to use the default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)} */
 	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig)
 	{
 	    this(amazonDynamoDB, dynamoDBMapperConfig, null);
 	}
     
+	/** Convenient constructor to use the {@link DynamoDBMapperConfig.DEFAULT} */
+
     public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper)
     {
         this(amazonDynamoDB, null, dynamoDBMapper);
     }
     
+    /** Convenient construcotr to thse the {@link DynamoDBMapperConfig.DEFAULT} and default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)} */
     public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB)
     {
         this(amazonDynamoDB, null, null);
     }
 	
-	DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig, DynamoDBMapper dynamoDBMapper) {
-       this.amazonDynamoDB = amazonDynamoDB;
-       if (dynamoDBMapper == null && dynamoDBMapperConfig == null) {
-            this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
-            this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB);
-            // Mapper must be null as it could not have been constructed without a Config
-            assert dynamoDBMapper == null;
-        } else {
-            this.dynamoDBMapperConfig = dynamoDBMapperConfig;
-            if (dynamoDBMapper == null) {
-                this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
-            } else {
-                this.dynamoDBMapper = dynamoDBMapper;
-            }
-        }
+    /** Initializes a new {@code DynamoDBTemplate}.
+     * The following combinations are valid:
+     * @param amazonDynamoDB must not be {@code null}
+     * @param dynamoDBMapperConfig can be {@code null} - {@link DynamoDBMapperConfig.DEFAULT} is used if {@code null} is passed in
+     * @param dynamoDBMapper can be {@code null} - {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB, DynamoDBMapperConfig)} is used if {@code null} is passed in */
+	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig, DynamoDBMapper dynamoDBMapper) {
+       Assert.notNull(amazonDynamoDB, "amazonDynamoDB must not be null!");
+	   this.amazonDynamoDB = amazonDynamoDB;
+	   
+	  if (dynamoDBMapperConfig == null) {
+		  this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;		  
+	  } else {
+		  this.dynamoDBMapperConfig = dynamoDBMapperConfig;
+	  }
+	  
+	  if (dynamoDBMapper == null) {
+          this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
+	  } else {
+          this.dynamoDBMapper = dynamoDBMapper;
+	  }
     }
 	
 	@Override
