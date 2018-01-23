@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,7 +31,7 @@ import java.util.UUID;
  * Integration test that interacts with DynamoDB Local instance.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={ConfigurationTI.class})
+@ContextConfiguration(classes={DynamoDBResource.class})
 public class DynamoDBTemplateIT {
 
     @Autowired
