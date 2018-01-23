@@ -27,13 +27,21 @@
       <action dev="derjust" type="add" date="2017-12-17" >
         Update Mockito and resolve dependency clashes
       </action>
-      <action dev="Gaurav Rawat" type="fix" issue="91">>
+      <action dev="Gaurav Rawat" type="fix" issue="91">
         Fixed false assertion introduced implementing #91
+      </action>
+      <action dev="Alex Arana" type="add" issue="62">
+        Support @DynamoDBTypeConverted instead of/in addition to @DynamoDBMarshalling for query methods
       </action>
     </release>
     <release version="5.0.0" date="2017-11-27" description="Spring 5 release" >
       <action dev="derjust" type="add">
         Added Spring 5 / Spring-Data Kay support
+      </action>
+    </release>
+    <release version="4.5.4" date="2017-01-23" description="Backport of PR #79">
+      <action dev="Alex Arana" type="add" issue="62">
+        Support @DynamoDBTypeConverted instead of/in addition to @DynamoDBMarshalling for query methods
       </action>
     </release>
     <release version="4.5.3" date="2017-01-14" description="Backport of PR #108">

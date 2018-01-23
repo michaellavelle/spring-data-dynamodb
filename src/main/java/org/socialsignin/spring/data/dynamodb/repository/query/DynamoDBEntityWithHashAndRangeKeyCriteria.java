@@ -38,6 +38,7 @@ import org.socialsignin.spring.data.dynamodb.query.SingleEntityLoadByHashAndRang
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 import org.springframework.util.Assert;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
@@ -67,8 +68,10 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 		return rangeKeyPropertyName.equals(propertyName);
 	}
 
-	public DynamoDBEntityWithHashAndRangeKeyCriteria(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> entityInformation) {
-		super(entityInformation);
+	public DynamoDBEntityWithHashAndRangeKeyCriteria(
+	        DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> entityInformation, DynamoDBMapperTableModel<T> tableModel) {
+
+	    super(entityInformation, tableModel);
 		this.rangeKeyPropertyName = entityInformation.getRangeKeyPropertyName();
 		this.indexRangeKeyPropertyNames = entityInformation.getIndexRangeKeyPropertyNames();
 		if (indexRangeKeyPropertyNames == null) {
