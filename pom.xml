@@ -46,6 +46,7 @@
 
         <cdi.version>1.2</cdi.version>
         <slf4j-test.version>1.2.0</slf4j-test.version>
+        <sqlite4java.version>1.0.392</sqlite4java.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -95,6 +96,12 @@
                 <version>${aws-java-sdk.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>DynamoDBLocal</artifactId>
+                <version>[1.11,2.0)</version>
             </dependency>
 
             <dependency>
@@ -151,6 +158,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>DynamoDBLocal</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -413,6 +425,43 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.almworks.sqlite4java</groupId>
+                                    <artifactId>${sqlite4java.artifactId}</artifactId>
+                                    <version>${sqlite4java.version}</version>
+                                    <type>${sqlite4java.type}</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>sqlite4java.library.path</name>
+                            <value>${project.build.directory}/lib</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
@@ -444,6 +493,11 @@
             <id>spring-libs-snapshot</id>
             <url>http://repo.springsource.org/libs-snapshot</url>
         </repository>
+        <repository>
+            <id>dynamodb-local-oregon</id>
+            <name>DynamoDB Local Release Repository</name>
+            <url>https://s3-us-west-2.amazonaws.com/dynamodb-local/release</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -457,6 +511,70 @@
     </pluginRepositories>
 
     <profiles>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-osx</sqlite4java.artifactId>
+                <sqlite4java.type>dylib</sqlite4java.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-x32</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <arch>i386</arch>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-linux-i386</sqlite4java.artifactId>
+                <sqlite4java.type>so</sqlite4java.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-x64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-linux-amd64</sqlite4java.artifactId>
+                <sqlite4java.type>so</sqlite4java.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows-x86</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>x86</arch>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-win32-x86</sqlite4java.artifactId>
+                <sqlite4java.type>dll</sqlite4java.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows-x64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>x64</arch>
+                </os>
+            </activation>
+            <properties>
+                <sqlite4java.artifactId>libsqlite4java-win32-x64</sqlite4java.artifactId>
+                <sqlite4java.type>dll</sqlite4java.type>
+            </properties>
+        </profile>
         <profile>
             <id>release</id>
             <build>

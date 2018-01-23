@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.socialsignin.spring.data.dynamodb.core;
+package org.socialsignin.spring.data.dynamodb.utils;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
@@ -28,7 +31,7 @@ import org.springframework.util.Assert;
  * launched local DynamoDB by Maven's integration-test.
  */
 @Configuration
-public class ConfigurationTI {
+public class DynamoDBResource {
     private static final String DYNAMODB_PORT_PROPERTY = "dynamodb.port";
     private static final String PORT = System.getProperty(DYNAMODB_PORT_PROPERTY);
 
@@ -36,9 +39,11 @@ public class ConfigurationTI {
     public AmazonDynamoDB amazonDynamoDB() {
         Assert.notNull(PORT, "System property '" + DYNAMODB_PORT_PROPERTY + " not set!");
 
-        AmazonDynamoDB dynamoDB = new AmazonDynamoDBClient(new BasicAWSCredentials("AWS-Key", ""));
-        dynamoDB.setEndpoint(String.format("http://localhost:%s", PORT));
+        AmazonDynamoDBClientBuilder builder = AmazonDynamoDBClientBuilder.standard();
+        builder.withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("AWS-Key", "")));
+        builder.withEndpointConfiguration(
+                new AwsClientBuilder.EndpointConfiguration(String.format("http://localhost:%s", PORT), "us-east-1"));
 
-        return dynamoDB;
+        return builder.build();
     }
 }
