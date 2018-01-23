@@ -17,8 +17,8 @@ package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.socialsignin.spring.data.dynamodb.core.ConfigurationTI;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertNotNull;
  * github.com/spring-projects/spring-data-examples/master/jpa/java8</a>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ConfigurationTI.class, Jdk8IT.TestAppConfig.class})
+@ContextConfiguration(classes = {DynamoDBResource.class, Jdk8IT.TestAppConfig.class})
 public class Jdk8IT {
 
 	@Configuration
