@@ -27,6 +27,8 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
+import java.util.Optional;
+
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unused")
 public class DynamoDBIdIsHashAndRangeKeyEntityInformationImplUnitTest {
@@ -73,7 +75,7 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImplUnitTest {
 		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropertyName()).thenReturn("playlistHashKeyPropertyName");
 		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropotypeEntityForHashKey("somePlaylistHashKey")).thenReturn(mockPlaylistPrototype);
 		Mockito.when(mockPlaylistEntityMetadata.getMarshallerForProperty("marshalledProperty")).thenReturn(mockPropertyMarshaller);
-		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("overriddenProperty")).thenReturn("modifiedPropertyName");
+		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("overriddenProperty")).thenReturn(Optional.of("modifiedPropertyName"));
 	
 		Mockito.when(mockPlaylistEntityMetadata.isHashKeyProperty("nonHashKeyProperty")).thenReturn(false);
 		Mockito.when(mockPlaylistEntityMetadata.isCompositeHashAndRangeKeyProperty("compositeIdProperty")).thenReturn(true);
@@ -190,8 +192,8 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImplUnitTest {
 	{
 
 		
-		String propertyName2 =  dynamoDBPlaylistEntityInformation.getOverriddenAttributeName("overriddenProperty");
-		Assert.assertEquals("modifiedPropertyName", propertyName2);
+		Optional<String> propertyName2 =  dynamoDBPlaylistEntityInformation.getOverriddenAttributeName("overriddenProperty");
+		Assert.assertEquals(Optional.of("modifiedPropertyName"), propertyName2);
 	}
 	
 	@Test

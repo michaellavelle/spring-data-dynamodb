@@ -88,7 +88,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 		queryRequest.setIndexName(theIndexName);
 
 		if (isApplicableForGlobalSecondaryIndex()) {
-			List<String> allowedSortProperties = new ArrayList<String>();
+			List<String> allowedSortProperties = new ArrayList<>();
 
 			for (Entry<String, List<Condition>> singlePropertyCondition : propertyConditions.entrySet()) {
 				if (entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet()
@@ -97,7 +97,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 				}
 			}
 
-			HashMap<String, Condition> keyConditions = new HashMap<String, Condition>();
+			HashMap<String, Condition> keyConditions = new HashMap<>();
 
 			if (hashKeyConditions != null && hashKeyConditions.size() > 0) {
 				for (Condition hashKeyCondition : hashKeyConditions) {
@@ -130,7 +130,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 
 			queryRequest.setKeyConditions(keyConditions);
 			queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);
-			applySortIfSpecified(queryRequest, new ArrayList<String>(new HashSet<String>(allowedSortProperties)));
+			applySortIfSpecified(queryRequest, new ArrayList<>(new HashSet<>(allowedSortProperties)));
 		}
 		return queryRequest;
 	}
@@ -223,11 +223,11 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 
 	public AbstractDynamoDBQueryCriteria(DynamoDBEntityInformation<T, ID> dynamoDBEntityInformation, final DynamoDBMapperTableModel<T> tableModel) {
 		this.clazz = dynamoDBEntityInformation.getJavaType();
-		this.attributeConditions = new LinkedMultiValueMap<String, Condition>();
-		this.propertyConditions = new LinkedMultiValueMap<String, Condition>();
+		this.attributeConditions = new LinkedMultiValueMap<>();
+		this.propertyConditions = new LinkedMultiValueMap<>();
 		this.hashKeyPropertyName = dynamoDBEntityInformation.getHashKeyPropertyName();
 		this.entityInformation = dynamoDBEntityInformation;
-		this.attributeNamesByPropertyName = new HashMap<String, String>();
+		this.attributeNamesByPropertyName = new HashMap<>();
 		// TODO consider adding the DynamoDBMapper table model to DynamoDBEntityInformation instead
 		this.tableModel = tableModel;
 	}
@@ -257,10 +257,10 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 		if (globalSecondaryIndexName == null  && attributeConditions != null && !attributeConditions.isEmpty())
 		{
 			// Declare map of index names by attribute name which we will populate below - this will be used to determine which index to use if multiple indexes are applicable
-			Map<String,String[]> indexNamesByAttributeName =  new HashMap<String,String[]>();
+			Map<String, String[]> indexNamesByAttributeName =  new HashMap<>();
 
 			// Declare map of attribute lists by index name which we will populate below - this will be used to determine whether we have an exact match index for specified attribute conditions
-			MultiValueMap<String,String> attributeListsByIndexName = new LinkedMultiValueMap<String,String>();
+			MultiValueMap<String, String> attributeListsByIndexName = new LinkedMultiValueMap<>();
 
 			// Populate the above maps
 			for (Entry<String, String[]> indexNamesForPropertyNameEntry : entityInformation.getGlobalSecondaryIndexNamesByPropertyName().entrySet())
@@ -275,8 +275,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 			}
 
 			// Declare lists to store matching index names
-			List<String> exactMatchIndexNames = new ArrayList<String>();
-			List<String> partialMatchIndexNames = new ArrayList<String>();
+			List<String> exactMatchIndexNames = new ArrayList<>();
+			List<String> partialMatchIndexNames = new ArrayList<>();
 
 			// Populate matching index name lists - an index is either an exact match ( the index attributes match all the specified criteria exactly)
 			// or a partial match ( the properties for the specified criteria are contained within the property set for an index )
@@ -412,8 +412,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	protected String getAttributeName(String propertyName) {
 		String attributeName = attributeNamesByPropertyName.get(propertyName);
 		if (attributeName == null) {
-			String overriddenName = entityInformation.getOverriddenAttributeName(propertyName);
-			attributeName = overriddenName != null ? overriddenName : propertyName;
+			attributeName = entityInformation.getOverriddenAttributeName(propertyName).orElse(propertyName);
 			attributeNamesByPropertyName.put(propertyName, attributeName);
 		}
 		return attributeName;
@@ -498,7 +497,11 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
         if (marshaller != null) {
             return marshaller.marshall(value);
         } else if (tableModel != null) {  // purely here for testing as DynamoDBMapperTableModel cannot be mocked using Mockito
-            DynamoDBMapperFieldModel<T,Object> fieldModel = tableModel.field(propertyName);
+
+			String attributeName = getAttributeName(propertyName);
+			entityInformation.getOverriddenAttributeName(propertyName).orElse(propertyName);
+
+			DynamoDBMapperFieldModel<T,Object> fieldModel = tableModel.field(attributeName);
             if (fieldModel != null) {
                 return fieldModel.convert(value);
             }
@@ -515,7 +518,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	}
 
 	private List<String> getNumberListAsStringList(List<Number> numberList) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (Number number : numberList) {
 			if (number != null) {
 				list.add(number.toString());
@@ -541,7 +544,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 
 	private List<String> getInstantListAsStringList(List<Instant> dateList) {
 		DynamoDBMarshaller<Instant> marshaller = new Instant2IsoDynamoDBMarshaller();
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (Instant date : dateList) {
 			if (date != null) {
 				list.add(marshaller.marshall(date));
@@ -553,7 +556,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	}
 	
 	private List<String> getBooleanListAsStringList(List<Boolean> booleanList) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (Boolean booleanValue : booleanList) {
 			if (booleanValue != null) {
 				list.add(booleanValue.booleanValue() ? "1" : "0");
@@ -567,9 +570,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	@SuppressWarnings("unchecked")
 	private <P> List<P> getAttributeValueAsList(Object attributeValue) {
 		boolean isIterable = ClassUtils.isAssignable(Iterable.class, attributeValue.getClass());
-		List<P> attributeValueAsList = null;
 		if (isIterable) {
-			attributeValueAsList = new ArrayList<P>();
+			List<P> attributeValueAsList = new ArrayList<>();
 			Iterable<P> iterable = (Iterable<P>) attributeValue;
 			for (P attributeValueElement : iterable) {
 				attributeValueAsList.add(attributeValueElement);
@@ -643,7 +645,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 		Assert.notNull(o, "Creating conditions on null property values not supported: please specify a value for '"
 				+ propertyName + "'");
 
-		List<AttributeValue> attributeValueList = new ArrayList<AttributeValue>();
+		List<AttributeValue> attributeValueList = new ArrayList<>();
 		Object attributeValue = !alreadyMarshalledIfRequired ? getPropertyAttributeValue(propertyName, o) : o;
 		if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {
 		    attributeValueList.add((AttributeValue) attributeValue);

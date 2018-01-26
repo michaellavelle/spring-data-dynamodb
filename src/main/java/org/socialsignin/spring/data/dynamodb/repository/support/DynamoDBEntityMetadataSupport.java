@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Michael Lavelle
@@ -221,33 +222,33 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 	}
 
 	@Override
-	public String getOverriddenAttributeName(final String propertyName) {
+	public Optional<String> getOverriddenAttributeName(final String propertyName) {
 
 		Method method = findMethod(propertyName);
 		if (method != null) {
 			if (method.getAnnotation(DynamoDBAttribute.class) != null
 					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBAttribute.class).attributeName())) {
-				return method.getAnnotation(DynamoDBAttribute.class).attributeName();
+				return Optional.of(method.getAnnotation(DynamoDBAttribute.class).attributeName());
 			}
 			if (method.getAnnotation(DynamoDBHashKey.class) != null
 					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBHashKey.class).attributeName())) {
-				return method.getAnnotation(DynamoDBHashKey.class).attributeName();
+				return Optional.of(method.getAnnotation(DynamoDBHashKey.class).attributeName());
 			}
 			if (method.getAnnotation(DynamoDBRangeKey.class) != null
 					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
-				return method.getAnnotation(DynamoDBRangeKey.class).attributeName();
+				return Optional.of(method.getAnnotation(DynamoDBRangeKey.class).attributeName());
 			}
 			if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null
 					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
-				return method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
+				return Optional.of(method.getAnnotation(DynamoDBIndexRangeKey.class).attributeName());
 			}
 			if (method.getAnnotation(DynamoDBIndexHashKey.class) != null
 					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
-				return method.getAnnotation(DynamoDBIndexHashKey.class).attributeName();
+				return Optional.of(method.getAnnotation(DynamoDBIndexHashKey.class).attributeName());
 			}
 			if (method.getAnnotation(DynamoDBVersionAttribute.class) != null
 					&& !StringUtils.isEmpty(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
-				return method.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
+				return Optional.of(method.getAnnotation(DynamoDBVersionAttribute.class).attributeName());
 			}
 		}
 
@@ -255,30 +256,30 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 		if (field != null) {
 			if (field.getAnnotation(DynamoDBAttribute.class) != null
 					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBAttribute.class).attributeName())) {
-				return field.getAnnotation(DynamoDBAttribute.class).attributeName();
+				return Optional.of(field.getAnnotation(DynamoDBAttribute.class).attributeName());
 			}
 			if (field.getAnnotation(DynamoDBHashKey.class) != null
 					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBHashKey.class).attributeName())) {
-				return field.getAnnotation(DynamoDBHashKey.class).attributeName();
+				return Optional.of(field.getAnnotation(DynamoDBHashKey.class).attributeName());
 			}
 			if (field.getAnnotation(DynamoDBRangeKey.class) != null
 					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBRangeKey.class).attributeName())) {
-				return field.getAnnotation(DynamoDBRangeKey.class).attributeName();
+				return Optional.of(field.getAnnotation(DynamoDBRangeKey.class).attributeName());
 			}
 			if (field.getAnnotation(DynamoDBIndexRangeKey.class) != null
 					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBIndexRangeKey.class).attributeName())) {
-				return field.getAnnotation(DynamoDBIndexRangeKey.class).attributeName();
+				return Optional.of(field.getAnnotation(DynamoDBIndexRangeKey.class).attributeName());
 			}
 			if (field.getAnnotation(DynamoDBIndexHashKey.class) != null
 					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBIndexHashKey.class).attributeName())) {
-				return field.getAnnotation(DynamoDBIndexHashKey.class).attributeName();
+				return Optional.of(field.getAnnotation(DynamoDBIndexHashKey.class).attributeName());
 			}
 			if (field.getAnnotation(DynamoDBVersionAttribute.class) != null
 					&& !StringUtils.isEmpty(field.getAnnotation(DynamoDBVersionAttribute.class).attributeName())) {
-				return field.getAnnotation(DynamoDBVersionAttribute.class).attributeName();
+				return Optional.of(field.getAnnotation(DynamoDBVersionAttribute.class).attributeName());
 			}
 		}
-		return null;
+		return Optional.empty();
 
 	}
 

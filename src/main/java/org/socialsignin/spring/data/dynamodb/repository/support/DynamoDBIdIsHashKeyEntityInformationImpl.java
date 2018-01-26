@@ -20,6 +20,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import org.springframework.util.Assert;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Encapsulates minimal information needed to load DynamoDB entities.
@@ -65,7 +66,7 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
 	}
 
 	@Override
-	public String getOverriddenAttributeName(String attributeName) {
+	public Optional<String> getOverriddenAttributeName(String attributeName) {
 		return metadata.getOverriddenAttributeName(attributeName);
 	}
 

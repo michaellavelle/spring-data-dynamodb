@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -1125,7 +1126,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 		Set<String> indexRangeKeyPropertyNames = new HashSet<String>();
 		indexRangeKeyPropertyNames.add("displayName");
 		Mockito.when(mockPlaylistEntityMetadata.getIndexRangeKeyPropertyNames()).thenReturn(indexRangeKeyPropertyNames);
-		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("displayName")).thenReturn("DisplayName");
+		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("displayName")).thenReturn(Optional.of("DisplayName"));
 
 		Mockito.when(mockDynamoDBPlaylistQueryMethod.isCollectionQuery()).thenReturn(true);
 		Playlist prototypeHashKey = new Playlist();
@@ -1189,7 +1190,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 //				prototypeHashKey);
 		Mockito.when(mockPlaylistEntityMetadata.getHashKey(playlistId)).thenReturn("someUserName");
 		Mockito.when(mockPlaylistEntityMetadata.getRangeKey(playlistId)).thenReturn(null);
-		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("displayName")).thenReturn("DisplayName");
+		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("displayName")).thenReturn(Optional.of("DisplayName"));
 
 		// Mock out specific DynamoDBOperations behavior expected by this method
 		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
@@ -1263,7 +1264,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 		prototypeHashKey.setUserName("someUserName");
 		Mockito.when(mockPlaylistEntityMetadata.getHashKey(playlistId)).thenReturn(null);
 		Mockito.when(mockPlaylistEntityMetadata.getRangeKey(playlistId)).thenReturn("somePlaylistName");
-		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("displayName")).thenReturn("DisplayName");
+		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("displayName")).thenReturn(Optional.of("DisplayName"));
 
 		// Mock out specific DynamoDBOperations behavior expected by this method
 		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
@@ -1408,7 +1409,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 //				prototypeHashKey);
 		Mockito.when(mockPlaylistEntityMetadata.getHashKey(playlistId)).thenReturn("someUserName");
 		Mockito.when(mockPlaylistEntityMetadata.getRangeKey(playlistId)).thenReturn("somePlaylistName");
-		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("displayName")).thenReturn("DisplayName");
+		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("displayName")).thenReturn(Optional.of("DisplayName"));
 
 		// Mock out specific DynamoDBOperations behavior expected by this method
 		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
@@ -1537,7 +1538,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 	public void testExecute_WhenFinderMethodIsFindingSingleEntity_WithSingleStringParameter_WhenNotFindingByHashKey_WhenDynamoAttributeNameOverridden() {
 		setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
 				"findByName", 1, "id", null);
-		Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn("Name");
+		Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn(Optional.of("Name"));
 
 		// Mock out specific DynamoDBOperations behavior expected by this method
 		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
@@ -1727,8 +1728,8 @@ public class PartTreeDynamoDBQueryUnitTest {
 		setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
 				"findByIdAndName", 2, "id", null);
 
-		Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn("Name");
-		Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("id")).thenReturn("Id");
+		Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn(Optional.of("Name"));
+		Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("id")).thenReturn(Optional.of("Id"));
 
 		// Mock out specific DynamoDBOperations behavior expected by this method
 		ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
@@ -3672,7 +3673,7 @@ public class PartTreeDynamoDBQueryUnitTest {
     public void testExecute_WhenExistsQueryFindsNoEntity() {
         setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
                 "existsByName", 1, "id", null);
-        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn("Name");
+        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn(Optional.of("Name"));
 
         // Mock out specific DynamoDBOperations behavior expected by this method
         ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
@@ -3726,7 +3727,7 @@ public class PartTreeDynamoDBQueryUnitTest {
     public void testExecute_WhenExistsQueryFindsOneEntity() {
         setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
                 "existsByName", 1, "id", null);
-        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn("Name");
+        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn(Optional.of("Name"));
 
         // Mock out specific DynamoDBOperations behavior expected by this method
         ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
@@ -3782,7 +3783,7 @@ public class PartTreeDynamoDBQueryUnitTest {
     public void testExecute_WhenExistsQueryFindsMultipleEntities() {
         setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
                 "existsByName", 1, "id", null);
-        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn("Name");
+        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn(Optional.of("Name"));
 
         // Mock out specific DynamoDBOperations behavior expected by this method
         ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
@@ -3838,7 +3839,7 @@ public class PartTreeDynamoDBQueryUnitTest {
     public void testExecute_WhenExistsWithLimitQueryFindsNoEntity() {
         setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
                 "existsTop1ByName", 1, "id", null);
-        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn("Name");
+        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn(Optional.of("Name"));
 
         // Mock out specific DynamoDBOperations behavior expected by this method
         ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);
@@ -3892,7 +3893,7 @@ public class PartTreeDynamoDBQueryUnitTest {
     public void testExecute_WhenExistsWithLimitQueryFindsOneEntity() {
         setupCommonMocksForThisRepositoryMethod(mockUserEntityMetadata, mockDynamoDBUserQueryMethod, User.class,
                 "existsTop1ByName", 1, "id", null);
-        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn("Name");
+        Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("name")).thenReturn(Optional.of("Name"));
 
         // Mock out specific DynamoDBOperations behavior expected by this method
         ArgumentCaptor<DynamoDBScanExpression> scanCaptor = ArgumentCaptor.forClass(DynamoDBScanExpression.class);

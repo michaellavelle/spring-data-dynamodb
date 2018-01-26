@@ -43,11 +43,17 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBRepositoryFactory.class);
 
 	static {
+		final String DEVELOPMENT = "DEVELOPMENT";
+
 		String awsSdkVersion = VersionInfoUtils.getVersion();
 		String springDataVersion = Version.class.getPackage().getImplementationVersion();
 
 		String thisSpecVersion = DynamoDBRepositoryFactory.class.getPackage().getSpecificationVersion();
 		String thisImplVersion = DynamoDBRepositoryFactory.class.getPackage().getImplementationVersion();
+		if (thisImplVersion == null || thisSpecVersion == null) {
+			thisSpecVersion = DEVELOPMENT;
+			thisImplVersion = DEVELOPMENT;
+		}
 
 		LOGGER.info("Spring Data DynamoDB Version: {} ({})", thisImplVersion, thisSpecVersion);
 		LOGGER.info("Spring Data Version:          {}", springDataVersion);
@@ -57,7 +63,7 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 		LOGGER.info("Platform Details:             {} {}", System.getProperty("os.name"),
 				System.getProperty("os.version"));
 
-		if (!isCompatible(springDataVersion, thisSpecVersion)) {
+		if (!DEVELOPMENT.equals(thisImplVersion) && !isCompatible(springDataVersion, thisSpecVersion)) {
 			LOGGER.warn("This Spring Data DynamoDB implementation might not be compatible with the available Spring Data classes on the classpath!"
 					+ System.getProperty("line.separator") + "NoDefClassFoundExceptions or similar might occur!");
 		}

@@ -20,6 +20,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -60,7 +61,7 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends
 	}
 
 	@Override
-	public String getOverriddenAttributeName(String attributeName) {
+	public Optional<String> getOverriddenAttributeName(String attributeName) {
 		return metadata.getOverriddenAttributeName(attributeName);
 	}
 
