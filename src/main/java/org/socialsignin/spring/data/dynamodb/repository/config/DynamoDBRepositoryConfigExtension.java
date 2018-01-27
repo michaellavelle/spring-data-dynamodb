@@ -37,7 +37,6 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 	
 	private static final String DYNAMO_DB_OPERATIONS_REF = "dynamodb-operations-ref";
 
-
 	private static final String AMAZON_DYNAMODB_REF = "amazon-dynamodb-ref";
 
 	@Override

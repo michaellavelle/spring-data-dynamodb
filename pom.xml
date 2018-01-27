@@ -39,6 +39,8 @@
     <properties>
         <spring.version>5.0.1.RELEASE</spring.version>
         <spring-data.version>Kay-SR1</spring-data.version>
+        <artifact.selectedVersion.minorVersion>0</artifact.selectedVersion.minorVersion>
+
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
         <aws-java-sdk.version>1.11.232</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
@@ -151,7 +153,7 @@
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>${cdi.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
         <!-- TEST -->
@@ -225,9 +227,28 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.20.1</version>
                 </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Specification-Title>Spring Data</Specification-Title>
+                            <Specification-Version>2.0</Specification-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -692,6 +713,10 @@
         <contributor>
           <name>Alex Arana</name>
           <url>https://github.com/alexarana</url>
+        </contributor>
+        <contributor>
+            <name>Davin</name>
+            <url>https://github.com/Davinpidoto</url>
         </contributor>
     </contributors>
 
