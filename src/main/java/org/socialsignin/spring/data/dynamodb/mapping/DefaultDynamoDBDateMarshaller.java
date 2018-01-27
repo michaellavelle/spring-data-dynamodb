@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,15 +20,17 @@ import java.util.TimeZone;
 
 /**
  * @author Michael Lavelle
+ * @deprecated Consider using {@link org.socialsignin.spring.data.dynamodb.marshaller.Date2IsoDynamoDBMarshaller}
  */
+@Deprecated
 public class DefaultDynamoDBDateMarshaller extends AbstractDynamoDBDateMarshaller {
 
 	public DefaultDynamoDBDateMarshaller() {
 		super(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") {
-        private static final long serialVersionUID = 1L;
-        {
-            setTimeZone(TimeZone.getTimeZone("UTC"));
-        }
-    });
+			private static final long serialVersionUID = 1L;
+			{
+				setTimeZone(TimeZone.getTimeZone("UTC"));
+			}
+		});
 	}
 }

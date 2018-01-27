@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,17 +15,16 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 import org.springframework.data.repository.query.RepositoryQuery;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import java.lang.reflect.Method;
+
 
 /**
  * @author Michael Lavelle
@@ -41,7 +40,7 @@ public class DynamoDBQueryLookupStrategy {
 
 	/**
 	 * Base class for {@link QueryLookupStrategy} implementations that need
-	 * access to an {@link DynamoDBMapper}.
+	 * access to an {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper}.
 	 *
 	 * @author Michael Lavelle
 	 */
@@ -63,13 +62,13 @@ public class DynamoDBQueryLookupStrategy {
 		 * org.springframework.data.repository.core.NamedQueries)
 		 */
 		@Override
-        public final RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, NamedQueries namedQueries) {
+        public final RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory, NamedQueries namedQueries) {
 
-			return createDynamoDBQuery(method, metadata, metadata.getDomainType(), metadata.getIdType(), namedQueries);
+			return createDynamoDBQuery(method, metadata, factory, metadata.getDomainType(), metadata.getIdType(), namedQueries);
 		}
 
-		protected abstract <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method,
-				RepositoryMetadata metadata, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries);
+		protected abstract <T, ID> RepositoryQuery createDynamoDBQuery(Method method,
+				RepositoryMetadata metadata, ProjectionFactory factory, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries);
 	}
 
 	/**
@@ -85,10 +84,10 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		@Override
-		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
 				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			try {
-				return new PartTreeDynamoDBQuery<T, ID>(dynamoDBOperations, new DynamoDBQueryMethod<T, ID>(method, metadata));
+				return new PartTreeDynamoDBQuery<T, ID>(dynamoDBOperations, new DynamoDBQueryMethod<T, ID>(method, metadata, factory));
 			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(String.format("Could not create query metamodel for method %s!",
 						method.toString()), e);
@@ -99,7 +98,7 @@ public class DynamoDBQueryLookupStrategy {
 
 	/**
 	 * {@link QueryLookupStrategy} that tries to detect a declared query
-	 * declared via {@link Query} annotation
+	 * declared via {@link org.socialsignin.spring.data.dynamodb.query.Query} annotation
 	 *
 	 * @author Michael Lavelle
 	 */
@@ -111,7 +110,7 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		@Override
-		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
 				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			throw new UnsupportedOperationException("Declared Queries not supported at this time");
 		}
@@ -138,14 +137,14 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		@Override
-		protected <T, ID extends Serializable> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
 				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			try {
-				return strategy.createDynamoDBQuery(method, metadata, entityClass, idClass, namedQueries);
+				return strategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
 			} catch (IllegalStateException e) {
-				return createStrategy.createDynamoDBQuery(method, metadata, entityClass, idClass, namedQueries);
+				return createStrategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
 			} catch (UnsupportedOperationException e) {
-				return createStrategy.createDynamoDBQuery(method, metadata, entityClass, idClass, namedQueries);
+				return createStrategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
 			}
 
 		}
@@ -153,11 +152,11 @@ public class DynamoDBQueryLookupStrategy {
 
 	/**
 	 * Creates a {@link QueryLookupStrategy} for the given
-	 * {@link DynamoDBMapper} and {@link Key}.
+	 * {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper} and {@link Key}.
 	 *
-	 * @param dynamoDBOperations
-	 * @param key
-	 * @return
+	 * @param dynamoDBOperations The current operation
+	 * @param key The key of the entity
+	 * @return The created {@link QueryLookupStrategy}
 	 */
 	public static QueryLookupStrategy create(DynamoDBOperations dynamoDBOperations, Key key) {
 

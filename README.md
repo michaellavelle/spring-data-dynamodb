@@ -1,53 +1,74 @@
-# Spring Data DynamoDB#
+[![codecov.io](https://codecov.io/github/derjust/spring-data-dynamodb/coverage.svg?branch=master)](https://codecov.io/github/derjust/spring-data-dynamodb?branch=master) [![Build Status](https://travis-ci.org/derjust/spring-data-dynamodb.svg?branch=master)](https://travis-ci.org/derjust/spring-data-dynamodb) 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb)
+[![Donation badge](https://img.shields.io/badge/Donate-%F0%9F%92%B8-DAA520.svg)](DONATION.md)
 
-Due to external time and project commitments, I'm no longer able to continue active development of this project as of January 2016.  Thank you to everyone involved in shaping the project over the past few years and thanks to all those who have raised issues and submitted pull requests over the time.
 
-@derjust has kindly offered to continue managing the progression of spring-data-dynamodb going forward - the latest version of the project can be found at the following fork:
+# Spring  Data DynamoDB #
 
-https://github.com/derjust/spring-data-dynamodb
+<img align="left" src="https://derjust.github.io/spring-data-dynamodb/banner/spring-data-dynamodb.png">
 
-Thank you Sebastian for your help with the project to date and for this kind offer.
+The primary goal of the [Spring® Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies.
 
-Kind Regards,
+This module deals with enhanced support for a data access layer built on [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
 
-Michael
-
-The primary goal of the [Spring Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies. This module deals with enhanced support for Amazon DynamoDB based data access layers.
+Technical infos can be found on the [project page](https://derjust.github.io/spring-data-dynamodb/).
 
 ## Supported Features ##
 
 * Implementation of CRUD methods for DynamoDB Entities
 * Dynamic query generation from query method names  (Only a limited number of keywords and comparison operators currently supported)
-* Possibility to integrate custom repository code
+* Possibility to integrate [custom repository code](http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.single-repository-behaviour)
 * Easy Spring annotation based integration
 
 ## Demo application ##
 
 For a demo of spring-data-dynamodb, using spring-data-rest to showcase DynamoDB repositories exposed with REST,
-please see <a href="https://github.com/michaellavelle/spring-data-dynamodb-demo">spring-data-dynamodb-demo
-## Version
+please see [spring-data-dynamodb-demo](https://github.com/michaellavelle/spring-data-dynamodb-demo).
 
-The major and minor number of this library refers to the compatible Spring framework compatibility:
-`4.2.n` is compatible with Spring framework `4.2.0`.
+## Version & Spring Framework compatibility ##
+
+The major and minor number of this library refers to the compatible Spring framework version. The build number is used as specified by SEMVER.
+
+API changes will follow SEMVER and loosly the Spring Framework releases.
+
+| `spring-data-dynamodb` version  | Spring Boot compatibility      |Spring Framework compatibility  | Spring Data compatibility |
+| ------------------------------- | ------------------------------ | ------------------------------ | ------------------------- |
+| 1.0.x                           |                                | >= 3.1 && < 4.2                |                           |
+| 4.2.x                           | => 1.3.0 && < 1.4.0            | >= 4.2 && < 4.3                | Gosling-SR1               |
+| 4.3.x                           | => 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Gosling-SR1               |
+| 4.4.x                           | => 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Hopper-SR2                |
+| 4.5.x                           | => 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Ingalls                   |
+| 5.0.x                           | => 2.0                         | >= 5.0                         | Kay-SR1                   |
+
+`spring-data-dynamodb` depends directly on `spring-data` as also `spring-context`, `spring-data` and `spring-tx`.
+
+`compile` and `runtime` dependencies are kept to a minimum to allow easy integartion, for example into 
+Spring-Boot projects.
 
 ## Quick Start ##
 
-Download the jar though Maven:
-
-
-```xml
-<repository>
-	<id>opensourceagility-release</id>
-	<url>http://repo.opensourceagility.com/release/</url
-</repository>
-```
+Download the JAR though [Maven](http://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb):
 
 ```xml
 <dependency>
-  <groupId>org.socialsignin</groupId>
+  <groupId>com.github.derjust</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>4.2.1</version>
+  <version>5.0.1</version>
 </dependency>
+```
+
+or via Gradle
+
+```yml
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile group: 'com.github.derjust',
+  name: 'spring-data-dynamodb',
+  version: '5.0.1'
+}
 ```
 
 Setup DynamoDB configuration as well as enabling Spring Data DynamoDB repository support.
@@ -67,9 +88,9 @@ public class DynamoDBConfig {
 	private String amazonAWSSecretKey;
 
 	@Bean
-	public AmazonDynamoDB amazonDynamoDB() {
-		AmazonDynamoDB amazonDynamoDB = new AmazonDynamoDBClient(
-				amazonAWSCredentials());
+	public AmazonDynamoDB amazonDynamoDB(AWSCredentials amazonAWSCredentials) {
+		AmazonDynamoDB amazonDynamoDB = new AmazonDynamoDBClient(amazonAWSCredentials);
+
 		if (StringUtils.isNotEmpty(amazonDynamoDBEndpoint)) {
 			amazonDynamoDB.setEndpoint(amazonDynamoDBEndpoint);
 		}
@@ -78,21 +99,19 @@ public class DynamoDBConfig {
 
 	@Bean
 	public AWSCredentials amazonAWSCredentials() {
+	    // Or use an AWSCredentialsProvider/AWSCredentialsProviderChain
 		return new BasicAWSCredentials(amazonAWSAccessKey, amazonAWSSecretKey);
 	}
 
 }
 ```
 
-or in xml...
+or in XML...
 
 ```xml
-
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xmlns:dynamodb="http://docs.socialsignin.org/schema/data/dynamodb"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -115,7 +134,7 @@ or in xml...
 
 ```
 
-Create a DynamoDB hash-key only table in AWS console, with table name 'User' and with hash key attribute name "id"
+Create a DynamoDB hash-key only table in AWS console, with table name `User` and with hash key attribute name `id`.
 
 Create a DynamoDB entity for this table:
 
@@ -127,32 +146,64 @@ public class User {
   private String firstName;
   private String lastName;
 
+  public User() {
+  }
+  
+  public User(String firstName, String lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
   @DynamoDBHashKey
   @DynamoDBAutoGeneratedKey 
-  public String getId()
-  {
+  public String getId() {
 	return id;
   }
 
   @DynamoDBAttribute
-  public String getFirstName()
-  {
+  public String getFirstName() {
 	return firstName;
   }
 
   @DynamoDBAttribute
-  public String getLastName()
-  {
+  public String getLastName() {
 	return lastName;
   }
        
-  // setters, default constructor and firstname/lastname constructor
+  public void setId(String id) {
+    this.id = id;
+  }
+  
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      User user = (User) o;
+
+      return id.equals(user.id);
+  }
+
+  @Override
+  public int hashCode() {
+      return id.hashCode();
+  }
 }
 ```
 
 Create a CRUD repository interface in `com.acme.repositories`:
 
 ```java
+package com.acme.repositories;
+
 @EnableScan
 public interface UserRepository extends CrudRepository<User, String> {
   List<User> findByLastName(String lastName);
@@ -162,6 +213,8 @@ public interface UserRepository extends CrudRepository<User, String> {
 or for paging and sorting...
 
 ```java
+package com.acme.repositories;
+
 public interface UserRepository extends PagingAndSortingRepository<User, String> {
   Page<User> findByLastName(String lastName,Pageable pageable);
   
@@ -171,28 +224,83 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
 }
 ```
 
-Write a test client
+And finally write a test client
 
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:your-config-file.xml")
-public class UserRepositoryIntegrationTest {
+@SpringApplicationConfiguration(classes = { 
+    PropertyPlaceholderAutoConfiguration.class, DynamoDBConfig.class})
+    public class UserRepositoryIntegrationTest {
      
-  @Autowired UserRepository repository;
-     
-  @Test
-  public void sampleTestCase() {
-    User dave = new User("Dave", "Matthews");
-    repository.save(user);
-         
-    User carter = new User("Carter", "Beauford");
-    repository.save(carter);
-         
-    List<User> result = repository.findByLastName("Matthews");
-    assertThat(result.size(), is(1));
-    assertThat(result, hasItem(dave));
-  }
+    private static final String KEY_NAME = "id";
+    private static final Long READ_CAPACITY_UNITS = 5L;
+    private static final Long WRITE_CAPACITY_UNITS = 5L;
+    
+    @Autowired
+    UserRepository repository;
+    
+    @Autowired
+    private AmazonDynamoDB amazonDynamoDB;
+    
+    @Before
+    public void init() throws Exception {
+    
+        ListTablesResult listTablesResult = amazonDynamoDB.listTables();
+    
+        listTablesResult.getTableNames().stream().
+                filter(tableName -> tableName.equals(User.TABLE_NAME)).forEach(tableName -> {
+            amazonDynamoDB.deleteTable(tableName);
+        });
+    
+        List<AttributeDefinition> attributeDefinitions = new ArrayList<AttributeDefinition>();
+        attributeDefinitions.add(new AttributeDefinition().withAttributeName(KEY_NAME).withAttributeType("S"));
+    
+        List<KeySchemaElement> keySchemaElements = new ArrayList<KeySchemaElement>();
+        keySchemaElements.add(new KeySchemaElement().withAttributeName(KEY_NAME).withKeyType(KeyType.HASH));
+    
+        CreateTableRequest request = new CreateTableRequest()
+                .withTableName(TABLE_NAME)
+                .withKeySchema(keySchemaElements)
+                .withAttributeDefinitions(attributeDefinitions)
+                .withProvisionedThroughput(new ProvisionedThroughput().withReadCapacityUnits(READ_CAPACITY_UNITS)
+                        .withWriteCapacityUnits(WRITE_CAPACITY_UNITS));
+    
+        amazonDynamoDB.createTable(request);
+    
+    }
+    
+    @Test
+    public void sampleTestCase() {
+        User dave = new User("Dave", "Matthews");
+        repository.save(dave);
+    
+        User carter = new User("Carter", "Beauford");
+        repository.save(carter);
+    
+        List<User> result = repository.findByLastName("Matthews");
+        Assert.assertThat(result.size(), is(1));
+        Assert.assertThat(result, hasItem(dave));
+    }
 }
 ```
  
+ 
+## Advanced topics ##
+Advanced topics can be found in the [wiki](https://github.com/derjust/spring-data-dynamodb/wiki).
 
+## Release process ##
+
+1. Check `pom.xml` for the proper `<version />` tag
+1. Update `src/changes/changes.xml` timestamp of the release version
+1. Update `README.md` version for the Maven/Gradle examples
+
+Then execute
+
+```
+  $ mvn release:prepare && mvn release:perform
+```
+
+which will tag, build, test and upload the artifacts to Sonatype's OSS staging area & closes the staging repository.
+Maven Central synchronization usually takes ~15 minutes.
+
+Finally create a new section in `src/changes/changes.xml`.

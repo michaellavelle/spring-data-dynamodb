@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,20 +15,35 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper.FailedBatch;
 
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
+import org.socialsignin.spring.data.dynamodb.exception.BatchWriteException;
 import org.springframework.dao.EmptyResultDataAccessException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyIterable;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -42,6 +57,9 @@ public class SimpleDynamoDBCrudRepositoryUnitTest {
 	SimpleDynamoDBCrudRepository<User, Long> repoForEntityWithOnlyHashKey;
 
 	SimpleDynamoDBCrudRepository<Playlist, PlaylistId> repoForEntityWithHashAndRangeKey;
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@Mock
 	DynamoDBOperations dynamoDBOperations;
@@ -75,9 +93,9 @@ public class SimpleDynamoDBCrudRepositoryUnitTest {
 		when(entityWithSimpleIdInformation.getJavaType()).thenReturn(User.class);
 		when(entityWithSimpleIdInformation.getHashKey(1l)).thenReturn(1l);
 		
-		when(mockEnableScanPermissions.isFindAllUnpaginatedScanEnabled()).thenReturn(true);
-		when(mockEnableScanPermissions.isDeleteAllUnpaginatedScanEnabled()).thenReturn(true);
-		when(mockEnableScanPermissions.isCountUnpaginatedScanEnabled()).thenReturn(true);
+//		when(mockEnableScanPermissions.isFindAllUnpaginatedScanEnabled()).thenReturn(true);
+//		when(mockEnableScanPermissions.isDeleteAllUnpaginatedScanEnabled()).thenReturn(true);
+//		when(mockEnableScanPermissions.isCountUnpaginatedScanEnabled()).thenReturn(true);
 
 		
 		when(entityWithCompositeIdInformation.getJavaType()).thenReturn(Playlist.class);
@@ -85,14 +103,30 @@ public class SimpleDynamoDBCrudRepositoryUnitTest {
 		when(entityWithCompositeIdInformation.getRangeKey(testPlaylistId)).thenReturn("playlist1");
 		when(entityWithCompositeIdInformation.isRangeKeyAware()).thenReturn(true);
 
-		repoForEntityWithOnlyHashKey = new SimpleDynamoDBCrudRepository<User, Long>(entityWithSimpleIdInformation,
+		repoForEntityWithOnlyHashKey = new SimpleDynamoDBCrudRepository<>(entityWithSimpleIdInformation,
 				dynamoDBOperations,mockEnableScanPermissions);
-		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBCrudRepository<Playlist, PlaylistId>(
+		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBCrudRepository<>(
 				entityWithCompositeIdInformation, dynamoDBOperations,mockEnableScanPermissions);
 
 		when(dynamoDBOperations.load(User.class, 1l)).thenReturn(testUser);
 		when(dynamoDBOperations.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);
 
+	}
+
+	@Test
+	public void deleteById() {
+		final long id = new Random().nextLong();
+		User testResult = new User();
+		testResult.setId(Long.toString(id));
+
+		when(entityWithSimpleIdInformation.getHashKey(id)).thenReturn(id);
+		when(dynamoDBOperations.load(User.class, id)).thenReturn(testResult);
+
+		repoForEntityWithOnlyHashKey.deleteById(id);
+
+		ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+		Mockito.verify(dynamoDBOperations).delete(captor.capture());
+		Assert.assertEquals(Long.toString(id), captor.getValue().getId());
 	}
 
 	/**
@@ -101,21 +135,21 @@ public class SimpleDynamoDBCrudRepositoryUnitTest {
 	@Test(expected = EmptyResultDataAccessException.class)
 	public void throwsExceptionIfEntityOnlyHashKeyToDeleteDoesNotExist() {
 
-		repoForEntityWithOnlyHashKey.delete(4711L);
+		repoForEntityWithOnlyHashKey.deleteById(4711L);
 	}
 
 	@Test
 	public void findOneEntityWithOnlyHashKey() {
-		User user = repoForEntityWithOnlyHashKey.findOne(1l);
+		Optional<User> user = repoForEntityWithOnlyHashKey.findById(1l);
 		Mockito.verify(dynamoDBOperations).load(User.class,1l);
-		assertEquals(testUser, user);
+		assertEquals(testUser, user.get());
 	}
 	
 
 	@Test
 	public void findOneEntityWithHashAndRangeKey() {
-		Playlist playlist = repoForEntityWithHashAndRangeKey.findOne(testPlaylistId);
-		assertEquals(testPlaylist, playlist);
+		Optional<Playlist> playlist = repoForEntityWithHashAndRangeKey.findById(testPlaylistId);
+		assertEquals(testPlaylist, playlist.get());
 	}
 
 	/**
@@ -128,6 +162,40 @@ public class SimpleDynamoDBCrudRepositoryUnitTest {
 		playlistId.setUserName("someUser");
 		playlistId.setPlaylistName("somePlaylistName");
 
-		repoForEntityWithHashAndRangeKey.delete(playlistId);
+		repoForEntityWithHashAndRangeKey.deleteById(playlistId);
+	}
+
+	@Test
+	public void testBatchSave() {
+
+		List<User> entities = new ArrayList<>();
+		entities.add(new User());
+		entities.add(new User());
+		when(dynamoDBOperations.batchSave(anyIterable())).thenReturn(Collections.emptyList());
+
+		repoForEntityWithOnlyHashKey.saveAll(entities);
+
+		verify(dynamoDBOperations).batchSave(anyIterable());
+	}
+
+	@Test
+	public void testBatchSaveFailure() {
+		List<FailedBatch> failures = new ArrayList<>();
+		FailedBatch e1 = new FailedBatch();
+		e1.setException(new Exception("First exception"));
+		failures.add(e1);
+		FailedBatch e2 = new FailedBatch();
+		e2.setException(new Exception("Followup exception"));
+		failures.add(e2);
+
+		List<User> entities = new ArrayList<>();
+		entities.add(new User());
+		entities.add(new User());
+		when(dynamoDBOperations.batchSave(anyIterable())).thenReturn(failures);
+
+		expectedException.expect(BatchWriteException.class);
+		expectedException.expectMessage("Saving of entities failed!; nested exception is java.lang.Exception: First exception");
+
+		repoForEntityWithOnlyHashKey.saveAll(entities);
 	}
 }

@@ -1,0 +1,49 @@
+{
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "customerId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "createDt",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "tag",
+      "AttributeType": "S"
+    }
+   ],
+  "KeySchema": [
+    {
+      "AttributeName": "customerId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "createDt",
+      "KeyType": "RANGE"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": "10",
+    "WriteCapacityUnits": "10"
+  },
+  "GlobalSecondaryIndexes": [
+        {
+            "IndexName": "idx_global_tag",
+            "KeySchema": [
+                {
+                    "AttributeName": "tag",
+                    "KeyType": "HASH"
+                }
+            ],
+            "Projection": {
+                "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 10,
+                "WriteCapacityUnits": 10
+            }
+        }
+    ],
+  "TableName": "customerhistory"
+}
