@@ -19,6 +19,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,7 +32,9 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Set;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBRepositoryBeanTest {
@@ -92,5 +95,27 @@ public class DynamoDBRepositoryBeanTest {
 
         DynamoDBRepositoryBean underTest = new DynamoDBRepositoryBean(beanManager, amazonDynamoDBBean,
                 null, dynamoDBOperationsBean, qualifiers, repositoryType);
+    }
+
+    @Test
+    public void testVersionNullNull() {
+        assertFalse(DynamoDBRepositoryBean.isCompatible(null, null));
+    }
+
+    @Test
+    public void testVersionNullValue() {
+        assertFalse(DynamoDBRepositoryBean.isCompatible(null, "1.0."));
+        assertFalse(DynamoDBRepositoryBean.isCompatible("1.0", null));
+    }
+
+    @Test
+    public void testVersionCompatible() {
+        assertTrue(DynamoDBRepositoryBean.isCompatible("1.0", "1.0"));
+        assertTrue(DynamoDBRepositoryBean.isCompatible("1.0.0.0.1", "1.0..0.0.1"));
+
+        assertFalse(DynamoDBRepositoryBean.isCompatible("1.1", "1.0"));
+        assertFalse(DynamoDBRepositoryBean.isCompatible("1.0", "2.0"));
+
+        assertTrue(DynamoDBRepositoryBean.isCompatible("1.0.0-SR", "1.0.0-SR"));
     }
 }

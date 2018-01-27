@@ -36,6 +36,12 @@
       <action dev="derjust" type="add" date="2018-01-23">
         Allow for JUnit tests to use a in-memory DynamoDB instance
       </action>
+      <action dev="Davinpidoto" issue="122" type="add" date="2018-01-27">
+        Added documentation about Spring-Boot compatibility
+      </action>
+      <action dev="derjust" issue="122" type="add" date="2018-01-27">
+        Added logging of AWS/Spring-Data/this version and potential compatibility issues
+      </action>
     </release>
     <release version="5.0.1" date="2018-01-06" description="Maintenance release">
       <action dev="derjust" issue="68" type="fix" date="2017-12-01" >

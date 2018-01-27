@@ -291,6 +291,7 @@ Advanced topics can be found in the [wiki](https://github.com/derjust/spring-dat
 ## Release process ##
 
 1. Check `pom.xml` for the proper `<version />` tag
+1. Check `pom.xml` SpecificaitonVersion entries
 1. Update `src/changes/changes.xml` timestamp of the release version
 1. Update `README.md` version for the Maven/Gradle examples
 
