@@ -15,6 +15,9 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
+import com.amazonaws.util.VersionInfoUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
 import org.socialsignin.spring.data.dynamodb.repository.query.DynamoDBQueryLookupStrategy;
@@ -25,9 +28,11 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
 import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
+import org.springframework.data.util.Version;
 
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.StringTokenizer;
 
 import static org.springframework.data.querydsl.QuerydslUtils.QUERY_DSL_PRESENT;
 
@@ -35,6 +40,49 @@ import static org.springframework.data.querydsl.QuerydslUtils.QUERY_DSL_PRESENT;
  * @author Michael Lavelle
  */
 public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBRepositoryFactory.class);
+
+	static {
+		String awsSdkVersion = VersionInfoUtils.getVersion();
+		String springDataVersion = Version.class.getPackage().getImplementationVersion();
+
+		String thisSpecVersion = DynamoDBRepositoryFactory.class.getPackage().getSpecificationVersion();
+		String thisImplVersion = DynamoDBRepositoryFactory.class.getPackage().getImplementationVersion();
+
+		LOGGER.info("Spring Data DynamoDB Version: {} ({})", thisImplVersion, thisSpecVersion);
+		LOGGER.info("Spring Data Version:          {}", springDataVersion);
+		LOGGER.info("AWS SDK Version:              {}", awsSdkVersion);
+		LOGGER.info("Java Version:                 {} - {} {}", System.getProperty("java.version"),
+				System.getProperty("java.vm.name"), System.getProperty("java.vm.version"));
+		LOGGER.info("Platform Details:             {} {}", System.getProperty("os.name"),
+				System.getProperty("os.version"));
+
+		if (!isCompatible(springDataVersion, thisSpecVersion)) {
+			LOGGER.warn("This Spring Data DynamoDB implementation might not be compatible with the available Spring Data classes on the classpath!"
+					+ System.getProperty("line.separator") + "NoDefClassFoundExceptions or similar might occur!");
+		}
+	}
+
+	protected static boolean isCompatible(String spec, String impl) {
+		if (spec == null && impl == null) {
+			return false;
+		} else if (spec == null) {
+			spec = "";
+		} else if (impl == null) {
+			impl = "";
+		}
+		StringTokenizer specTokenizer = new StringTokenizer(spec, ".");
+		StringTokenizer implTokenizer = new StringTokenizer(impl, ".");
+
+		String specMajor = specTokenizer.hasMoreTokens() ? specTokenizer.nextToken() : "0";
+		String specMinor = specTokenizer.hasMoreTokens() ? specTokenizer.nextToken() : "0";
+
+		String implMajor = implTokenizer.hasMoreTokens() ? implTokenizer.nextToken() : "0";
+		String implMinor = implTokenizer.hasMoreTokens() ? implTokenizer.nextToken() : "0";
+
+		return specMajor.equals(implMajor) && specMinor.equals(implMinor);
+	}
+
 
 	private final DynamoDBOperations dynamoDBOperations;
 

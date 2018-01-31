@@ -18,6 +18,6 @@
   - Java Version: 
   - Platform Details: 
 
-All those information are logged by `org.socialsignin.spring.data.dynamodb.repository.cdi.DynamoDBRepositoryBean` on `INFO` level on startup.
+All those information are logged by `org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBRepositoryFactory` on `INFO` level on startup.
 Or use `java -version` and `mvn dependency:tree | grep -E 'spring|aws'` to provide those version numbers.
 
