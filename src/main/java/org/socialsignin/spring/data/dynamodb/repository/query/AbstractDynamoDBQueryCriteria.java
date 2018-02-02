@@ -29,6 +29,7 @@ import org.socialsignin.spring.data.dynamodb.marshaller.Date2IsoDynamoDBMarshall
 import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
+import org.socialsignin.spring.data.dynamodb.utils.SortHandler;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
@@ -51,7 +52,7 @@ import java.util.Map.Entry;
 /**
  * @author Michael Lavelle
  */
-public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQueryCriteria<T, ID> {
+public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQueryCriteria<T, ID>, SortHandler {
 
 	protected Class<T> clazz;
 	private DynamoDBEntityInformation<T, ID> entityInformation;
@@ -65,18 +66,9 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	protected Object hashKeyAttributeValue;
 	protected Object hashKeyPropertyValue;
 	protected String globalSecondaryIndexName;
-	protected Sort sort;
+	protected Sort sort = Sort.unsorted();
 
 	public abstract boolean isApplicableForLoad();
-
-	/**
-	 * @throws UnsupportedOperationException if a {@link #sort} is initalized (non-null &amp;&amp; not {@link Sort#unsorted()}
-	 */
-	protected void ensureNoSort() throws UnsupportedOperationException {
-		if (sort != null && sort != Sort.unsorted()) {
-			throw new UnsupportedOperationException("Sort not supported for scan expressions");
-		}
-	}
 
 	protected QueryRequest buildQueryRequest(String tableName, String theIndexName, String hashKeyAttributeName,
 			String rangeKeyAttributeName, String rangeKeyPropertyName, List<Condition> hashKeyConditions,
@@ -119,14 +111,12 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 				}
 			}
 
-            if (sort != null) {
-                for (Order order : sort) {
-                    final String sortProperty = order.getProperty();
-                    if (entityInformation.isGlobalIndexRangeKeyProperty(sortProperty)) {
-                        allowedSortProperties.add(sortProperty);
-                    }
-                }
-            }
+			for (Order order : sort) {
+				final String sortProperty = order.getProperty();
+				if (entityInformation.isGlobalIndexRangeKeyProperty(sortProperty)) {
+					allowedSortProperties.add(sortProperty);
+				}
+			}
 
 			queryRequest.setKeyConditions(keyConditions);
 			queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);
@@ -140,20 +130,19 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 			throw new UnsupportedOperationException("Can only sort by at most a single range or index range key");
 
 		}
-		if (sort != null) {
-			boolean sortAlreadySet = false;
-			for (Order order : sort) {
-				if (permittedPropertyNames.contains(order.getProperty())) {
-					if (sortAlreadySet) {
-						throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
 
-					}
-					queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
-					sortAlreadySet = true;
-				} else {
-					throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyNames
-							+ " for the criteria specified");
+		boolean sortAlreadySet = false;
+		for (Order order : sort) {
+			if (permittedPropertyNames.contains(order.getProperty())) {
+				if (sortAlreadySet) {
+					throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
+
 				}
+				queryExpression.setScanIndexForward(order.getDirection().equals(Direction.ASC));
+				sortAlreadySet = true;
+			} else {
+				throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyNames
+						+ " for the criteria specified");
 			}
 		}
 	}
@@ -163,25 +152,23 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 			throw new UnsupportedOperationException("Can only sort by at most a single global hash and range key");
 		}
 
-		if (sort != null) {
-			boolean sortAlreadySet = false;
-			for (Order order : sort) {
-				if (permittedPropertyNames.contains(order.getProperty())) {
-					if (sortAlreadySet) {
-						throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
+		boolean sortAlreadySet = false;
+		for (Order order : sort) {
+			if (permittedPropertyNames.contains(order.getProperty())) {
+				if (sortAlreadySet) {
+					throw new UnsupportedOperationException("Sorting by multiple attributes not possible");
 
-					}
-					if (queryRequest.getKeyConditions().size() > 1 && !hasIndexHashKeyEqualCondition()) {
-						throw new UnsupportedOperationException(
-								"Sorting for global index queries with criteria on both hash and range not possible");
-
-					}
-					queryRequest.setScanIndexForward(order.getDirection().equals(Direction.ASC));
-					sortAlreadySet = true;
-				} else {
-					throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyNames
-							+ " for the criteria specified");
 				}
+				if (queryRequest.getKeyConditions().size() > 1 && !hasIndexHashKeyEqualCondition()) {
+					throw new UnsupportedOperationException(
+							"Sorting for global index queries with criteria on both hash and range not possible");
+
+				}
+				queryRequest.setScanIndexForward(order.getDirection().equals(Direction.ASC));
+				sortAlreadySet = true;
+			} else {
+				throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyNames
+						+ " for the criteria specified");
 			}
 		}
 	}

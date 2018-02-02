@@ -47,14 +47,13 @@ public class DynamoDBLocalResource extends ExternalResource {
         return ddb;
     }
 
-    public static CreateTableResult createTable(AmazonDynamoDB ddb, Class<?> domainType) {
-        DynamoDBEntityMetadataSupport support = new DynamoDBEntityMetadataSupport(domainType);
-        DynamoDBEntityInformation entityInfo = support.getEntityInformation();
+    public static <T> CreateTableResult createTable(AmazonDynamoDB ddb, Class<T> domainType) {
+        DynamoDBEntityMetadataSupport<T, Object> support = new DynamoDBEntityMetadataSupport(domainType);
+        DynamoDBEntityInformation<T, Object> entityInfo = support.getEntityInformation();
 
         String tableName = entityInfo.getDynamoDBTableName();
         String hashKey = entityInfo.getHashKeyPropertyName();
-        Optional<String> columnName = entityInfo.getOverriddenAttributeName(hashKey);
-        hashKey = columnName.orElse(hashKey);
+        hashKey = entityInfo.getOverriddenAttributeName(hashKey).orElse(hashKey);
 
         Optional<String> rangeKey = Optional.empty();
         if (entityInfo instanceof DynamoDBIdIsHashAndRangeKeyEntityInformation) {

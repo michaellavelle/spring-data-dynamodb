@@ -108,6 +108,7 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void publishEachElement(List<?> list, Consumer<E> publishMethod) {
 		list.stream()
 				.filter(o -> domainClass.isAssignableFrom(o.getClass()))

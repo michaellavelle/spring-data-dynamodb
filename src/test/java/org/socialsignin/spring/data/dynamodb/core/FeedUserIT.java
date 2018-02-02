@@ -42,7 +42,7 @@ public class FeedUserIT {
 
     @Test
     public void feed_test(){
-        PageRequest pageRequest = new PageRequest(1, 10, new Sort(Direction.DESC, "usrNo"));
+        PageRequest pageRequest = PageRequest.of(1, 10, new Sort(Direction.DESC, "usrNo"));
         feedUserRepository.findByUsrNo(2, pageRequest); //runnable
         feedUserRepository.findByUsrNoAndFeedOpenYn(2, true, pageRequest); //not runnable
     }

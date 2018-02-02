@@ -90,7 +90,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 
 	public DynamoDBScanExpression buildScanExpression() {
 
-		ensureNoSort();
+		ensureNoSort(sort);
 
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		if (isHashKeySpecified()) {
