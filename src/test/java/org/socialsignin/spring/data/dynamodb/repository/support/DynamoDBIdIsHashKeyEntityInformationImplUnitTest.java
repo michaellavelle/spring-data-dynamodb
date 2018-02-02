@@ -27,6 +27,8 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
+import java.util.Optional;
+
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unused")
 public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
@@ -63,8 +65,8 @@ public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
 		Mockito.when(mockPlaylistEntityMetadata.getHashKeyPropertyName()).thenReturn("playlistHashKeyPropertyName");
 		Mockito.when(mockUserEntityMetadata.getMarshallerForProperty("marshalledProperty")).thenReturn(mockPropertyMarshaller);
 		Mockito.when(mockPlaylistEntityMetadata.getMarshallerForProperty("marshalledProperty")).thenReturn(mockPropertyMarshaller);
-		Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("overriddenProperty")).thenReturn("modifiedPropertyName");
-		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("overriddenProperty")).thenReturn("modifiedPropertyName");
+		Mockito.when(mockUserEntityMetadata.getOverriddenAttributeName("overriddenProperty")).thenReturn(Optional.of("modifiedPropertyName"));
+		Mockito.when(mockPlaylistEntityMetadata.getOverriddenAttributeName("overriddenProperty")).thenReturn(Optional.of("modifiedPropertyName"));
 
 		Mockito.when(mockUserEntityMetadata.isHashKeyProperty("hashKeyProperty")).thenReturn(true);
 		Mockito.when(mockPlaylistEntityMetadata.isHashKeyProperty("nonHashKeyProperty")).thenReturn(false);
@@ -199,11 +201,11 @@ public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
 	@Test
 	public void testGetOverriddenAttributeName_DelegatesToEntityMetadata_IrrespectiveOfEntityInformationSetup()
 	{
-		String propertyName1 =  dynamoDBUserEntityInformation.getOverriddenAttributeName("overriddenProperty");
-		Assert.assertEquals("modifiedPropertyName", propertyName1);
-		
-		String propertyName2 =  dynamoDBPlaylistEntityInformation.getOverriddenAttributeName("overriddenProperty");
-		Assert.assertEquals("modifiedPropertyName", propertyName2);
+		Optional<String> propertyName1 =  dynamoDBUserEntityInformation.getOverriddenAttributeName("overriddenProperty");
+		Assert.assertEquals(Optional.of("modifiedPropertyName"), propertyName1);
+
+		Optional<String> propertyName2 =  dynamoDBPlaylistEntityInformation.getOverriddenAttributeName("overriddenProperty");
+		Assert.assertEquals(Optional.of("modifiedPropertyName"), propertyName2);
 	}
 
 	

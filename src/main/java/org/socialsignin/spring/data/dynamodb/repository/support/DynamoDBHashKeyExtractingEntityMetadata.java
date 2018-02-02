@@ -19,6 +19,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import org.springframework.data.repository.core.EntityMetadata;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Obtains basic hash key-related metadata about a DynamoDBEntity, such as
@@ -30,15 +31,15 @@ import java.util.Map;
  */
 public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetadata<T> {
 
-	public String getOverriddenAttributeName(String propertyName);
+	Optional<String> getOverriddenAttributeName(String propertyName);
 
-	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName);
+	DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName);
 
-	public boolean isHashKeyProperty(String propertyName);
+	boolean isHashKeyProperty(String propertyName);
 
-	public String getHashKeyPropertyName();
+	String getHashKeyPropertyName();
 
-	public String getDynamoDBTableName();
+	String getDynamoDBTableName();
 
 	Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName();
 	
