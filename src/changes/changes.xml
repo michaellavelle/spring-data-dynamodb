@@ -42,6 +42,9 @@
       <action dev="derjust" issue="122" type="add" date="2018-01-27">
         Added logging of AWS/Spring-Data/this version and potential compatibility issues
       </action>
+      <action dev="derjust" issue="118" type="fix" date="2018-02-01">
+        Handle hash key properties with different column name (attribute name) properly
+      </action>
     </release>
     <release version="5.0.1" date="2018-01-06" description="Maintenance release">
       <action dev="derjust" issue="68" type="fix" date="2017-12-01" >
