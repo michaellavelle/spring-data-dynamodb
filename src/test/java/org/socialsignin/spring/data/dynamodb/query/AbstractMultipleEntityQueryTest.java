@@ -63,7 +63,7 @@ public class AbstractMultipleEntityQueryTest {
 
     @Test
     public void testNullResult() {
-        underTest = new TestAbstractMultipleEntityQuery(dynamoDBOperations, new User[]{null});
+        underTest = new TestAbstractMultipleEntityQuery(dynamoDBOperations);
 
         assertNull(underTest.getSingleResult());
     }
