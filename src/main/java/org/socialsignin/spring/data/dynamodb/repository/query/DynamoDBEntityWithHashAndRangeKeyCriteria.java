@@ -330,7 +330,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 
 	public DynamoDBScanExpression buildScanExpression() {
 
-		ensureNoSort();
+		ensureNoSort(sort);
 
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		if (isHashKeySpecified()) {

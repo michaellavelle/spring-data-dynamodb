@@ -24,6 +24,7 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -109,7 +110,7 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends
 	public T getHashKeyPropotypeEntityForHashKey(Object hashKey) {
 
 		try {
-			T entity = getJavaType().newInstance();
+			T entity = getJavaType().getDeclaredConstructor().newInstance();
 			if (hashKeySetterMethod != null)
 			{
 				ReflectionUtils.invokeMethod(hashKeySetterMethod, entity, hashKey);
@@ -120,9 +121,7 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends
 			}
 
 			return entity;
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
 	}

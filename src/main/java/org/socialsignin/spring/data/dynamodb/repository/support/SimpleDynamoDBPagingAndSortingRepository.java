@@ -64,15 +64,13 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynam
 
 	@Override
 	public Iterable<T> findAll(Sort sort) {
-		throw new UnsupportedOperationException("Sorting not supported for find all scan operations");
+		return throwUnsupportedSortOperationException();
 	}
 
 	@Override
 	public Page<T> findAll(Pageable pageable) {
 
-		if (pageable.getSort() != null) {
-			throw new UnsupportedOperationException("Sorting not supported for find all scan operations");
-		}
+		ensureNoSort(pageable);
 
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		// Scan to the end of the page after the requested page

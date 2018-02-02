@@ -22,6 +22,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
 import org.socialsignin.spring.data.dynamodb.exception.BatchWriteException;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
+import org.socialsignin.spring.data.dynamodb.utils.SortHandler;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.Assert;
@@ -46,7 +47,8 @@ import java.util.stream.StreamSupport;
  *            the type of the entity's identifier
  */
 public class SimpleDynamoDBCrudRepository<T, ID>
-		implements DynamoDBCrudRepository<T, ID> {
+		implements DynamoDBCrudRepository<T, ID>,
+		SortHandler {
 
 	protected DynamoDBEntityInformation<T, ID> entityInformation;
 

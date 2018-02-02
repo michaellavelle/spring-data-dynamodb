@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -301,12 +302,9 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 
 		if(annotation != null) {
 			try {
-				return annotation.marshallerClass().newInstance();
-			} catch (InstantiationException e) {
+				return annotation.marshallerClass().getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-
 			}
 		}
 
