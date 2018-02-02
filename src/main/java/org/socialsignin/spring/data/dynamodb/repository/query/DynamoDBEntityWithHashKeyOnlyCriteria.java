@@ -71,7 +71,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 			List<Condition> hashKeyConditions = getHashKeyConditions();
 			QueryRequest queryRequest = buildQueryRequest(dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName()),
 					getGlobalSecondaryIndexName(), getHashKeyAttributeName(), null, null, hashKeyConditions, null);
-			return new QueryRequestCountQuery<>(dynamoDBOperations, entityInformation.getJavaType(), queryRequest);
+			return new QueryRequestCountQuery(dynamoDBOperations, queryRequest);
 
 		} else {
 			return new ScanExpressionCountQuery<>(dynamoDBOperations, clazz, buildScanExpression(),pageQuery);

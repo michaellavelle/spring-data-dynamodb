@@ -18,12 +18,12 @@ package org.socialsignin.spring.data.dynamodb.query;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
-public class QueryRequestCountQuery<T> extends AbstractSingleEntityQuery<Long> {
+public class QueryRequestCountQuery extends AbstractSingleEntityQuery<Long> {
 
-	private DynamoDBOperations dynamoDBOperations;
-	private QueryRequest queryRequest;
+	private final DynamoDBOperations dynamoDBOperations;
+	private final QueryRequest queryRequest;
 	
-	public QueryRequestCountQuery(DynamoDBOperations dynamoDBOperations,Class<T> clazz,QueryRequest queryRequest) {
+	public QueryRequestCountQuery(DynamoDBOperations dynamoDBOperations, QueryRequest queryRequest) {
 		super(null, Long.class);
 		this.queryRequest = queryRequest;
 		this.dynamoDBOperations = dynamoDBOperations;
@@ -32,7 +32,7 @@ public class QueryRequestCountQuery<T> extends AbstractSingleEntityQuery<Long> {
 	@Override
 	public Long getSingleResult() {
 
-		return new Long(dynamoDBOperations.count(clazz, queryRequest));
+		return Long.valueOf(dynamoDBOperations.count(clazz, queryRequest));
 	}
 
 }

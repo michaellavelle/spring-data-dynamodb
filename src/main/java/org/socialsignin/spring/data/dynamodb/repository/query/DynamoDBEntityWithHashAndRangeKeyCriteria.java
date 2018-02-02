@@ -223,7 +223,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 				QueryRequest queryRequest = buildQueryRequest(tableName, getGlobalSecondaryIndexName(),
 						getHashKeyAttributeName(), getRangeKeyAttributeName(), this.getRangeKeyPropertyName(),
 						getHashKeyConditions(), getRangeKeyConditions());
-				return new QueryRequestCountQuery<T>(dynamoDBOperations,entityInformation.getJavaType(), queryRequest);
+				return new QueryRequestCountQuery(dynamoDBOperations, queryRequest);
 		
 			} else {
 				DynamoDBQueryExpression<T> queryExpression = buildQueryExpression();
