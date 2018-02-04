@@ -36,6 +36,7 @@ import java.util.Set;
  * {@link DynamoDBPersistentProperty} implementation
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<DynamoDBPersistentProperty> implements
 		DynamoDBPersistentProperty {
@@ -50,7 +51,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 		annotations.add(Reference.class); // Reference not yet supported
 		ASSOCIATION_ANNOTATIONS = Collections.unmodifiableSet(annotations);
 
-		annotations = new HashSet<Class<? extends Annotation>>();
+		annotations = new HashSet<>();
 		annotations.add(Id.class);
 		annotations.add(DynamoDBHashKey.class);
 		ID_ANNOTATIONS = annotations;

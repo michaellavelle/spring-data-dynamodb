@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBMappingEvent<T> extends ApplicationEvent {
 

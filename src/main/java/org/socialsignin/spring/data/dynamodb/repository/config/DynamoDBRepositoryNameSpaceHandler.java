@@ -24,6 +24,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * Simple namespace handler for {@literal repositories} namespace.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBRepositoryNameSpaceHandler extends NamespaceHandlerSupport {
 

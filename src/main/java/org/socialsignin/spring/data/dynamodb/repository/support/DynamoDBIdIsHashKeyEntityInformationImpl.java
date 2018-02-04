@@ -37,6 +37,7 @@ import java.util.Optional;
  * annotated with @DynamoDBHashKey to ensure correct behavior
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
 		FieldAndGetterReflectionEntityInformation<T, ID> implements DynamoDBEntityInformation<T, ID> {

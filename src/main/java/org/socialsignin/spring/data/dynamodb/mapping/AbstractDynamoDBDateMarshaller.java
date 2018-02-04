@@ -23,6 +23,7 @@ import java.util.Date;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  * @deprecated According to {@code com.amazonaws.services.dynamodbv2.datamodeling.marshallers.CustomMarshaller.marshall(Object)}
  * at some point {@link DynamoDBMarshaller} might be cached - whereas {@link DateFormat} is not thread-safe. <br>
  * Use {@link org.socialsignin.spring.data.dynamodb.marshaller.DateDynamoDBMarshaller} instead.
@@ -39,15 +40,23 @@ public class AbstractDynamoDBDateMarshaller implements DynamoDBMarshaller<Date> 
 
 	@Override
 	public String marshall(Date getterReturnResult) {
-		return dateFormat.format(getterReturnResult);
+		if (getterReturnResult == null) {
+			return null;
+		} else {
+			return dateFormat.format(getterReturnResult);
+		}
 	}
 
 	@Override
-	public Date unmarshall(Class<Date> clazz, String obj) {
-		try {
-			return dateFormat.parse(obj);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
+	public Date unmarshall(Class<Date> clazz, String obj) throws IllegalArgumentException {
+		if (obj == null) {
+			return null;
+		} else {
+			try {
+				return dateFormat.parse(obj);
+			} catch (ParseException e) {
+				throw new IllegalArgumentException("Could not unmarshall '" + obj + "' via " + dateFormat, e);
+			}
 		}
 	}
 

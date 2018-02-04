@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
  * annotated configuration class for Spring Data repositories by default.
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

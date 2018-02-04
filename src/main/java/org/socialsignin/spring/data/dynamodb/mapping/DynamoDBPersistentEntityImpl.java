@@ -25,6 +25,7 @@ import java.util.Comparator;
  * DynamoDB specific {@link DynamoDBPersistentEntity} implementation
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBPersistentEntityImpl<T> extends BasicPersistentEntity<T, DynamoDBPersistentProperty> implements
 		DynamoDBPersistentEntity<T> {

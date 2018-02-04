@@ -21,6 +21,7 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
  * {@link org.socialsignin.spring.data.dynamodb.mapping.DynamoDBPersistentProperty} implementation
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public abstract class AbstractQuery<T> implements Query<T> {
 

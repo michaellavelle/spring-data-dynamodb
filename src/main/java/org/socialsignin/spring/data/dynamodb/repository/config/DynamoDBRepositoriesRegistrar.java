@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSupport {
 

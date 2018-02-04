@@ -31,6 +31,7 @@ import static org.junit.Assert.assertThat;
  * Unit tests for {@link DynamoDBPersistentPropertyImpl}.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBPersistentPropertyImplUnitTest {

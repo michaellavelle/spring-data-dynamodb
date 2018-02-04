@@ -23,6 +23,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  * {@link org.springframework.data.repository.Repository}.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 @NoRepositoryBean
 public interface DynamoDBPagingAndSortingRepository<T, ID> extends PagingAndSortingRepository<T, ID> {

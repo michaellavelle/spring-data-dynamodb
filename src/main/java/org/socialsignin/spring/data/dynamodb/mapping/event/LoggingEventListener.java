@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * {@link org.springframework.context.ApplicationListener} for DynamoDB mapping events logging the events.
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class LoggingEventListener extends AbstractDynamoDBEventListener<Object> {
 

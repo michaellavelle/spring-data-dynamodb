@@ -28,6 +28,7 @@ import java.util.Optional;
  * property, and generates a hash key prototype entity given a hash key.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetadata<T> {
 

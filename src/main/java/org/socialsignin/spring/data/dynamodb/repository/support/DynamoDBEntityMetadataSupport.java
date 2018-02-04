@@ -42,6 +42,7 @@ import java.util.Optional;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtractingEntityMetadata<T> {
 

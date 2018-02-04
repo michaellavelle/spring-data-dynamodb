@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class CompositeIdHashAndRangeKeyExtractor<ID, H> implements HashAndRangeKeyExtractor<ID, H> {
 

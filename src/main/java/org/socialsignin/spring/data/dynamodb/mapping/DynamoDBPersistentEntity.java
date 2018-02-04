@@ -21,6 +21,7 @@ import org.springframework.data.mapping.PersistentEntity;
  * Interface for a DynamoDB-specific entity.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public interface DynamoDBPersistentEntity<T> extends PersistentEntity<T, DynamoDBPersistentProperty> {
 

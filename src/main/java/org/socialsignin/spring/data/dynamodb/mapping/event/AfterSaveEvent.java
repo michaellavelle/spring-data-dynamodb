@@ -18,6 +18,7 @@ package org.socialsignin.spring.data.dynamodb.mapping.event;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class AfterSaveEvent<T> extends DynamoDBMappingEvent<T> {
 

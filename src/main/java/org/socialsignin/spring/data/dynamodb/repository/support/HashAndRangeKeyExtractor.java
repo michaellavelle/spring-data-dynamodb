@@ -17,6 +17,7 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public interface HashAndRangeKeyExtractor<ID, H> extends HashKeyExtractor<ID, H> {
 

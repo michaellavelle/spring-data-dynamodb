@@ -20,17 +20,26 @@ import java.util.TimeZone;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  * @deprecated Consider using {@link org.socialsignin.spring.data.dynamodb.marshaller.Date2IsoDynamoDBMarshaller}
  */
 @Deprecated
 public class DefaultDynamoDBDateMarshaller extends AbstractDynamoDBDateMarshaller {
 
+	private static final class UTCSimpleDateFormat extends SimpleDateFormat {
+		private static final long serialVersionUID = 1L;
+		private UTCSimpleDateFormat() {
+			super("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+			setTimeZone(TimeZone.getTimeZone("UTC"));
+		}
+
+		@Override
+		public String toString() {
+			return toPattern();
+		}
+	}
+
 	public DefaultDynamoDBDateMarshaller() {
-		super(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") {
-			private static final long serialVersionUID = 1L;
-			{
-				setTimeZone(TimeZone.getTimeZone("UTC"));
-			}
-		});
+		super(new UTCSimpleDateFormat());
 	}
 }

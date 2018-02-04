@@ -36,6 +36,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link DynamoDBSimpleIdRepository}.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleDynamoDBPagingAndSortingRepositoryUnitTest {

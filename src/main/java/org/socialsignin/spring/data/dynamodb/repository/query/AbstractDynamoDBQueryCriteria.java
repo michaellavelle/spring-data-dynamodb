@@ -51,6 +51,7 @@ import java.util.Map.Entry;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQueryCriteria<T, ID>, SortHandler {
 

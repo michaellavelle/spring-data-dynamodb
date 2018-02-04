@@ -36,6 +36,7 @@ import java.util.Iterator;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public abstract class AbstractDynamoDBQueryCreator<T, ID, R> extends
 		AbstractQueryCreator<Query<R>, DynamoDBQueryCriteria<T, ID>> {

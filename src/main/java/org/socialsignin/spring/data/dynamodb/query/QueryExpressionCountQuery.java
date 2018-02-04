@@ -20,6 +20,7 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class QueryExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long> {
 

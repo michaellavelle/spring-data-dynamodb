@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })

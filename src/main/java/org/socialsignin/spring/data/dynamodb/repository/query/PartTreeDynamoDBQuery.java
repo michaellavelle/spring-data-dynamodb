@@ -24,6 +24,7 @@ import org.springframework.data.repository.query.parser.PartTree;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class PartTreeDynamoDBQuery<T, ID> extends AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 

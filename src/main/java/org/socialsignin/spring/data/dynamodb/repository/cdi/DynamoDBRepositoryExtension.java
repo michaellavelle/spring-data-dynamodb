@@ -42,6 +42,7 @@ import java.util.Set;
  * repositories.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBRepositoryExtension extends CdiRepositoryExtensionSupport {
 

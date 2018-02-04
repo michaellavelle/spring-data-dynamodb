@@ -21,11 +21,12 @@ import org.springframework.data.mapping.PersistentProperty;
  * Interface for a DynamoDB-specific {@link PersistentProperty}.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public interface DynamoDBPersistentProperty extends PersistentProperty<DynamoDBPersistentProperty> {
 
-	public boolean isHashKeyProperty();
+	boolean isHashKeyProperty();
 
-	public boolean isCompositeIdProperty();
+	boolean isCompositeIdProperty();
 
 }

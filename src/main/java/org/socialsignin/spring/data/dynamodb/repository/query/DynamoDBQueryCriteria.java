@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public interface DynamoDBQueryCriteria<T, ID> {
 

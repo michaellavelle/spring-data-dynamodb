@@ -17,6 +17,7 @@ package org.socialsignin.spring.data.dynamodb.repository.cdi;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.theories.suppliers.TestedOn;
@@ -25,7 +26,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+import org.socialsignin.spring.data.dynamodb.domain.sample.User;
+import org.socialsignin.spring.data.dynamodb.domain.sample.UserRepository;
+import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.RepositoryDefinition;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
@@ -35,20 +41,24 @@ import java.util.Set;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBRepositoryBeanTest {
-
-    interface SampleRepository {
+    interface SampleRepository extends Repository<User, String> {
     }
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
+    private CreationalContext creationalContext;
+    @Mock
     private BeanManager beanManager;
     @Mock
     private Bean<AmazonDynamoDB> amazonDynamoDBBean;
+    @Mock
+    private AmazonDynamoDB amazonDynamoDB;
     @Mock
     private javax.enterprise.inject.spi.Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean;
     @Mock
@@ -56,6 +66,12 @@ public class DynamoDBRepositoryBeanTest {
 
     private Set<Annotation> qualifiers = Collections.emptySet();
     private Class<?> repositoryType = SampleRepository.class;
+
+    @Before
+    public void setUp() {
+        when(beanManager.createCreationalContext(amazonDynamoDBBean)).thenReturn(creationalContext);
+        when(beanManager.getReference(amazonDynamoDBBean, AmazonDynamoDB.class, creationalContext)).thenReturn(amazonDynamoDB);
+    }
 
     @Test
     public void testNullOperationsOk() {
@@ -98,24 +114,11 @@ public class DynamoDBRepositoryBeanTest {
     }
 
     @Test
-    public void testVersionNullNull() {
-        assertFalse(DynamoDBRepositoryBean.isCompatible(null, null));
-    }
+    public void testCreateRepostiory() {
+        DynamoDBRepositoryBean<SampleRepository> underTest = new DynamoDBRepositoryBean(beanManager, amazonDynamoDBBean,
+                dynamoDBMapperConfigBean, null, qualifiers, repositoryType);
 
-    @Test
-    public void testVersionNullValue() {
-        assertFalse(DynamoDBRepositoryBean.isCompatible(null, "1.0."));
-        assertFalse(DynamoDBRepositoryBean.isCompatible("1.0", null));
-    }
-
-    @Test
-    public void testVersionCompatible() {
-        assertTrue(DynamoDBRepositoryBean.isCompatible("1.0", "1.0"));
-        assertTrue(DynamoDBRepositoryBean.isCompatible("1.0.0.0.1", "1.0..0.0.1"));
-
-        assertFalse(DynamoDBRepositoryBean.isCompatible("1.1", "1.0"));
-        assertFalse(DynamoDBRepositoryBean.isCompatible("1.0", "2.0"));
-
-        assertTrue(DynamoDBRepositoryBean.isCompatible("1.0.0-SR", "1.0.0-SR"));
+        SampleRepository actual = underTest.create(creationalContext, SampleRepository.class);
+        assertNotNull(actual);
     }
 }
