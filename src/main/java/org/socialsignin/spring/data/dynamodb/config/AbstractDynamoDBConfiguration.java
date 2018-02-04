@@ -88,7 +88,7 @@ public abstract class AbstractDynamoDBConfiguration {
      */
     protected Set<Class<?>> getInitialEntitySet() throws ClassNotFoundException {
 
-        Set<Class<?>> initialEntitySet = new HashSet<Class<?>>();
+        Set<Class<?>> initialEntitySet = new HashSet<>();
 
         String[] basePackages = getMappingBasePackages();
 

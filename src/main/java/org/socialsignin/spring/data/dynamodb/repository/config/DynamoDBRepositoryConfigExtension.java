@@ -28,6 +28,7 @@ import org.w3c.dom.Element;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
 

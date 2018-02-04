@@ -20,6 +20,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class AfterQueryEvent<T> extends DynamoDBMappingEvent<PaginatedQueryList<T>> {
 

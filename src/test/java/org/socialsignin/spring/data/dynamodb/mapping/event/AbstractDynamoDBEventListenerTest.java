@@ -83,7 +83,7 @@ public class AbstractDynamoDBEventListenerTest {
 
     @Test
     public void testAfterQuery() {
-        underTest.onApplicationEvent(new AfterQueryEvent<User>(sampleQueryList));
+        underTest.onApplicationEvent(new AfterQueryEvent<>(sampleQueryList));
 
         verify(underTest, never()).onAfterDelete(any());
         verify(underTest, never()).onAfterLoad(any());
@@ -145,8 +145,5 @@ public class AbstractDynamoDBEventListenerTest {
         verify(underTest, never()).onBeforeDelete(any());
         verify(underTest).onBeforeSave(sampleEntity);
     }
-
-
-
 
 }

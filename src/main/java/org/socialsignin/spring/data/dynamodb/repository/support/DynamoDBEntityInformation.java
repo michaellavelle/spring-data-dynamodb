@@ -28,6 +28,7 @@ import org.springframework.data.repository.core.EntityInformation;
  * isCompositeHashAndRangeKeyProperty methods
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public interface DynamoDBEntityInformation<T, ID> extends EntityInformation<T, ID>,
 		DynamoDBHashKeyExtractingEntityMetadata<T> {

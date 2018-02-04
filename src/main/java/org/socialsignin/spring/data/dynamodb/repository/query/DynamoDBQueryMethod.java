@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBQueryMethod<T, ID> extends QueryMethod {
 

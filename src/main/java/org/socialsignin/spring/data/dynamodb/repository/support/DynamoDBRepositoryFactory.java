@@ -38,6 +38,7 @@ import static org.springframework.data.querydsl.QuerydslUtils.QUERY_DSL_PRESENT;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBRepositoryFactory.class);

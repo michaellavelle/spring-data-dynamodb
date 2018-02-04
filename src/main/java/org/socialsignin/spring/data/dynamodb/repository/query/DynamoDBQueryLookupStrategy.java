@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBQueryLookupStrategy {
 
@@ -43,6 +44,7 @@ public class DynamoDBQueryLookupStrategy {
 	 * access to an {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper}.
 	 *
 	 * @author Michael Lavelle
+ * @author Sebastian Just
 	 */
 	private abstract static class AbstractQueryLookupStrategy implements QueryLookupStrategy {
 
@@ -75,6 +77,7 @@ public class DynamoDBQueryLookupStrategy {
 	 * {@link QueryLookupStrategy} to create a query from the method name.
 	 *
 	 * @author Michael Lavelle
+ * @author Sebastian Just
 	 */
 	private static class CreateQueryLookupStrategy extends AbstractQueryLookupStrategy {
 
@@ -101,6 +104,7 @@ public class DynamoDBQueryLookupStrategy {
 	 * declared via {@link org.socialsignin.spring.data.dynamodb.query.Query} annotation
 	 *
 	 * @author Michael Lavelle
+ * @author Sebastian Just
 	 */
 	private static class DeclaredQueryLookupStrategy extends AbstractQueryLookupStrategy {
 
@@ -123,6 +127,7 @@ public class DynamoDBQueryLookupStrategy {
 	 * found we fall back on query creation.
 	 *
 	 * @author Michael Lavelle
+ * @author Sebastian Just
 	 */
 	private static class CreateIfNotFoundQueryLookupStrategy extends AbstractQueryLookupStrategy {
 

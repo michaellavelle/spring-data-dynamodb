@@ -46,6 +46,7 @@ import java.util.List;
  * 
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  * 
  * @param <T>
  *            the type of the entity to handle

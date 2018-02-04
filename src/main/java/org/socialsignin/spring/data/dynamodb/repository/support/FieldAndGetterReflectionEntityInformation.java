@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
  * annotation and invokes this getter's value to retrieve the id.
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class FieldAndGetterReflectionEntityInformation<T, ID> extends AbstractEntityInformation<T, ID> {
 

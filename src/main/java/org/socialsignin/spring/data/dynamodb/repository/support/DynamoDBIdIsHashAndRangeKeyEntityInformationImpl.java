@@ -31,6 +31,7 @@ import java.util.Set;
  * Delegates to metadata and hashKeyExtractor components for all operations.
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends
 		ReflectionEntityInformation<T, ID> implements DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> {

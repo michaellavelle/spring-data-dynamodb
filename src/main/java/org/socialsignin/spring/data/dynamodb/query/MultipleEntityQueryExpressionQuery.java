@@ -22,6 +22,7 @@ import java.util.List;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class MultipleEntityQueryExpressionQuery<T> extends AbstractMultipleEntityQuery<T> {
 

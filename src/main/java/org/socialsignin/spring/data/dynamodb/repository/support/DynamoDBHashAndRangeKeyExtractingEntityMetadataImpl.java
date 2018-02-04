@@ -31,6 +31,7 @@ import java.util.Set;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends
 		DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> {

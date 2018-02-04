@@ -33,6 +33,7 @@ import java.util.List;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 

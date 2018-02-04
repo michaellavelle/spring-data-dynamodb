@@ -23,6 +23,7 @@ import java.util.List;
 /**
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public abstract class AbstractMultipleEntityQuery<T> extends AbstractQuery<T> implements Query<T> {
 

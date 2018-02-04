@@ -35,6 +35,7 @@ import java.io.Serializable;
  * setup of repository factories via Spring configuration.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  * @param <T>
  *            the type of the repository
  */

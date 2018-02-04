@@ -20,6 +20,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class AfterScanEvent<T> extends DynamoDBMappingEvent<PaginatedScanList<T>> {
 

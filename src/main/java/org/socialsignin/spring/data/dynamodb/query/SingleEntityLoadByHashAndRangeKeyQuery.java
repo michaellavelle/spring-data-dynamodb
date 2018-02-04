@@ -19,6 +19,7 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class SingleEntityLoadByHashAndRangeKeyQuery<T> extends AbstractSingleEntityQuery<T> implements Query<T> {
 

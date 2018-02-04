@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
  * as primary abstractions.
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBMappingContext extends AbstractMappingContext<DynamoDBPersistentEntityImpl<?>, DynamoDBPersistentProperty> {
 	/*
@@ -43,7 +44,7 @@ public class DynamoDBMappingContext extends AbstractMappingContext<DynamoDBPersi
 	 */
 	@Override
 	protected <T> DynamoDBPersistentEntityImpl<?> createPersistentEntity(TypeInformation<T> typeInformation) {
-		return new DynamoDBPersistentEntityImpl<T>(typeInformation, null);
+		return new DynamoDBPersistentEntityImpl<>(typeInformation, null);
 
 	}
 

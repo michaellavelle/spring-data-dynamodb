@@ -25,6 +25,7 @@ import java.io.Serializable;
  * and a range key.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBHashAndRangeKey implements Serializable {
 

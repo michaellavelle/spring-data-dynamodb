@@ -48,6 +48,7 @@ import java.util.Set;
  * before entities are saved in database.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class ValidatingDynamoDBEventListener extends AbstractDynamoDBEventListener<Object> {
 

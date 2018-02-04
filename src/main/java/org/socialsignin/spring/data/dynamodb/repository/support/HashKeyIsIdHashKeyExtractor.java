@@ -19,6 +19,7 @@ import org.springframework.util.Assert;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class HashKeyIsIdHashKeyExtractor<ID> implements HashKeyExtractor<ID, ID> {
 

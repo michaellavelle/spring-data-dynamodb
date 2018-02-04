@@ -45,6 +45,7 @@ import java.util.function.Consumer;
  * Base class to implement domain class specific {@link ApplicationListener}s.
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public abstract class AbstractDynamoDBEventListener<E> implements
 		ApplicationListener<DynamoDBMappingEvent<?>> {
@@ -75,18 +76,16 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 		@SuppressWarnings("unchecked")
 		E source = (E) event.getSource();
 
-		if (source == null) {
-			return;
-		}
+		// source can not be null as java.util.EventObject can not be constructed with null
+		assert source != null;
 
 		if (event instanceof AfterScanEvent) {
-			if (source instanceof PaginatedScanList) {
-				publishEachElement((PaginatedScanList<?>)source, this::onAfterScan);
-			}
+
+			publishEachElement((PaginatedScanList<?>)source, this::onAfterScan);
+
 		} else if (event instanceof AfterQueryEvent) {
-			if (source instanceof PaginatedQueryList) {
-				publishEachElement((PaginatedQueryList<?>)source, this::onAfterQuery);
-			}
+
+			publishEachElement((PaginatedQueryList<?>)source, this::onAfterQuery);
 		}
 		// Check for matching domain type and invoke callbacks
 		else if (domainClass.isAssignableFrom(source.getClass())) {
@@ -117,45 +116,31 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 	}
 
 	public void onBeforeSave(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onBeforeSave({}, {})", source);
-		}
+		LOG.debug("onBeforeSave({}, {})", source);
 	}
 
 	public void onAfterSave(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterSave({}, {})", source);
-		}
+		LOG.debug("onAfterSave({}, {})", source);
 	}
 
 	public void onAfterLoad(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterLoad({})", source);
-		}
+		LOG.debug("onAfterLoad({})", source);
 	}
 
 	public void onAfterDelete(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterDelete({})", source);
-		}
+		LOG.debug("onAfterDelete({})", source);
 	}
 
 	public void onBeforeDelete(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onBeforeDelete({})", source);
-		}
+		LOG.debug("onBeforeDelete({})", source);
 	}
 
 	public void onAfterScan(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterScan({})", source);
-		}
+		LOG.debug("onAfterScan({})", source);
 	}
 
 	public void onAfterQuery(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterQuery({})", source);
-		}
+		LOG.debug("onAfterQuery({})", source);
 	}
 
 }
