@@ -19,6 +19,8 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.TableNameResolver;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 
 import org.junit.Assert;
@@ -39,9 +41,12 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DynamoDBTemplateUnitTest {
+public class DynamoDBTemplateTest {
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	@Mock
@@ -85,24 +90,54 @@ public class DynamoDBTemplateUnitTest {
 		assertTrue("The constructor should not fail with an assert error", true);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Test
+	public void testDelete() {
+		User user = new User();
+		dynamoDBTemplate.delete(user);
+
+		verify(dynamoDBMapper).delete(user);
+	}
+
 	@Test
 	public void testBatchDelete_CallsCorrectDynamoDBMapperMethod()
 	{
 			List<User> users = new ArrayList<>();
 			dynamoDBTemplate.batchDelete(users);
-			Mockito.verify(dynamoDBMapper).batchDelete(Mockito.any(List.class));
+			verify(dynamoDBMapper).batchDelete(any(List.class));
 	}
-	
-	@SuppressWarnings("unchecked")
+
+	@Test
+	public void testSave() {
+		User user = new User();
+		dynamoDBTemplate.save(user);
+
+		verify(dynamoDBMapper).save(user);
+	}
+
 	@Test
 	public void testBatchSave_CallsCorrectDynamoDBMapperMethod()
 	{
 			List<User> users = new ArrayList<>();
 			dynamoDBTemplate.batchSave(users);
-			Mockito.verify(dynamoDBMapper).batchSave(Mockito.any(List.class));
+			verify(dynamoDBMapper).batchSave(any(List.class));
 	}
-	
+
+	@Test
+	public void testCountQuery() {
+		DynamoDBQueryExpression<User> query = mock(DynamoDBQueryExpression.class);
+		int actual = dynamoDBTemplate.count(User.class, query);
+
+		verify(dynamoDBMapper).count(User.class, query);
+	}
+
+	@Test
+	public void testCountScan() {
+		DynamoDBScanExpression scan = mock(DynamoDBScanExpression.class);
+		int actual = dynamoDBTemplate.count(User.class, scan);
+
+		verify(dynamoDBMapper).count(User.class, scan);
+	}
+
 	@Test
 	public void testGetOverriddenTableName_WhenConfigIsNull()
 	{
@@ -120,7 +155,7 @@ public class DynamoDBTemplateUnitTest {
     @Test
     public void testGetOverriddenTableName_WithTableNameResolver()
     {
-        TableNameResolver tableNameResolver = Mockito.mock(TableNameResolver.class);
+        TableNameResolver tableNameResolver = mock(TableNameResolver.class);
         Mockito.when(tableNameResolver.getTableName(Object.class, dynamoDBMapperConfig)).thenReturn(
             "someOtherTableName");
         Mockito.when(dynamoDBMapperConfig.getTableNameResolver()).thenReturn(tableNameResolver);

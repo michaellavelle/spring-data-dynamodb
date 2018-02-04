@@ -23,13 +23,13 @@ import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.PartTree;
 
 public class DynamoDBQueryCreator<T,ID> extends AbstractDynamoDBQueryCreator<T, ID,T> {
-
+/*
 	public DynamoDBQueryCreator(PartTree tree,
 			DynamoDBEntityInformation<T, ID> entityMetadata,
 			DynamoDBOperations dynamoDBOperations) {
 		super(tree, entityMetadata, dynamoDBOperations);
 	}
-
+*/
 	public DynamoDBQueryCreator(PartTree tree,
 			ParameterAccessor parameterAccessor,
 			DynamoDBEntityInformation<T, ID> entityMetadata,
