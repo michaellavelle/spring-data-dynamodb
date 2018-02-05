@@ -17,7 +17,7 @@ Technical infos can be found on the [project page](https://derjust.github.io/spr
 
 * Implementation of CRUD methods for DynamoDB Entities
 * Dynamic query generation from query method names  (Only a limited number of keywords and comparison operators currently supported)
-* Possibility to integrate [custom repository code](http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.single-repository-behaviour)
+* Possibility to integrate [custom repository code](https://github.com/derjust/spring-data-dynamodb/wiki/Custom-repository-implementations)
 * Easy Spring annotation based integration
 
 ## Demo application ##
