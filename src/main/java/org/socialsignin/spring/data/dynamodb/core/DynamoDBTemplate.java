@@ -40,10 +40,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextAware {
 
@@ -109,7 +111,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	public <T> PaginatedQueryList<T> query(Class<T> domainClass,
 			DynamoDBQueryExpression<T> queryExpression) {
 		PaginatedQueryList<T> results = dynamoDBMapper.query(domainClass, queryExpression);
-		maybeEmitEvent(new AfterQueryEvent<T>(results));
+		maybeEmitEvent(results, AfterQueryEvent::new);
 		return results;
 	}
 
@@ -122,20 +124,16 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey, Object rangeKey) {
 		T entity =  dynamoDBMapper.load(domainClass, hashKey,rangeKey);
-		if (entity != null)
-		{
-			maybeEmitEvent(new AfterLoadEvent<>(entity));
-		}
+		maybeEmitEvent(entity, AfterLoadEvent::new);
+
 		return entity;
 	}
 
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey) {
 		T entity =  dynamoDBMapper.load(domainClass, hashKey);
-		if (entity != null)
-		{
-			maybeEmitEvent(new AfterLoadEvent<>(entity));
-		}
+		maybeEmitEvent(entity, AfterLoadEvent::new);
+
 		return entity;
 	}
 
@@ -143,7 +141,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	public <T> PaginatedScanList<T> scan(Class<T> domainClass,
 			DynamoDBScanExpression scanExpression) {
 		PaginatedScanList<T> results = dynamoDBMapper.scan(domainClass, scanExpression);
-		maybeEmitEvent(new AfterScanEvent<T>(results));
+		maybeEmitEvent(results, AfterScanEvent::new);
 		return results;
 	}
 
@@ -154,7 +152,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 		{
 			for (Object entity : resultList)
 			{
-				maybeEmitEvent(new AfterLoadEvent<Object>(entity));
+				maybeEmitEvent(entity, AfterLoadEvent::new);
 			}
 		}
 		return results;
@@ -162,37 +160,37 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 
 	@Override
 	public void save(Object entity) {
-		maybeEmitEvent(new BeforeSaveEvent<>(entity));
+		maybeEmitEvent(entity, BeforeSaveEvent::new);
 		dynamoDBMapper.save(entity);
-		maybeEmitEvent(new AfterSaveEvent<>(entity));
+		maybeEmitEvent(entity, AfterSaveEvent::new);
 
 	}
 	
 	@Override
 	public List<FailedBatch> batchSave(Iterable<?> entities) {
-		entities.forEach(it -> maybeEmitEvent(new BeforeSaveEvent<>(it)));
+		entities.forEach(it -> maybeEmitEvent(it, BeforeSaveEvent::new));
 
 		List<FailedBatch> result = dynamoDBMapper.batchSave(entities);
 
-		entities.forEach(it -> maybeEmitEvent(new AfterSaveEvent<>(it)));
+		entities.forEach(it -> maybeEmitEvent(it, AfterSaveEvent::new));
         return result;
     }
 
 	@Override
 	public void delete(Object entity) {
-		maybeEmitEvent(new BeforeDeleteEvent<>(entity));
+		maybeEmitEvent(entity, BeforeDeleteEvent::new);
 		dynamoDBMapper.delete(entity);
-		maybeEmitEvent(new AfterDeleteEvent<>(entity));
+		maybeEmitEvent(entity, AfterDeleteEvent::new);
 
 	}
 	
 	@Override
 	public List<FailedBatch> batchDelete(Iterable<?> entities) {
-		entities.forEach(it -> maybeEmitEvent(new BeforeDeleteEvent<>(it)));
+		entities.forEach(it -> maybeEmitEvent(it, BeforeDeleteEvent::new));
 		
 	    List<FailedBatch> result = dynamoDBMapper.batchDelete(entities);
 
-		entities.forEach(it -> maybeEmitEvent(new AfterDeleteEvent<>(it)));
+		entities.forEach(it -> maybeEmitEvent(it, AfterDeleteEvent::new));
 		return result;
 	}
 
@@ -243,11 +241,14 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
         return dynamoDBMapper.getTableModel(domainClass, dynamoDBMapperConfig);
     }
 
-	protected <T> void maybeEmitEvent(DynamoDBMappingEvent<T> event) {
-		if (null != eventPublisher) {
-			eventPublisher.publishEvent(event);
-		}
-}
+    protected <T> void maybeEmitEvent(@Nullable T source, Function<T, DynamoDBMappingEvent<T>> factory) {
+    	if (eventPublisher != null) {
+    		if (source != null) {
+				DynamoDBMappingEvent<T> event = factory.apply(source);
 
-	
+				eventPublisher.publishEvent(event);
+			}
+		}
+
+	}
 }

@@ -146,9 +146,7 @@ public class DynamoDBQueryLookupStrategy {
 				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			try {
 				return strategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
-			} catch (IllegalStateException e) {
-				return createStrategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
-			} catch (UnsupportedOperationException e) {
+			} catch (IllegalStateException | UnsupportedOperationException e) {
 				return createStrategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
 			}
 

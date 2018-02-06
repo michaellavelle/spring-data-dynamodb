@@ -82,29 +82,33 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 		if (event instanceof AfterScanEvent) {
 
 			publishEachElement((PaginatedScanList<?>)source, this::onAfterScan);
-
+			return;
 		} else if (event instanceof AfterQueryEvent) {
 
 			publishEachElement((PaginatedQueryList<?>)source, this::onAfterQuery);
+			return;
 		}
 		// Check for matching domain type and invoke callbacks
 		else if (domainClass.isAssignableFrom(source.getClass())) {
 			if (event instanceof BeforeSaveEvent) {
 				onBeforeSave(source);
+				return;
 			} else if (event instanceof AfterSaveEvent) {
 				onAfterSave(source);
+				return;
 			} else if (event instanceof BeforeDeleteEvent) {
 				onBeforeDelete(source);
+				return;
 			} else if (event instanceof AfterDeleteEvent) {
 				onAfterDelete(source);
+				return;
 			} else if (event instanceof AfterLoadEvent) {
 				onAfterLoad(source);
-			} else {
-				assert false;
+				return;
 			}
-		} else {
-			assert false;
 		}
+		// we should never end up here
+		assert false;
 	}
 
 	@SuppressWarnings("unchecked")
