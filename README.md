@@ -2,6 +2,9 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb)
 [![Donation badge](https://img.shields.io/badge/Donate-%F0%9F%92%B8-DAA520.svg)](DONATION.md)
 
+# ⚠ Planing to move this repository to the [spring-data-dynamodb](https://github.com/spring-data-dynamodb) organization by the end of the month! ⚠ #
+Everything should stay the same for links/browsing - just Git `remote`s must be updated
+
 
 # Spring  Data DynamoDB #
 
