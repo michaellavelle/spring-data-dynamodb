@@ -290,21 +290,3 @@ And finally write a test client
  
 ## Advanced topics ##
 Advanced topics can be found in the [wiki](https://github.com/derjust/spring-data-dynamodb/wiki).
-
-## Release process ##
-
-1. Check `pom.xml` for the proper `<version />` tag
-1. Check `pom.xml` SpecificaitonVersion entries
-1. Update `src/changes/changes.xml` timestamp of the release version
-1. Update `README.md` version for the Maven/Gradle examples
-
-Then execute
-
-```
-  $ mvn release:prepare && mvn release:perform
-```
-
-which will tag, build, test and upload the artifacts to Sonatype's OSS staging area & closes the staging repository.
-Maven Central synchronization usually takes ~15 minutes.
-
-Finally create a new section in `src/changes/changes.xml`.
