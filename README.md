@@ -37,11 +37,11 @@ API changes will follow SEMVER and loosly the Spring Framework releases.
 | `spring-data-dynamodb` version  | Spring Boot compatibility      |Spring Framework compatibility  | Spring Data compatibility |
 | ------------------------------- | ------------------------------ | ------------------------------ | ------------------------- |
 | 1.0.x                           |                                | >= 3.1 && < 4.2                |                           |
-| 4.2.x                           | => 1.3.0 && < 1.4.0            | >= 4.2 && < 4.3                | Gosling-SR1               |
-| 4.3.x                           | => 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Gosling-SR1               |
-| 4.4.x                           | => 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Hopper-SR2                |
-| 4.5.x                           | => 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Ingalls                   |
-| 5.0.x                           | => 2.0                         | >= 5.0                         | Kay-SR1                   |
+| 4.2.x                           | >= 1.3.0 && < 1.4.0            | >= 4.2 && < 4.3                | Gosling-SR1               |
+| 4.3.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Gosling-SR1               |
+| 4.4.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Hopper-SR2                |
+| 4.5.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Ingalls                   |
+| 5.0.x                           | >= 2.0                         | >= 5.0                         | Kay-SR1                   |
 
 `spring-data-dynamodb` depends directly on `spring-data` as also `spring-context`, `spring-data` and `spring-tx`.
 
