@@ -721,6 +721,9 @@
 
 
     <distributionManagement>
+        <relocation>
+            <groupId>com.github.spring-data-dynamodb</groupId>
+        </relocation>
         <site>
             <id>website</id>
             <url>https://github.com/derjust/spring-data-dynamodb/</url>
