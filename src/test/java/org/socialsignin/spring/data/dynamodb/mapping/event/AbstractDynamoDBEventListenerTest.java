@@ -28,6 +28,7 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -42,6 +43,9 @@ public class AbstractDynamoDBEventListenerTest {
     @Mock
     private PaginatedScanList<User> sampleScanList;
 
+    @Mock
+    private DynamoDBMappingEvent<User> brokenEvent;
+
     private AbstractDynamoDBEventListener<User> underTest;
 
     @Before
@@ -55,9 +59,34 @@ public class AbstractDynamoDBEventListenerTest {
         when(sampleScanList.stream()).thenReturn(queryList.stream());
     }
 
+    @Test(expected =  AssertionError.class)
+    public void testNullArgument() {
+        // This is impossible but let's be sure that it is covered
+        when(brokenEvent.getSource()).thenReturn(null);
+
+        underTest.onApplicationEvent(brokenEvent);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testUnknownEvent() {
+        // Simulate an unknown event
+        when(brokenEvent.getSource()).thenReturn(new User());
+
+        underTest.onApplicationEvent(brokenEvent);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testRawType() {
+        underTest = Mockito.spy(new AbstractDynamoDBEventListener() {
+        });
+
+        assertSame(Object.class, underTest.getDomainClass());
+    }
+
     @Test
     public void testAfterDelete() {
-        underTest.onApplicationEvent(new AfterDeleteEvent<User>(sampleEntity));
+        underTest.onApplicationEvent(new AfterDeleteEvent<>(sampleEntity));
 
         verify(underTest).onAfterDelete(sampleEntity);
         verify(underTest, never()).onAfterLoad(any());

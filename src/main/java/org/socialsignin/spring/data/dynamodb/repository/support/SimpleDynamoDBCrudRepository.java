@@ -162,14 +162,11 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 		return findById(id).isPresent();
 	}
 
-	public void assertScanEnabled(boolean scanEnabled, String methodName) {
+	void assertScanEnabled(boolean scanEnabled, String methodName) {
 		Assert.isTrue(
 				scanEnabled,
-				"Scanning for unpaginated "
-						+ methodName
-						+ "() queries is not enabled.  "
-						+ "To enable, re-implement the "
-						+ methodName
+				"Scanning for unpaginated " + methodName + "() queries is not enabled.  "
+						+ "To enable, re-implement the " + methodName
 						+ "() method in your repository interface and annotate with @EnableScan, or "
 						+ "enable scanning for all repository methods by annotating your repository interface with @EnableScan");
 	}

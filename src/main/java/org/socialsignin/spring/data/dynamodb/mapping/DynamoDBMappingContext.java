@@ -77,17 +77,21 @@ public class DynamoDBMappingContext extends AbstractMappingContext<DynamoDBPersi
 		boolean hasHashKey = false;
 		boolean hasRangeKey = false;
 		for (Method method : type.getType().getMethods()) {
-			if (method.isAnnotationPresent(DynamoDBHashKey.class))
+			if (method.isAnnotationPresent(DynamoDBHashKey.class)) {
 				hasHashKey = true;
-			if (method.isAnnotationPresent(DynamoDBRangeKey.class))
+			}
+			if (method.isAnnotationPresent(DynamoDBRangeKey.class)) {
 				hasRangeKey = true;
+			}
 
 		}
 		for (Field field : type.getType().getFields()) {
-			if (field.isAnnotationPresent(DynamoDBHashKey.class))
+			if (field.isAnnotationPresent(DynamoDBHashKey.class)) {
 				hasHashKey = true;
-			if (field.isAnnotationPresent(DynamoDBRangeKey.class))
+			}
+			if (field.isAnnotationPresent(DynamoDBRangeKey.class)) {
 				hasRangeKey = true;
+			}
 
 		}
 		return type.getType().isAnnotationPresent(DynamoDBTable.class) || (hasHashKey && hasRangeKey);

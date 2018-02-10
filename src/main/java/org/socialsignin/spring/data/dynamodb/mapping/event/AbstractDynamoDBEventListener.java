@@ -63,6 +63,10 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 		this.domainClass = typeArgument == null ? Object.class : typeArgument;
 	}
 
+	protected Class<?> getDomainClass() {
+		return this.domainClass;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *

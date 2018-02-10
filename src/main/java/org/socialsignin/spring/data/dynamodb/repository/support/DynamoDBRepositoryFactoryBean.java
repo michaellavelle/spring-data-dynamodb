@@ -87,6 +87,5 @@ public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 	public void setDynamoDBOperations(DynamoDBOperations dynamoDBOperations) {
 		this.dynamoDBOperations = dynamoDBOperations;
 		setMappingContext(new DynamoDBMappingContext());
-
 	}
 }
