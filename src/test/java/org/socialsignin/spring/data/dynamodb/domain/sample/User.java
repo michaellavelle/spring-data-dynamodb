@@ -19,7 +19,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
-import org.springframework.data.annotation.Id;
 
 import java.time.Instant;
 import java.util.Date;

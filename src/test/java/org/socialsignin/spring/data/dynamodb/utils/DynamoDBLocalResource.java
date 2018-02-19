@@ -31,7 +31,6 @@ import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHash
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

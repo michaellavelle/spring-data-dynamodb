@@ -145,7 +145,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 		if (isHashKeySpecified()) {
 			T hashKeyPrototype = entityInformation.getHashKeyPropotypeEntityForHashKey(getHashKeyPropertyValue());
 			queryExpression.withHashKeyValues(hashKeyPrototype);
-			queryExpression.withRangeKeyConditions(new HashMap<>());
+			queryExpression.withRangeKeyConditions(new HashMap<String, Condition>());
 		}
 
 		if (isRangeKeySpecified() && !isApplicableForGlobalSecondaryIndex()) {

@@ -17,7 +17,6 @@ package org.socialsignin.spring.data.dynamodb.repository.cdi;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
-
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBTemplate;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBRepositoryFactory;

@@ -665,9 +665,7 @@
 					            <phase>site-deploy</phase>
 					            <configuration>
 					                <!-- Plugin configuration ges here -->
-					
 					                <server>github</server>
-					
 					                <!-- The commit message -->
 					                <message>Building site</message>
 					                <!-- The location where the site is uploaded -->
@@ -710,8 +708,8 @@
             <url>https://github.com/vitolimandibhrata</url>
         </contributor>
         <contributor>
-          <name>Alex Arana</name>
-          <url>https://github.com/alexarana</url>
+            <name>Alex Arana</name>
+            <url>https://github.com/alexarana</url>
         </contributor>
         <contributor>
             <name>Davin</name>

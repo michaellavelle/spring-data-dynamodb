@@ -17,6 +17,8 @@ package org.socialsignin.spring.data.dynamodb.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
+import org.socialsignin.spring.data.dynamodb.mapping.event.AuditingEventListener;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -26,14 +28,12 @@ import org.springframework.data.auditing.IsNewAwareAuditingHandler;
 import org.springframework.data.auditing.config.AuditingBeanDefinitionRegistrarSupport;
 import org.springframework.data.auditing.config.AuditingConfiguration;
 import org.springframework.data.config.ParsingUtils;
-import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
-import org.socialsignin.spring.data.dynamodb.mapping.event.AuditingEventListener;
 import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
 
-import static org.springframework.beans.factory.config.BeanDefinition.ROLE_INFRASTRUCTURE;
 import static org.socialsignin.spring.data.dynamodb.config.BeanNames.MAPPING_CONTEXT_BEAN_NAME;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_INFRASTRUCTURE;
 
 /**
  * {@link org.springframework.context.annotation.ImportBeanDefinitionRegistrar} to enable {@link EnableDynamoDBAuditing} annotation.

@@ -24,7 +24,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBHashAndRangeKey;
 import org.springframework.data.annotation.Id;
 

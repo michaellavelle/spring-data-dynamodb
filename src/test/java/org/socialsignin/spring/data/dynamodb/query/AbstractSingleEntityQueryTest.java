@@ -15,7 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,7 +22,6 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
 import java.util.List;
-import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 

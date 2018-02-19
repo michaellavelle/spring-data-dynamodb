@@ -35,7 +35,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
+import static uk.org.lidalia.slf4jtest.LoggingEvent.trace;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LoggingEventListenerTest {

@@ -15,11 +15,9 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import java.util.List;
-
-import org.socialsignin.spring.data.dynamodb.domain.sample.CustomerDocument;
-import org.socialsignin.spring.data.dynamodb.domain.sample.CustomerDocumentId;
 import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
 
 
 public interface CustomerDocumentRepository extends CrudRepository<CustomerDocument, CustomerDocumentId> {

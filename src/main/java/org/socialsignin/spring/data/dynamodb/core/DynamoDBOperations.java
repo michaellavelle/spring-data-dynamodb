@@ -29,8 +29,8 @@ import java.util.Map;
 
 public interface DynamoDBOperations {
 
-	<T> int count(Class<T> domainClass,DynamoDBQueryExpression<T> queryExpression);
-	<T> int count(Class<T> domainClass,DynamoDBScanExpression scanExpression);
+	<T> int count(Class<T> domainClass, DynamoDBQueryExpression<T> queryExpression);
+	<T> int count(Class<T> domainClass, DynamoDBScanExpression scanExpression);
 	<T> int count(Class<T> clazz, QueryRequest mutableQueryRequest);
 
 	

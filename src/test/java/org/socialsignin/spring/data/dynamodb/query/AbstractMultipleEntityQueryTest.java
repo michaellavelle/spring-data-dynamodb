@@ -15,7 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.query;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -26,9 +25,7 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertNull;

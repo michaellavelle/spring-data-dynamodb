@@ -41,10 +41,6 @@ public class PartTreeDynamoDBQuery<T, ID> extends AbstractDynamoDBQuery<T, ID> i
 		this.tree = new PartTree(method.getName(), method.getEntityType());
 	}
 
-	public PartTree getTree() {
-		return tree;
-	}
-
 	protected DynamoDBQueryCreator<T, ID> createQueryCreator(ParametersParameterAccessor accessor) {
 		return new DynamoDBQueryCreator<>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations);
 	}
@@ -53,8 +49,6 @@ public class PartTreeDynamoDBQuery<T, ID> extends AbstractDynamoDBQuery<T, ID> i
 		return new DynamoDBCountQueryCreator<>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations,
 				pageQuery);
 	}
-	
-	
 
 	@Override
 	public Query<T> doCreateQuery(Object[] values) {

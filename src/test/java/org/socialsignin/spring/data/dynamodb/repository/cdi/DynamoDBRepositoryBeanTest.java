@@ -20,16 +20,13 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.theories.suppliers.TestedOn;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
-import org.socialsignin.spring.data.dynamodb.domain.sample.UserRepository;
 import org.springframework.data.repository.Repository;
-import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -38,9 +35,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)

@@ -20,7 +20,7 @@
           xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
   <properties>
     <title>spring-data-dynamodb Changes</title>
-    <author email="zeeman@zeeman.de" >derjust</author>
+    <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
     <release version="5.0.2" date="" description="Maintenance release">
@@ -45,19 +45,25 @@
       <action dev="derjust" issue="118" type="fix" date="2018-02-01">
         Handle hash key properties with different column name (attribute name) properly
       </action>
+      <action dev="derjust" type="add" issue="136">
+        Transfer to spring-data-dynamodb organization
+      </action>
     </release>
     <release version="5.0.1" date="2018-01-06" description="Maintenance release">
-      <action dev="derjust" issue="68" type="fix" date="2017-12-01" >
+      <action dev="derjust" issue="68" type="fix" date="2017-12-01">
         Respecting DynamoDBOperations.batchSave()'s List&lt;FailedBatch&gt; return value and turn it into a BatchWriteException
       </action>
-      <action dev="derjust" type="add" date="2017-12-01" >
+      <action dev="derjust" type="add" date="2017-12-01">
         Added maven-changes-plugin to build process
       </action>
-      <action dev="derjust" type="add" date="2017-12-17" >
+      <action dev="derjust" type="add" date="2017-12-17">
         Update Mockito and resolve dependency clashes
       </action>
       <action dev="Gaurav Rawat" type="fix" issue="91">
         Fixed false assertion introduced implementing #91
+      </action>
+      <action dev="Alex Arana" type="add" issue="62">
+        Support @DynamoDBTypeConverted instead of/in addition to @DynamoDBMarshalling for query methods
       </action>
       <action dev="derjust" type="fix" issue="109">
         Fix incorrect passing of an Optional into the delete method
@@ -65,10 +71,21 @@
       <action dev="Alex Arana" type="add" issue="62">
         Support @DynamoDBTypeConverted instead of/in addition to @DynamoDBMarshalling for query methods
       </action>
+      <action dev="derjust" type="add" issue="136">
+        Transfer to spring-data-dynamodb organization
+      </action>
     </release>
     <release version="5.0.0" date="2017-11-27" description="Spring 5 release" >
       <action dev="derjust" type="add">
         Added Spring 5 / Spring-Data Kay support
+      </action>
+    </release>
+    <release version="4.5.5" date="" description="Backport of v5.0 (master)">
+      <action dev="derjust" type="fix" issue="139">
+        Backport of v5.0 branch (master)
+      </action>
+      <action dev="derjust" type="add" issue="136">
+        Transfer to spring-data-dynamodb organization
       </action>
     </release>
     <release version="4.5.4" date="2017-01-23" description="Backport of PR #79">

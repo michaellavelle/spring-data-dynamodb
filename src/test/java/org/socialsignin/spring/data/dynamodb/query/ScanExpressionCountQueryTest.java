@@ -25,8 +25,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
-import java.util.concurrent.ExecutionException;
-
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)

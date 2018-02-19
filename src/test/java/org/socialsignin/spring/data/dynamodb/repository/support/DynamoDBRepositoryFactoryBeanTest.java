@@ -24,17 +24,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
-import org.socialsignin.spring.data.dynamodb.domain.sample.UserRepository;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBRepositoryFactoryBeanTest {

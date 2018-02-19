@@ -106,7 +106,7 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 
 		private List<T> restrictMaxResultsIfNecessary(Iterator<T> iterator) {
 			int processed = 0;
-			List<T> resultsPage = new ArrayList<T>();
+			List<T> resultsPage = new ArrayList<>();
 			while (iterator.hasNext() && processed < getResultsRestrictionIfApplicable()) {
 				resultsPage.add(iterator.next());
 				processed++;
@@ -129,8 +129,8 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 			this.parameters = parameters;
 		}
 
-		private int scanThroughResults(Iterator<T> iterator, long resultsToScan) {
-			int processed = 0;
+		private long scanThroughResults(Iterator<T> iterator, long resultsToScan) {
+			long processed = 0;
 			while (iterator.hasNext() && processed < resultsToScan) {
 				iterator.next();
 				processed++;
@@ -141,7 +141,7 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 		private List<T> readPageOfResultsRestrictMaxResultsIfNecessary(Iterator<T> iterator, int pageSize) {
 			int processed = 0;
 			int toProcess = getResultsRestrictionIfApplicable() != null ? Math.min(pageSize,getResultsRestrictionIfApplicable()) : pageSize;
-			List<T> resultsPage = new ArrayList<T>();
+			List<T> resultsPage = new ArrayList<>();
 			while (iterator.hasNext() && processed < toProcess) {
 				resultsPage.add(iterator.next());
 				processed++;
@@ -165,7 +165,7 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 			
 			Iterator<T> iterator = allResults.iterator();
 			if (pageable.getOffset() > 0) {
-				int processedCount = scanThroughResults(iterator, pageable.getOffset());
+				long processedCount = scanThroughResults(iterator, pageable.getOffset());
 				if (processedCount < pageable.getOffset())
 					return new PageImpl<>(new ArrayList<T>());
 			}
@@ -194,8 +194,8 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 			this.parameters = parameters;
 		}
 
-		private int scanThroughResults(Iterator<T> iterator, long resultsToScan) {
-			int processed = 0;
+		private long scanThroughResults(Iterator<T> iterator, long resultsToScan) {
+			long processed = 0;
 			while (iterator.hasNext() && processed < resultsToScan) {
 				iterator.next();
 				processed++;
@@ -228,17 +228,16 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 		private Slice<T> createSlice(List<T> allResults, Pageable pageable) {
 
 			Iterator<T> iterator = allResults.iterator();
-			int processedCount = 0;
 			if (pageable.getOffset() > 0) {
-				processedCount = scanThroughResults(iterator, pageable.getOffset());
+				long processedCount = scanThroughResults(iterator, pageable.getOffset());
 				if (processedCount < pageable.getOffset())
-					return new SliceImpl<T>(new ArrayList<T>());
+					return new SliceImpl<>(new ArrayList<T>());
 			}
 			List<T> results = readPageOfResultsRestrictMaxResultsIfNecessary(iterator, pageable.getPageSize());
 			// Scan ahead to retrieve the next page count
 			boolean hasMoreResults = scanThroughResults(iterator, 1) > 0;
-			if (getResultsRestrictionIfApplicable() != null && getResultsRestrictionIfApplicable().intValue() <= results.size()) hasMoreResults = false; 
-			return new SliceImpl<T>(results, pageable, hasMoreResults);
+			if (getResultsRestrictionIfApplicable() != null && getResultsRestrictionIfApplicable().intValue() <= results.size()) hasMoreResults = false;
+			return new SliceImpl<>(results, pageable, hasMoreResults);
 		}
 	}
 

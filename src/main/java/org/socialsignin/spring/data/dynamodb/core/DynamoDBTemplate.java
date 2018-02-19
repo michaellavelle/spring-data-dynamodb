@@ -187,7 +187,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	@Override
 	public List<FailedBatch> batchDelete(Iterable<?> entities) {
 		entities.forEach(it -> maybeEmitEvent(it, BeforeDeleteEvent::new));
-		
+
 	    List<FailedBatch> result = dynamoDBMapper.batchDelete(entities);
 
 		entities.forEach(it -> maybeEmitEvent(it, AfterDeleteEvent::new));

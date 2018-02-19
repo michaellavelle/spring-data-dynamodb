@@ -17,7 +17,6 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.theories.suppliers.TestedOn;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
 import org.socialsignin.spring.data.dynamodb.repository.EnableScanCount;

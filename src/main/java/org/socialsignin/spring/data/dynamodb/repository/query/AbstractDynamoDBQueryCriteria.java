@@ -487,7 +487,6 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
         } else if (tableModel != null) {  // purely here for testing as DynamoDBMapperTableModel cannot be mocked using Mockito
 
 			String attributeName = getAttributeName(propertyName);
-			entityInformation.getOverriddenAttributeName(propertyName).orElse(propertyName);
 
 			DynamoDBMapperFieldModel<T,Object> fieldModel = tableModel.field(attributeName);
             if (fieldModel != null) {

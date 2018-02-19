@@ -57,10 +57,10 @@ public class DynamoDBMappingContext extends AbstractMappingContext<DynamoDBPersi
 	 * org.springframework.data.mapping.MutablePersistentEntity,
 	 * org.springframework.data.mapping.SimpleTypeHolder)
 	 */
-
 	@Override
 	protected DynamoDBPersistentProperty createPersistentProperty(Property property,
-		    DynamoDBPersistentEntityImpl<?> owner, SimpleTypeHolder simpleTypeHolder) {
+																  DynamoDBPersistentEntityImpl<?> owner,
+																  SimpleTypeHolder simpleTypeHolder) {
 		return new DynamoDBPersistentPropertyImpl(property, owner, simpleTypeHolder);
 	}
 

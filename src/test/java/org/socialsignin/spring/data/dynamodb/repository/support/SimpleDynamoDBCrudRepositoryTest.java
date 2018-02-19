@@ -16,7 +16,6 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper.FailedBatch;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import org.junit.Assert;
@@ -26,7 +25,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -36,7 +34,6 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.PlaylistId;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.socialsignin.spring.data.dynamodb.exception.BatchWriteException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,8 +47,6 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyIterable;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

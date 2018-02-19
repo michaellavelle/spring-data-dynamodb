@@ -76,15 +76,13 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynam
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		// Scan to the end of the page after the requested page
 		long scanTo = pageable.getOffset() + (2 * pageable.getPageSize());
-		//TODO Spring5: Fix downcast
-		scanExpression.setLimit((int)scanTo);
+		scanExpression.setLimit((int)Math.min(scanTo, Integer.MAX_VALUE));
 		PaginatedScanList<T> paginatedScanList = dynamoDBOperations.scan(domainType, scanExpression);
 		Iterator<T> iterator = paginatedScanList.iterator();
-		long processedCount = 0;
 		if (pageable.getOffset() > 0) {
-			processedCount = scanThroughResults(iterator, pageable.getOffset());
+			long processedCount = scanThroughResults(iterator, pageable.getOffset());
 			if (processedCount < pageable.getOffset())
-				return new PageImpl<T>(new ArrayList<T>());
+				return new PageImpl<>(new ArrayList<T>());
 		}
 		// Scan ahead to retrieve the next page count
 		List<T> results = readPageOfResults(iterator, pageable.getPageSize());
@@ -94,12 +92,12 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynam
 
 		int totalCount = dynamoDBOperations.count(domainType, scanExpression);
 		
-		return new PageImpl<T>(results, pageable, totalCount);
+		return new PageImpl<>(results, pageable, totalCount);
 
 	}
 
-	private int scanThroughResults(Iterator<T> paginatedScanListIterator, long resultsToScan) {
-		int processed = 0;
+	private long scanThroughResults(Iterator<T> paginatedScanListIterator, long resultsToScan) {
+		long processed = 0;
 		while (paginatedScanListIterator.hasNext() && processed < resultsToScan) {
 			paginatedScanListIterator.next();
 			processed++;
@@ -109,7 +107,7 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynam
 
 	private List<T> readPageOfResults(Iterator<T> paginatedScanListIterator, int pageSize) {
 		int processed = 0;
-		List<T> resultsPage = new ArrayList<T>();
+		List<T> resultsPage = new ArrayList<>();
 		while (paginatedScanListIterator.hasNext() && processed < pageSize) {
 			resultsPage.add(paginatedScanListIterator.next());
 			processed++;

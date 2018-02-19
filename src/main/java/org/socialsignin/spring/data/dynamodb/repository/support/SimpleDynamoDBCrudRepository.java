@@ -64,7 +64,7 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 			EnableScanPermissions enableScanPermissions) {
 		Assert.notNull(entityInformation, "entityInformation must not be null");
 		Assert.notNull(dynamoDBOperations, "dynamoDBOperations must not be null");
-		
+
 		this.entityInformation = entityInformation;
 		this.dynamoDBOperations = dynamoDBOperations;
 		this.domainType = entityInformation.getJavaType();
@@ -92,7 +92,7 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
 	public List<T> findAllById(Iterable<ID> ids) {
 
 		Assert.notNull(ids, "The given ids must not be null!");
@@ -112,7 +112,7 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 			}
 		}).collect(Collectors.toList());
 
-		Map<Class<?>, List<KeyPair>> keyPairsMap = Collections.singletonMap(domainType, keyPairs);
+		Map<Class<?>, List<KeyPair>> keyPairsMap = Collections.<Class<?>, List<KeyPair>>singletonMap(domainType, keyPairs);
 		return (List<T>)dynamoDBOperations.batchLoad(keyPairsMap)
 				.get(dynamoDBOperations.getOverriddenTableName(domainType, entityInformation.getDynamoDBTableName()));
 	}
@@ -131,7 +131,7 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 	 */
 	@Override
 	public <S extends T> Iterable<S> saveAll(Iterable<S> entities) throws BatchWriteException, IllegalArgumentException {
-		
+
 		Assert.notNull(entities, "The given Iterable of entities not be null!");
 		List<FailedBatch> failedBatches = dynamoDBOperations.batchSave(entities);
 		
