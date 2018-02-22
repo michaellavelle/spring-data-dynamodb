@@ -16,13 +16,18 @@
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends Repository<User, String> {
+public interface UserRepository extends CrudRepository<User, String> {
+
+	@EnableScan
+	@Override
+	Iterable<User> findAll();
 
 	// CRUD method using Optional
 	Optional<User> findById(String id);
@@ -33,5 +38,12 @@ public interface UserRepository extends Repository<User, String> {
 	@EnableScan
 	Optional<User> findByName(String name);
 
-	<T extends User> User save(T entity);
+	<T extends User> T save(T entity);
+
+	@EnableScan
+	List<User> findByNameIn(List<String> names);
+
+	@EnableScan
+	void deleteByIdAndName(String id, String name);
+
 }

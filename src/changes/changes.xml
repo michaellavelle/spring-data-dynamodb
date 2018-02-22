@@ -45,6 +45,9 @@
       <action dev="derjust" issue="118" type="fix" date="2018-02-01">
         Handle hash key properties with different column name (attribute name) properly
       </action>
+      <action dev="derjust" issue="46" type="fix" date="2018-02-27">
+        deleteBy...And... is not deleting records in Dynamo
+      </action>
       <action dev="derjust" type="add" issue="136">
         Transfer to spring-data-dynamodb organization
       </action>
