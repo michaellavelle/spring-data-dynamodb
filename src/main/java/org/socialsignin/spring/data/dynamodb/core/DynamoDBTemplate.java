@@ -159,10 +159,11 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	}
 
 	@Override
-	public void save(Object entity) {
+	public <T> T save(T entity) {
 		maybeEmitEvent(entity, BeforeSaveEvent::new);
 		dynamoDBMapper.save(entity);
 		maybeEmitEvent(entity, AfterSaveEvent::new);
+		return entity;
 
 	}
 	
@@ -177,11 +178,11 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
     }
 
 	@Override
-	public void delete(Object entity) {
+	public <T> T delete(T entity) {
 		maybeEmitEvent(entity, BeforeDeleteEvent::new);
 		dynamoDBMapper.delete(entity);
 		maybeEmitEvent(entity, AfterDeleteEvent::new);
-
+		return entity;
 	}
 	
 	@Override
