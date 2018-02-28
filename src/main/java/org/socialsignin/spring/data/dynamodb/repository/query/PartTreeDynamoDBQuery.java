@@ -78,6 +78,9 @@ public class PartTreeDynamoDBQuery<T, ID> extends AbstractDynamoDBQuery<T, ID> i
         return tree.isExistsProjection();
     }
 
+    @Override
+    protected boolean isDeleteQuery() { return tree.isDelete(); }
+
 	@Override
 	protected Integer getResultsRestrictionIfApplicable() {
 

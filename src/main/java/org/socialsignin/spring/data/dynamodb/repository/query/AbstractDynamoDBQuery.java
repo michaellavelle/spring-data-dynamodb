@@ -51,15 +51,16 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 			return new CollectionExecution();
 		}
 		else if (method.isSliceQuery() && !isSingleEntityResultsRestriction()) {
-				return new SlicedExecution(method.getParameters());
+			return new SlicedExecution(method.getParameters());
 		} else if (method.isPageQuery() && !isSingleEntityResultsRestriction()) {
 			return new PagedExecution(method.getParameters());
 		} else if (method.isModifyingQuery()) {
 			throw new UnsupportedOperationException("Modifying queries not yet supported");
 		} else if (isSingleEntityResultsRestriction()) {
 			return new SingleEntityLimitedExecution();
-		}
-		else {
+		} else if (isDeleteQuery()) {
+			return new DeleteExecution();
+		} else {
 			return new SingleEntityExecution();
 		}
 	}
@@ -68,6 +69,7 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 	protected abstract Query<Long> doCreateCountQuery(Object[] values, boolean pageQuery);
 	protected abstract boolean isCountQuery();
 	protected abstract boolean isExistsQuery();
+	protected abstract boolean isDeleteQuery();
 	
 	protected abstract Integer getResultsRestrictionIfApplicable();
 	protected abstract boolean isSingleEntityResultsRestriction();
@@ -117,7 +119,7 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 	}
 
 	/**
-	 * Executes the {@link AbstractStringBasedJpaQuery} to return a
+	 * Executes the {@link AbstractDynamoDBQuery} to return a
 	 * {@link org.springframework.data.domain.Page} of entities.
 	 */
 	class PagedExecution implements QueryExecution<T, ID> {
@@ -241,6 +243,16 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 		}
 	}
 
+	class DeleteExecution implements QueryExecution<T, ID> {
+
+		@Override
+		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
+			T entity = dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
+			dynamoDBOperations.delete(entity);
+			return entity;
+		}
+	}
+
 	class SingleEntityExecution implements QueryExecution<T, ID> {
 
 		@Override
@@ -249,16 +261,13 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 			{
 				return dynamoDBQuery.doCreateCountQueryWithPermissions(values,false).getSingleResult();
 			}
-            else
+            else if (isExistsQuery())
             {
-                if (isExistsQuery())
-                {
-                    return !dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList().isEmpty();
-                }
-                else
-                {
-                    return dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
-                }
+				return !dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList().isEmpty();
+			}
+			else
+			{
+				return dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
             }
 
 		}
