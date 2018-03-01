@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+    Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@
             </googleSearch>
 
             <gitHub>
-                <projectId>derjust/spring-data-dynamodb</projectId>
+                <projectId>spring-data-dynamodb/spring-data-dynamodb</projectId>
                 <ribbonOrientation>right</ribbonOrientation>
                 <ribbonColor>black</ribbonColor>
             </gitHub>
@@ -51,21 +51,21 @@
     <body>
         <head>
             <![CDATA[
-                <link rel="apple-touch-icon-precomposed" sizes="120x120" href="//derjust.github.io/spring-data-dynamodb/favicon/apple-touch-icon-120x120.png" />
-                <link rel="apple-touch-icon-precomposed" sizes="76x76" href="//derjust.github.io/spring-data-dynamodb/favicon/apple-touch-icon-76x76.png" />
-                <link rel="apple-touch-icon-precomposed" sizes="152x152" href="//derjust.github.io/spring-data-dynamodb/favicon/apple-touch-icon-152x152.png" />
-                <link rel="icon" type="image/png" href="//derjust.github.io/spring-data-dynamodb/favicon/favicon-196x196.png" sizes="196x196" />
-                <link rel="icon" type="image/png" href="//derjust.github.io/spring-data-dynamodb/favicon/favicon-96x96.png" sizes="96x96" />
-                <link rel="icon" type="image/png" href="//derjust.github.io/spring-data-dynamodb/favicon/favicon-32x32.png" sizes="32x32" />
-                <link rel="icon" type="image/png" href="//derjust.github.io/spring-data-dynamodb/favicon/favicon-16x16.png" sizes="16x16" />
-                <link rel="icon" type="image/png" href="//derjust.github.io/spring-data-dynamodb/favicon/favicon-128.png" sizes="128x128" />
+                <link rel="apple-touch-icon-precomposed" sizes="120x120" href="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/apple-touch-icon-120x120.png" />
+                <link rel="apple-touch-icon-precomposed" sizes="76x76" href="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/apple-touch-icon-76x76.png" />
+                <link rel="apple-touch-icon-precomposed" sizes="152x152" href="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/apple-touch-icon-152x152.png" />
+                <link rel="icon" type="image/png" href="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/favicon-196x196.png" sizes="196x196" />
+                <link rel="icon" type="image/png" href="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/favicon-96x96.png" sizes="96x96" />
+                <link rel="icon" type="image/png" href="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/favicon-32x32.png" sizes="32x32" />
+                <link rel="icon" type="image/png" href="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/favicon-16x16.png" sizes="16x16" />
+                <link rel="icon" type="image/png" href="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/favicon-128.png" sizes="128x128" />
                 <meta name="application-name" content="&nbsp;"/>
                 <meta name="msapplication-TileColor" content="#FFFFFF" />
-                <meta name="msapplication-TileImage" content="//derjust.github.io/spring-data-dynamodb/favicon/mstile-144x144.png" />
-                <meta name="msapplication-square70x70logo" content="//derjust.github.io/spring-data-dynamodb/favicon/mstile-70x70.png" />
-                <meta name="msapplication-square150x150logo" content="//derjust.github.io/spring-data-dynamodb/favicon/mstile-150x150.png" />
-                <meta name="msapplication-wide310x150logo" content="//derjust.github.io/spring-data-dynamodb/favicon/mstile-310x150.png" />
-                <meta name="msapplication-square310x310logo" content="//derjust.github.io/spring-data-dynamodb/favicon/mstile-310x310.png" />
+                <meta name="msapplication-TileImage" content="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/mstile-144x144.png" />
+                <meta name="msapplication-square70x70logo" content="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/mstile-70x70.png" />
+                <meta name="msapplication-square150x150logo" content="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/mstile-150x150.png" />
+                <meta name="msapplication-wide310x150logo" content="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/mstile-310x150.png" />
+                <meta name="msapplication-square310x310logo" content="//spring-data-dynamodb.github.io/spring-data-dynamodb/favicon/mstile-310x310.png" />
             ]]>
         </head>
 
@@ -78,9 +78,9 @@
         <menu ref="reports" />
 
         <links>
-            <item name="Maven Central" href="https://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb"/>
+            <item name="Maven Central" href="https://mvnrepository.com/artifact/com.github.spring-data-dynamodb/spring-data-dynamodb"/>
             <item name="Open Hub" href="https://www.openhub.net/p/spring-data-dynamodb" />
-            <item name="Github" href="https://www.github.com/derjust/spring-data-dynamodb" />
+            <item name="Github" href="https://www.github.com/spring-data-dynamodb/spring-data-dynamodb" />
         </links>
     </body>
 

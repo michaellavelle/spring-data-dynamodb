@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+    Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@
     <artifactId>spring-data-dynamodb</artifactId>
     <version>5.0.2-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
-    <inceptionYear>2013</inceptionYear>
+    <inceptionYear>2018</inceptionYear>
 
     <description>The primary goal of the Spring® Data project is to make it easier to build Spring-powered applications
         that use data access technologies.
         This module deals with enhanced support for a data access layer built on AWS DynamoDB.</description>
-    <url>https://github.com/derjust/spring-data-dynamodb</url>
+    <url>https://github.com/spring-data-dynamodb/spring-data-dynamodb</url>
 
     <licenses>
         <license>
@@ -277,7 +277,7 @@
                     <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
                     <properties>
                         <owner>spring-data-dynamodb</owner>
-                        <email>https://github.com/derjust/spring-data-dynamodb</email>
+                        <email>https://github.com/spring-data-dynamodb/spring-data-dynamodb</email>
                     </properties>
                     <excludes>
                         <exclude>**/README.md</exclude>
@@ -517,9 +517,9 @@
     </build>
 
     <scm>
-        <url>https://github.com/derjust/spring-data-dynamodb</url>
-        <connection>scm:git:ssh://github.com/derjust/spring-data-dynamodb.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/derjust/spring-data-dynamodb.git</developerConnection>
+        <url>https://github.com/spring-data-dynamodb/spring-data-dynamodb</url>
+        <connection>scm:git:ssh://github.com/spring-data-dynamodb/spring-data-dynamodb.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/spring-data-dynamodb/spring-data-dynamodb.git</developerConnection>
         <tag>HEAD</tag>
   </scm>
 
@@ -736,7 +736,7 @@
         </relocation>
         <site>
             <id>website</id>
-            <url>https://github.com/derjust/spring-data-dynamodb/</url>
+            <url>https://github.com/spring-data-dynamodb/spring-data-dynamodb/</url>
         </site>
         <snapshotRepository>
             <id>ossrh</id>
@@ -750,12 +750,12 @@
 
     <issueManagement>
     	<system>GitHub</system>
-    	<url>https://github.com/derjust/spring-data-dynamodb/issues</url>
+    	<url>https://github.com/spring-data-dynamodb/spring-data-dynamodb/issues</url>
     </issueManagement>
 
     <ciManagement>
         <system>Travis CI</system>
-        <url>https://travis-ci.org/derjust/spring-data-dynamodb</url>
+        <url>https://travis-ci.org/spring-data-dynamodb/spring-data-dynamodb</url>
     </ciManagement>
 
 
