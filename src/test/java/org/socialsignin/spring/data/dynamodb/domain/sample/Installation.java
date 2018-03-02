@@ -26,7 +26,7 @@ import java.util.Date;
 
 
 /**
- * Test for <a href="https://github.com/derjust/spring-data-dynamodb/issues/52">Issue 52</a>.
+ * Test for <a href="https://github.com/spring-data-dynamodb/spring-data-dynamodb/issues/52">Issue 52</a>.
  */
 @DynamoDBTable(tableName = "installations")
 public class Installation implements Serializable {

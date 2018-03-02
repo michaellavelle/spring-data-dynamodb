@@ -282,7 +282,16 @@ And finally write a test client
     }
 }
 ```
- 
- 
+
+## History
+The code base has some history already in it - let's clarify it a bit:
+* The code base was established under [github.com/michaellavelle/spring-data-dynamodb)](https://github.com/michaellavelle/spring-data-dynamodb)
+* It was forked and further maintained under [github.com/derjust/spring-data-dynamodb)](https://github.com/derjust/spring-data-dynamodb) 
+    * Available in Maven Central under [`com.github.derjust:spring-data-dynamodb`](http://central.maven.org/maven2/com/github/derjust/spring-data-dynamodb/)
+* Ultimately transferred to [github.com/spring-data-dynamodb/spring-data-dynamodb)](https://github.com/spring-data-dynamodb/spring-data-dynamodb) 
+    * Available in Maven Central under [`com.github.spring-data-dynamodb:spring-data-dynamodb`](http://central.maven.org/maven2/com/github/spring-data-dynamodb/spring-data-dynamodb/)
+
+The whole Java package never changed from `org.socialsignin.spring.data.dynamodb` 
+
 ## Advanced topics ##
 Advanced topics can be found in the [wiki](https://github.com/spring-data-dynamodb/spring-data-dynamodb/wiki).
