@@ -115,7 +115,7 @@ or in XML...
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://docs.socialsignin.org/schema/data/dynamodb
-                           http://docs.socialsignin.org/schema/data/dynamodb/spring-dynamodb.xsd">
+                           http://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd">
 
   <bean id="amazonDynamoDB" class="com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient">
     <constructor-arg ref="amazonAWSCredentials" />
@@ -219,7 +219,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
   
   @EnableScan 
   @EnableScanCount
-  public Page<User> findAll(Pageable pageable);
+  Page<User> findAll(Pageable pageable);
 }
 ```
 
@@ -291,7 +291,8 @@ The code base has some history already in it - let's clarify it a bit:
 * Ultimately transferred to [github.com/spring-data-dynamodb/spring-data-dynamodb)](https://github.com/spring-data-dynamodb/spring-data-dynamodb) 
     * Available in Maven Central under [`com.github.spring-data-dynamodb:spring-data-dynamodb`](http://central.maven.org/maven2/com/github/spring-data-dynamodb/spring-data-dynamodb/)
 
-The whole Java package never changed from `org.socialsignin.spring.data.dynamodb` 
+The Java package name/XSD namespace never changed from `org.socialsignin.spring.data.dynamodb`.
+But the XSD is now also available at [`https://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd`](https://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd).
 
 ## Advanced topics ##
 Advanced topics can be found in the [wiki](https://github.com/spring-data-dynamodb/spring-data-dynamodb/wiki).

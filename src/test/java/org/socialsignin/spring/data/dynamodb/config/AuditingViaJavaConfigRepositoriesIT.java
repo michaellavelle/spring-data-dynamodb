@@ -118,7 +118,7 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 	@Test
 	public void basicAuditing() {
 
-		doReturn(this.auditor.getId()).when(this.auditorAware).getCurrentAuditor();
+		doReturn(Optional.of(this.auditor.getId())).when(this.auditorAware).getCurrentAuditor();
 
 		AuditableUser savedUser = auditableUserRepository.save(new AuditableUser("user"));
 

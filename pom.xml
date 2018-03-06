@@ -37,11 +37,11 @@
     </licenses>
 
     <properties>
-        <spring.version>5.0.1.RELEASE</spring.version>
-        <spring-data.version>Kay-SR1</spring-data.version>
+        <spring.version>5.0.4.RELEASE</spring.version>
+        <spring-data.version>Kay-SR5</spring-data.version>
 
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <aws-java-sdk.version>1.11.232</aws-java-sdk.version>
+        <aws-java-sdk.version>1.11.289</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
         <mockito.version>2.13.0</mockito.version>
 
@@ -148,6 +148,7 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -500,6 +501,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
+                        <sqlite4java.library.path>${project.build.directory}/lib</sqlite4java.library.path>
                         <dynamodb.port>${dynamodblocal.port}</dynamodb.port>
                     </systemPropertyVariables>
                 </configuration>
