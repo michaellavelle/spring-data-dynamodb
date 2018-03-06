@@ -1,9 +1,9 @@
 # Release process #
 
 1. Check `pom.xml` for the proper `<version />` tag
-1. Check `pom.xml` SpecificaitonVersion entries
+1. Check `pom.xml` `<Specification-Version />` entries
 1. Update `src/changes/changes.xml` timestamp of the release version
-1. Update `README.md` version for the Maven/Gradle examples
+1. Update `README.md` version for the Maven examples
 
 Then execute
 

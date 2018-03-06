@@ -23,7 +23,7 @@
     <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
-    <release version="5.0.2" date="" description="Maintenance release">
+    <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">
         Added support for Auditing
       </action>

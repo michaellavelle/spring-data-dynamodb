@@ -46,13 +46,13 @@ Spring-Boot projects.
 
 ## Quick Start ##
 
-Download the JAR though [Maven](http://mvnrepository.com/artifact/com.github.spring-data-dynamodb/spring-data-dynamodb):
+Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.github.spring-data-dynamodb/spring-data-dynamodb):
 
 ```xml
 <dependency>
   <groupId>com.github.spring-data-dynamodb</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>5.0.1</version>
+  <version>5.0.2</version>
 </dependency>
 ```
 
