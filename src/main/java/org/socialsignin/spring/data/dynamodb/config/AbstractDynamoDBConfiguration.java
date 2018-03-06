@@ -67,8 +67,8 @@ public abstract class AbstractDynamoDBConfiguration {
      * Creates a {@link DynamoDBMappingContext} equipped with entity classes scanned from the mapping base package.
      *
      * @see #getMappingBasePackages()
-     * @return
-     * @throws ClassNotFoundException
+     * @return A newly created {@link DynamoDBMappingContext}
+     * @throws ClassNotFoundException if the class with {@link DynamoDBTable} annotation can't be loaded
      */
     @Bean
     public DynamoDBMappingContext dynamoDBMappingContext() throws ClassNotFoundException {
@@ -83,8 +83,8 @@ public abstract class AbstractDynamoDBConfiguration {
      * Scans the mapping base package for classes annotated with {@link DynamoDBTable}.
      *
      * @see #getMappingBasePackages()
-     * @return
-     * @throws ClassNotFoundException
+     * @return All classes with {@link DynamoDBTable} annotation
+     * @throws ClassNotFoundException if the class with {@link DynamoDBTable} annotation can't be loaded
      */
     protected Set<Class<?>> getInitialEntitySet() throws ClassNotFoundException {
 

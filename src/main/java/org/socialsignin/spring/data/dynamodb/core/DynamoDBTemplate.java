@@ -52,19 +52,27 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	private final DynamoDBMapperConfig dynamoDBMapperConfig;
 	private ApplicationEventPublisher eventPublisher;
 	
-	/** Convenient constructor to use the default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)} */
+	/** Convenient constructor to use the default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)}
+	 * @param amazonDynamoDB The AWS SDK instance to talk to DynamoDB
+	 * @param dynamoDBMapperConfig The config to use
+	 * */
 	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig)
 	{
 	    this(amazonDynamoDB, dynamoDBMapperConfig, null);
 	}
     
-	/** Convenient constructor to use the {@link DynamoDBMapperConfig#DEFAULT} */
+	/** Convenient constructor to use the {@link DynamoDBMapperConfig#DEFAULT}
+	 * @param amazonDynamoDB The AWS SDK instance to talk to DynamoDB
+	 * @param dynamoDBMapper The Mapper to use
+	 * */
     public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper)
     {
         this(amazonDynamoDB, null, dynamoDBMapper);
     }
     
-    /** Convenient construcotr to thse the {@link DynamoDBMapperConfig#DEFAULT} and default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)} */
+    /** Convenient construcotr to thse the {@link DynamoDBMapperConfig#DEFAULT} and default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)}
+	 * @param amazonDynamoDB The AWS SDK instance to talk to DynamoDB
+	 * */
     public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB)
     {
         this(amazonDynamoDB, null, null);

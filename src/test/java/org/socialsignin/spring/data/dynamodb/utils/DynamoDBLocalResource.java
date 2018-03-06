@@ -59,25 +59,25 @@ public class DynamoDBLocalResource extends ExternalResource {
             hashKeyAttribute = hashKeyProperty;
         }
 
-        Optional<String> rangeKey = Optional.empty();
+        String rangeKey = null;
         if (entityInfo instanceof DynamoDBIdIsHashAndRangeKeyEntityInformation) {
-            rangeKey = Optional.of(((DynamoDBIdIsHashAndRangeKeyEntityInformation)entityInfo).getRangeKeyPropertyName());
+            rangeKey = ((DynamoDBIdIsHashAndRangeKeyEntityInformation)entityInfo).getRangeKeyPropertyName();
         }
 
         return createTable(ddb, tableName, hashKeyAttribute, rangeKey);
     }
 
-    private static CreateTableResult createTable(AmazonDynamoDB ddb, String tableName, String hashKeyName, Optional<String> rangeKeyName) {
+    private static CreateTableResult createTable(AmazonDynamoDB ddb, String tableName, String hashKeyName, String rangeKeyName) {
         List<AttributeDefinition> attributeDefinitions = new ArrayList<>();
         attributeDefinitions.add(new AttributeDefinition(hashKeyName, ScalarAttributeType.S));
 
         List<KeySchemaElement> ks = new ArrayList<>();
         ks.add(new KeySchemaElement(hashKeyName, KeyType.HASH));
 
-        if (rangeKeyName.isPresent()) {
-            attributeDefinitions.add(new AttributeDefinition(rangeKeyName.get(), ScalarAttributeType.S));
+        if (rangeKeyName != null) {
+            attributeDefinitions.add(new AttributeDefinition(rangeKeyName, ScalarAttributeType.S));
 
-            ks.add(new KeySchemaElement(rangeKeyName.get(), KeyType.RANGE));
+            ks.add(new KeySchemaElement(rangeKeyName, KeyType.RANGE));
         }
 
         ProvisionedThroughput provisionedthroughput = new ProvisionedThroughput(10L, 10L);

@@ -28,13 +28,17 @@ public class SortHandler {
     private SortHandler() {
     }
 
-     public static void ensureNoSort(Pageable pageable) {
+    /**
+     * @param pageable The {@link Pageable} to check that no sort is specified
+     */
+    public static void ensureNoSort(Pageable pageable) {
         Sort sort = pageable.getSort();
         ensureNoSort(sort);
     }
 
     /**
-     * @throws UnsupportedOperationException if a {@code sort} is initialized (non-null &amp;&amp; not {@link Sort#unsorted()}
+     * @param sort The {@link Sort} to check that no sort is specified
+     * @throws UnsupportedOperationException if a {@code sort} is initialized (non-null)
      */
     public static void ensureNoSort(Sort sort) throws UnsupportedOperationException {
         if (sort != null) {
