@@ -23,6 +23,11 @@
     <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
+    <release version="5.0.3" date="" description="Maintenance release">
+      <action dev="derjust" type="fix" date="2018-03-05">
+        Fix Javadoc and cast warnings
+      </action>
+    </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">
         Added support for Auditing

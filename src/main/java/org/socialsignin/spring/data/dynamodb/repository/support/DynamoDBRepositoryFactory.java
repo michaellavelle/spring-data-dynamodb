@@ -113,11 +113,11 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	/**
 	 * Callback to create a {@link DynamoDBCrudRepository} instance with the given {@link RepositoryMetadata}
 	 *
-	 * @param <T>
-	 * @param <ID>
-	 * @param metadata
+	 * @param <T> Type of the Entity
+	 * @param <ID> Type of the Hash (Primary) Key
+	 * @param metadata Metadata of the entity
 	 * @see #getTargetRepository(RepositoryInformation)
-	 * @return
+	 * @return the created {@link DynamoDBCrudRepository} instance
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T, ID extends Serializable> DynamoDBCrudRepository<?, ?> getDynamoDBRepository(

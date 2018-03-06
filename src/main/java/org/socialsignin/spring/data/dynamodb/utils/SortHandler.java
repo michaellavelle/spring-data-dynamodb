@@ -25,12 +25,16 @@ import org.springframework.data.domain.Sort;
  */
 public interface SortHandler {
 
+    /**
+     * @param pageable The {@link Pageable} to check that no sort is specified
+     */
      default void ensureNoSort(Pageable pageable) {
         Sort sort = pageable.getSort();
         ensureNoSort(sort);
     }
 
     /**
+     * @param sort The {@link Sort} to check that no sort is specified
      * @throws UnsupportedOperationException if a {@code sort} is initialized (non-null &amp;&amp; not {@link Sort#unsorted()}
      */
     default void ensureNoSort(Sort sort) throws UnsupportedOperationException {

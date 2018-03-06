@@ -70,7 +70,7 @@ public class DynamoDBRepositoryBeanTest {
 
     @Test
     public void testNullOperationsOk() {
-        DynamoDBRepositoryBean underTest = new DynamoDBRepositoryBean(beanManager, amazonDynamoDBBean,
+        DynamoDBRepositoryBean<SampleRepository> underTest = new DynamoDBRepositoryBean(beanManager, amazonDynamoDBBean,
                 dynamoDBMapperConfigBean, null, qualifiers, repositoryType);
 
         assertNotNull(underTest);
@@ -80,13 +80,13 @@ public class DynamoDBRepositoryBeanTest {
     public void testNullOperationFail() {
         expectedException.expectMessage("amazonDynamoDBBean must not be null!");
 
-        DynamoDBRepositoryBean underTest = new DynamoDBRepositoryBean(beanManager, null,
+        DynamoDBRepositoryBean<SampleRepository> underTest = new DynamoDBRepositoryBean(beanManager, null,
                 dynamoDBMapperConfigBean, null, qualifiers, repositoryType);
     }
 
     @Test
     public void testSetOperationOk1() {
-        DynamoDBRepositoryBean underTest = new DynamoDBRepositoryBean(beanManager, null,
+        DynamoDBRepositoryBean<SampleRepository> underTest = new DynamoDBRepositoryBean(beanManager, null,
                 null, dynamoDBOperationsBean, qualifiers, repositoryType);
 
         assertNotNull(underTest);
@@ -96,7 +96,7 @@ public class DynamoDBRepositoryBeanTest {
     public void testSetOperationFail1() {
         expectedException.expectMessage("Cannot specify both dynamoDBMapperConfigBean bean and dynamoDBOperationsBean in repository configuration");
 
-        DynamoDBRepositoryBean underTest = new DynamoDBRepositoryBean(beanManager, null,
+        DynamoDBRepositoryBean<SampleRepository> underTest = new DynamoDBRepositoryBean(beanManager, null,
                 dynamoDBMapperConfigBean, dynamoDBOperationsBean, qualifiers, repositoryType);
     }
 
@@ -104,7 +104,7 @@ public class DynamoDBRepositoryBeanTest {
     public void testSetOperationFail2() {
         expectedException.expectMessage("Cannot specify both amazonDynamoDB bean and dynamoDBOperationsBean in repository configuration");
 
-        DynamoDBRepositoryBean underTest = new DynamoDBRepositoryBean(beanManager, amazonDynamoDBBean,
+        DynamoDBRepositoryBean<SampleRepository> underTest = new DynamoDBRepositoryBean(beanManager, amazonDynamoDBBean,
                 null, dynamoDBOperationsBean, qualifiers, repositoryType);
     }
 

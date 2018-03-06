@@ -56,7 +56,9 @@ public class DynamoDBTemplateTest {
 	private DynamoDBMapperConfig dynamoDBMapperConfig;
 	@Mock
 	private ApplicationContext applicationContext;
-	
+	@Mock
+	private DynamoDBQueryExpression<User> countUserQuery;
+
 	private DynamoDBTemplate dynamoDBTemplate;
 
 	@Before
@@ -124,7 +126,7 @@ public class DynamoDBTemplateTest {
 
 	@Test
 	public void testCountQuery() {
-		DynamoDBQueryExpression<User> query = mock(DynamoDBQueryExpression.class);
+		DynamoDBQueryExpression<User> query = countUserQuery;
 		int actual = dynamoDBTemplate.count(User.class, query);
 
 		verify(dynamoDBMapper).count(User.class, query);

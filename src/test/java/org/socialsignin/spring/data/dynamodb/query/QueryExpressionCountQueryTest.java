@@ -42,7 +42,7 @@ public class QueryExpressionCountQueryTest {
 
     @Before
     public void setUp() {
-        underTest = new QueryExpressionCountQuery(dynamoDBOperations, User.class, queryExpression);
+        underTest = new QueryExpressionCountQuery<>(dynamoDBOperations, User.class, queryExpression);
     }
 
     @Test

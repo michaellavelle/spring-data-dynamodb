@@ -48,7 +48,7 @@ public class DynamoDBLocalResource extends ExternalResource {
     }
 
     public static <T> CreateTableResult createTable(AmazonDynamoDB ddb, Class<T> domainType) {
-        DynamoDBEntityMetadataSupport<T, Object> support = new DynamoDBEntityMetadataSupport(domainType);
+        DynamoDBEntityMetadataSupport<T, Object> support = new DynamoDBEntityMetadataSupport<>(domainType);
         DynamoDBEntityInformation<T, Object> entityInfo = support.getEntityInformation();
 
         String tableName = entityInfo.getDynamoDBTableName();
