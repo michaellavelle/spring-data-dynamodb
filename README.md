@@ -56,20 +56,6 @@ Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.gi
 </dependency>
 ```
 
-or via Gradle
-
-```yml
-repositories {
-  mavenCentral()
-}
-
-dependencies {
-  compile group: 'com.github.spring-data-dynamodb',
-  name: 'spring-data-dynamodb',
-  version: '5.0.1'
-}
-```
-
 Setup DynamoDB configuration as well as enabling Spring Data DynamoDB repository support.
 
 ```java
