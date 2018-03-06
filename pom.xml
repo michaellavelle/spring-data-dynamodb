@@ -18,9 +18,9 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.spring-data-dynamodb</groupId>
+    <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>5.0.2</version>
+    <version>5.0.2-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
     <inceptionYear>2018</inceptionYear>
 
@@ -377,11 +377,11 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <tagNameFormat>v@{project.version}-old</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
-                    <goals>deploy site-deploy</goals>
+                    <goals>deploy</goals>
                 </configuration>
             </plugin>
             <plugin>
@@ -732,10 +732,10 @@
     </contributors>
 
 
-    <distributionManagement><!--
+    <distributionManagement>
         <relocation>
             <groupId>com.github.spring-data-dynamodb</groupId>
-        </relocation>-->
+        </relocation>
         <site>
             <id>website</id>
             <url>https://github.com/spring-data-dynamodb/spring-data-dynamodb/</url>
