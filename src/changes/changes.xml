@@ -80,7 +80,7 @@
         Added Spring 5 / Spring-Data Kay support
       </action>
     </release>
-    <release version="4.5.5" date="" description="Backport of v5.0 (master)">
+    <release version="4.5.5" date="2018-03-07" description="Backport of v5.0 (master)">
       <action dev="derjust" type="fix" issue="139">
         Backport of v5.0 branch (master)
       </action>
