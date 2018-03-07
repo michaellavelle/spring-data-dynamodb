@@ -13,7 +13,7 @@ As I'm a firm believer in OSS I nevertheless have to pay once in a while for stu
 
 ## Paypal
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CWVWF9DD73J5S)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=CWVWF9DD73J5S)
 
 ## Beer
 

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,11 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +41,17 @@ import static org.junit.Assert.assertNull;
 public class HashRangeKeyIT {
 
 	@Autowired
-	PlaylistRepository playlistRepository;
+	private PlaylistRepository playlistRepository;
+
+	@Autowired
+	private AmazonDynamoDB ddb;
+
+	@Before
+	public void setUp() {
+		CreateTableRequest ctr = new DynamoDBMapper(ddb).generateCreateTableRequest(Playlist.class);
+		ctr.withProvisionedThroughput(new ProvisionedThroughput(10L, 10L));
+		ddb.createTable(ctr);
+	}
 
 	@Test
 	public void runCrudOperations() {

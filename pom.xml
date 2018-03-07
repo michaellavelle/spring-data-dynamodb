@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+    Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,16 +18,16 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.derjust</groupId>
+    <groupId>com.github.spring-data-dynamodb</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
     <version>4.5.5-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
-    <inceptionYear>2013</inceptionYear>
+    <inceptionYear>2018</inceptionYear>
 
     <description>The primary goal of the Spring® Data project is to make it easier to build Spring-powered applications
         that use data access technologies.
         This module deals with enhanced support for a data access layer built on AWS DynamoDB.</description>
-    <url>https://github.com/derjust/spring-data-dynamodb</url>
+    <url>https://github.com/spring-data-dynamodb/spring-data-dynamodb</url>
 
     <licenses>
         <license>
@@ -41,7 +41,7 @@
         <spring-data.version>Ingalls-RELEASE</spring-data.version>
 
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <aws-java-sdk.version>1.11.232</aws-java-sdk.version>
+        <aws-java-sdk.version>1.11.289</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
         <mockito.version>2.13.0</mockito.version>
 
@@ -117,6 +117,18 @@
                 <artifactId>commons-logging</artifactId>
                 <version>1.2</version>
             </dependency>
+            <!-- uk.org.lidalia:slf4j-test comes with 3.1 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.3.2</version>
+            </dependency>
+            <!-- uk.org.lidalia:slf4j-test comes with 1.7.5 -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -136,6 +148,7 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -265,7 +278,7 @@
                     <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
                     <properties>
                         <owner>spring-data-dynamodb</owner>
-                        <email>https://github.com/derjust/spring-data-dynamodb</email>
+                        <email>https://github.com/spring-data-dynamodb/spring-data-dynamodb</email>
                     </properties>
                     <excludes>
                         <exclude>**/README.md</exclude>
@@ -488,6 +501,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
+                        <sqlite4java.library.path>${project.build.directory}/lib</sqlite4java.library.path>
                         <dynamodb.port>${dynamodblocal.port}</dynamodb.port>
                     </systemPropertyVariables>
                 </configuration>
@@ -505,10 +519,10 @@
     </build>
 
     <scm>
-        <url>https://github.com/derjust/spring-data-dynamodb</url>
-        <connection>scm:git:ssh://github.com/derjust/spring-data-dynamodb.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/derjust/spring-data-dynamodb.git</developerConnection>
-    <tag>HEAD</tag>
+        <url>https://github.com/spring-data-dynamodb/spring-data-dynamodb</url>
+        <connection>scm:git:ssh://github.com/spring-data-dynamodb/spring-data-dynamodb.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/spring-data-dynamodb/spring-data-dynamodb.git</developerConnection>
+        <tag>v5.0.2</tag>
   </scm>
 
     <repositories>
@@ -718,13 +732,13 @@
     </contributors>
 
 
-    <distributionManagement>
+    <distributionManagement><!--
         <relocation>
             <groupId>com.github.spring-data-dynamodb</groupId>
-        </relocation>
+        </relocation>-->
         <site>
             <id>website</id>
-            <url>https://github.com/derjust/spring-data-dynamodb/</url>
+            <url>https://github.com/spring-data-dynamodb/spring-data-dynamodb/</url>
         </site>
         <snapshotRepository>
             <id>ossrh</id>
@@ -735,10 +749,16 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+
     <issueManagement>
     	<system>GitHub</system>
-    	<url>https://github.com/derjust/spring-data-dynamodb/issues</url>
+    	<url>https://github.com/spring-data-dynamodb/spring-data-dynamodb/issues</url>
     </issueManagement>
+
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/spring-data-dynamodb/spring-data-dynamodb</url>
+    </ciManagement>
 
 
     <reporting>
@@ -759,6 +779,33 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>2.9</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0</version>
+                <reportSets>
+                    <reportSet>
+                        <id>default</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.20.1</version>
+                <configuration>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>

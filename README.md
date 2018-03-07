@@ -1,26 +1,22 @@
-[![codecov.io](https://codecov.io/github/derjust/spring-data-dynamodb/coverage.svg?branch=master)](https://codecov.io/github/derjust/spring-data-dynamodb?branch=master) [![Build Status](https://travis-ci.org/derjust/spring-data-dynamodb.svg?branch=master)](https://travis-ci.org/derjust/spring-data-dynamodb) 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb)
+[![codecov.io](https://codecov.io/github/spring-data-dynamodb/spring-data-dynamodb/coverage.svg?branch=master)](https://codecov.io/github/spring-data-dynamodb/spring-data-dynamodb?branch=master) [![Build Status](https://travis-ci.org/spring-data-dynamodb/spring-data-dynamodb.svg?branch=master)](https://travis-ci.org/spring-data-dynamodb/spring-data-dynamodb) 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.spring-data-dynamodb/spring-data-dynamodb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.spring-data-dynamodb/spring-data-dynamodb)
 [![Donation badge](https://img.shields.io/badge/Donate-%F0%9F%92%B8-DAA520.svg)](DONATION.md)
-
-# ⚠ Planing to [transfer](https://help.github.com/articles/transferring-a-repository-owned-by-your-personal-account/) this repository to the [spring-data-dynamodb](https://github.com/spring-data-dynamodb) organization by the end of the month! ⚠ #
-Everything should stay the same for links/browsing - just Git `remote`s must be updated
-
 
 # Spring  Data DynamoDB #
 
-<img align="left" src="https://derjust.github.io/spring-data-dynamodb/banner/spring-data-dynamodb.png">
+<img align="left" src="https://spring-data-dynamodb.github.io/spring-data-dynamodb/banner/spring-data-dynamodb.png" />
 
 The primary goal of the [Spring® Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies.
 
 This module deals with enhanced support for a data access layer built on [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
 
-Technical infos can be found on the [project page](https://derjust.github.io/spring-data-dynamodb/).
+Technical infos can be found on the [project page](https://spring-data-dynamodb.github.io/spring-data-dynamodb/).
 
 ## Supported Features ##
 
 * Implementation of CRUD methods for DynamoDB Entities
 * Dynamic query generation from query method names  (Only a limited number of keywords and comparison operators currently supported)
-* Possibility to integrate [custom repository code](https://github.com/derjust/spring-data-dynamodb/wiki/Custom-repository-implementations)
+* Possibility to integrate [custom repository code](https://github.com/spring-data-dynamodb/spring-data-dynamodb/wiki/Custom-repository-implementations)
 * Easy Spring annotation based integration
 
 ## Demo application ##
@@ -50,11 +46,11 @@ Spring-Boot projects.
 
 ## Quick Start ##
 
-Download the JAR though [Maven](http://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb):
+Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.github.spring-data-dynamodb/spring-data-dynamodb):
 
 ```xml
 <dependency>
-  <groupId>com.github.derjust</groupId>
+  <groupId>com.github.spring-data-dynamodb</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
   <version>4.5.5</version>
 </dependency>
@@ -68,7 +64,7 @@ repositories {
 }
 
 dependencies {
-  compile group: 'com.github.derjust',
+  compile group: 'com.github.spring-data-dynamodb',
   name: 'spring-data-dynamodb',
   version: '4.5.5'
 }
@@ -119,7 +115,7 @@ or in XML...
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://docs.socialsignin.org/schema/data/dynamodb
-                           http://docs.socialsignin.org/schema/data/dynamodb/spring-dynamodb.xsd">
+                           http://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd">
 
   <bean id="amazonDynamoDB" class="com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient">
     <constructor-arg ref="amazonAWSCredentials" />
@@ -223,7 +219,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
   
   @EnableScan 
   @EnableScanCount
-  public Page<User> findAll(Pageable pageable);
+  Page<User> findAll(Pageable pageable);
 }
 ```
 
@@ -286,7 +282,17 @@ And finally write a test client
     }
 }
 ```
- 
- 
+
+## History
+The code base has some history already in it - let's clarify it a bit:
+* The code base was established under [github.com/michaellavelle/spring-data-dynamodb)](https://github.com/michaellavelle/spring-data-dynamodb)
+* It was forked and further maintained under [github.com/derjust/spring-data-dynamodb)](https://github.com/derjust/spring-data-dynamodb) 
+    * Available in Maven Central under [`com.github.derjust:spring-data-dynamodb`](http://central.maven.org/maven2/com/github/derjust/spring-data-dynamodb/)
+* Ultimately transferred to [github.com/spring-data-dynamodb/spring-data-dynamodb)](https://github.com/spring-data-dynamodb/spring-data-dynamodb) 
+    * Available in Maven Central under [`com.github.spring-data-dynamodb:spring-data-dynamodb`](http://central.maven.org/maven2/com/github/spring-data-dynamodb/spring-data-dynamodb/)
+
+The Java package name/XSD namespace never changed from `org.socialsignin.spring.data.dynamodb`.
+But the XSD is now also available at [`https://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd`](https://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd).
+
 ## Advanced topics ##
-Advanced topics can be found in the [wiki](https://github.com/derjust/spring-data-dynamodb/wiki).
+Advanced topics can be found in the [wiki](https://github.com/spring-data-dynamodb/spring-data-dynamodb/wiki).

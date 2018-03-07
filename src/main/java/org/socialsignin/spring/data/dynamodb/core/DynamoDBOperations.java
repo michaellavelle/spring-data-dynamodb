@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,10 +42,10 @@ public interface DynamoDBOperations {
 	<T> T load(Class<T> domainClass,Object hashKey);
 	Map<String, List<Object>> batchLoad(Map<Class<?>, List<KeyPair>> itemsToGet);
 
-	void save(Object entity);
+	<T> T save(T entity);
 	List<FailedBatch> batchSave(Iterable<?> entities);
 
-	void delete(Object entity);
+	<T> T delete(T entity);
     List<FailedBatch> batchDelete(Iterable<?> entities);
 
 	<T> String getOverriddenTableName(Class<T> domainClass, String tableName);

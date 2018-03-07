@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,7 +181,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	}
 
 	@Override
-	public void save(Object entity) {
+	public <T> T save(T entity) {
 		maybeEmitEvent(entity, new DynamoDBMappingEventFactory<Object>() {
 			@Override
 			public DynamoDBMappingEvent<Object> apply(Object source) {
@@ -195,6 +195,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 				return new AfterSaveEvent(source);
 			}
 		});
+		return entity;
 	}
 	
 	@Override
@@ -218,7 +219,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
     }
 
 	@Override
-	public void delete(Object entity) {
+	public <T> T delete(T entity) {
 		maybeEmitEvent(entity, new DynamoDBMappingEventFactory<Object>() {
 			@Override
 			public DynamoDBMappingEvent<Object> apply(Object source) {
@@ -232,7 +233,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 				return new AfterDeleteEvent(source);
 			}
 		});
-
+		return entity;
 	}
 	
 	@Override
