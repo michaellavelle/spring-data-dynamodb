@@ -46,11 +46,11 @@ Spring-Boot projects.
 
 ## Quick Start ##
 
-Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.github.spring-data-dynamodb/spring-data-dynamodb):
+Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb):
 
 ```xml
 <dependency>
-  <groupId>com.github.spring-data-dynamodb</groupId>
+  <groupId>com.github.derjust</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
   <version>5.0.2</version>
 </dependency>
@@ -101,7 +101,7 @@ or in XML...
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://docs.socialsignin.org/schema/data/dynamodb
-                           http://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd">
+                           http://derjust.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd">
 
   <bean id="amazonDynamoDB" class="com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient">
     <constructor-arg ref="amazonAWSCredentials" />
@@ -276,7 +276,7 @@ The code base has some history already in it - let's clarify it a bit:
     * Available in Maven Central under [`com.github.derjust:spring-data-dynamodb`](http://central.maven.org/maven2/com/github/derjust/spring-data-dynamodb/)
 
 The Java package name/XSD namespace never changed from `org.socialsignin.spring.data.dynamodb`.
-But the XSD is now also available at [`https://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd`](https://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd).
+But the XSD is now also available at [`https://derjust.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd`](https://derjust.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd).
 
 ## Advanced topics ##
-Advanced topics can be found in the [wiki](https://github.com/spring-data-dynamodb/spring-data-dynamodb/wiki).
+Advanced topics can be found in the [wiki](https://github.com/derjust/spring-data-dynamodb/wiki).
