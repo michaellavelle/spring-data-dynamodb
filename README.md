@@ -274,8 +274,6 @@ The code base has some history already in it - let's clarify it a bit:
 * The code base was established under [github.com/michaellavelle/spring-data-dynamodb)](https://github.com/michaellavelle/spring-data-dynamodb)
 * It was forked and further maintained under [github.com/derjust/spring-data-dynamodb)](https://github.com/derjust/spring-data-dynamodb) 
     * Available in Maven Central under [`com.github.derjust:spring-data-dynamodb`](http://central.maven.org/maven2/com/github/derjust/spring-data-dynamodb/)
-* Ultimately transferred to [github.com/spring-data-dynamodb/spring-data-dynamodb)](https://github.com/spring-data-dynamodb/spring-data-dynamodb) 
-    * Available in Maven Central under [`com.github.spring-data-dynamodb:spring-data-dynamodb`](http://central.maven.org/maven2/com/github/spring-data-dynamodb/spring-data-dynamodb/)
 
 The Java package name/XSD namespace never changed from `org.socialsignin.spring.data.dynamodb`.
 But the XSD is now also available at [`https://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd`](https://spring-data-dynamodb.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd).
