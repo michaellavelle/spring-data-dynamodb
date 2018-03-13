@@ -1,5 +1,5 @@
-[![codecov.io](https://codecov.io/github/spring-data-dynamodb/spring-data-dynamodb/coverage.svg?branch=master)](https://codecov.io/github/spring-data-dynamodb/spring-data-dynamodb?branch=master) [![Build Status](https://travis-ci.org/spring-data-dynamodb/spring-data-dynamodb.svg?branch=master)](https://travis-ci.org/spring-data-dynamodb/spring-data-dynamodb) 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.spring-data-dynamodb/spring-data-dynamodb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.spring-data-dynamodb/spring-data-dynamodb)
+[![codecov.io](https://codecov.io/github/derjust/spring-data-dynamodb/coverage.svg?branch=master)](https://codecov.io/github/derjust/spring-data-dynamodb?branch=master) [![Build Status](https://travis-ci.org/derjust/spring-data-dynamodb.svg?branch=master)](https://travis-ci.org/derjust/spring-data-dynamodb) 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb)
 [![Donation badge](https://img.shields.io/badge/Donate-%F0%9F%92%B8-DAA520.svg)](DONATION.md)
 
 # Spring  Data DynamoDB #
@@ -10,19 +10,19 @@ The primary goal of the [Spring® Data](http://www.springsource.org/spring-data)
 
 This module deals with enhanced support for a data access layer built on [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
 
-Technical infos can be found on the [project page](https://spring-data-dynamodb.github.io/spring-data-dynamodb/).
+Technical infos can be found on the [project page](https://derjust.github.io/spring-data-dynamodb/).
 
 ## Supported Features ##
 
 * Implementation of CRUD methods for DynamoDB Entities
 * Dynamic query generation from query method names  (Only a limited number of keywords and comparison operators currently supported)
-* Possibility to integrate [custom repository code](https://github.com/spring-data-dynamodb/spring-data-dynamodb/wiki/Custom-repository-implementations)
+* Possibility to integrate [custom repository code](https://github.com/derjust/spring-data-dynamodb/wiki/Custom-repository-implementations)
 * Easy Spring annotation based integration
 
 ## Demo application ##
 
 For a demo of spring-data-dynamodb, using spring-data-rest to showcase DynamoDB repositories exposed with REST,
-please see [spring-data-dynamodb-demo](https://github.com/michaellavelle/spring-data-dynamodb-demo).
+please see [spring-data-dynamodb-examples](https://github.com/derjust/spring-data-dynamodb-examples).
 
 ## Version & Spring Framework compatibility ##
 
