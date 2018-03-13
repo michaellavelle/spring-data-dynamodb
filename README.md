@@ -4,7 +4,7 @@
 
 # Spring  Data DynamoDB #
 
-<img align="left" src="https://spring-data-dynamodb.github.io/spring-data-dynamodb/banner/spring-data-dynamodb.png" />
+<img align="left" src="https://derjust.github.io/spring-data-dynamodb/banner/spring-data-dynamodb.png" />
 
 The primary goal of the [Spring® Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies.
 
