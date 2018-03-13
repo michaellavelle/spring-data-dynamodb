@@ -16,8 +16,8 @@
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
+import org.socialsignin.spring.data.dynamodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.Repository;
 
 import java.time.Instant;
 import java.util.List;
@@ -45,5 +45,8 @@ public interface UserRepository extends CrudRepository<User, String> {
 
 	@EnableScan
 	void deleteByIdAndName(String id, String name);
+
+	@Query(fields = "leaveDate")
+	List<User> findByPostCode(String postCode);
 
 }

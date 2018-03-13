@@ -23,7 +23,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -31,7 +31,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class CountByHashKeyQueryTest {
     private static final Class<User> DOMAIN_CLASS = User.class;
-    private static final Random r = new Random();
     @Mock
     private DynamoDBOperations dynamoDBOperations;
     @Mock
@@ -41,7 +40,7 @@ public class CountByHashKeyQueryTest {
 
     @Before
     public void setUp() {
-        hashKey = r.nextLong();
+        hashKey = ThreadLocalRandom.current().nextLong();
         underTest = new CountByHashKeyQuery(dynamoDBOperations, DOMAIN_CLASS, hashKey);
     }
 

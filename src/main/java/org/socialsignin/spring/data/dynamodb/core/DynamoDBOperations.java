@@ -27,6 +27,9 @@ import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Interface to DynmaoDB - as seen from the Spring-Data world
+ */
 public interface DynamoDBOperations {
 
 	<T> int count(Class<T> domainClass, DynamoDBQueryExpression<T> queryExpression);

@@ -17,6 +17,8 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import org.springframework.data.repository.core.EntityInformation;
 
+import java.util.Optional;
+
 /**
  * Encapsulates minimal information needed to load DynamoDB entities.
  * 
@@ -33,13 +35,17 @@ import org.springframework.data.repository.core.EntityInformation;
 public interface DynamoDBEntityInformation<T, ID> extends EntityInformation<T, ID>,
 		DynamoDBHashKeyExtractingEntityMetadata<T> {
 
-	boolean isRangeKeyAware();
+	default boolean isRangeKeyAware() {
+		return false;
+	}
 
 	boolean isCompositeHashAndRangeKeyProperty(String propertyName);
 
 	Object getHashKey(ID id);
 
-	Object getRangeKey(ID id);
+	default Object getRangeKey(ID id) {
+		return null;
+	}
 
-
+	Optional<String> getProjection();
 }

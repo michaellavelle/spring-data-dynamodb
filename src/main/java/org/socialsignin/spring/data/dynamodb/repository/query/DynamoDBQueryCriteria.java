@@ -20,6 +20,8 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.springframework.data.domain.Sort;
 
+import java.util.Optional;
+
 /**
  * @author Michael Lavelle
  * @author Sebastian Just
@@ -38,6 +40,8 @@ public interface DynamoDBQueryCriteria<T, ID> {
 	DynamoDBQueryCriteria<T, ID> withPropertyBetween(String segment, Object value1, Object value2, Class<?> type);
 
 	DynamoDBQueryCriteria<T, ID> withSort(Sort sort);
+
+	DynamoDBQueryCriteria<T, ID> withProjection(Optional<String> projection);
 
 	Query<T> buildQuery(DynamoDBOperations dynamoDBOperations);
 

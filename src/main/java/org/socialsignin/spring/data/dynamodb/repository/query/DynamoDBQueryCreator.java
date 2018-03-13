@@ -22,29 +22,24 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.PartTree;
 
+import java.util.Optional;
+
 public class DynamoDBQueryCreator<T,ID> extends AbstractDynamoDBQueryCreator<T, ID,T> {
-/*
-	public DynamoDBQueryCreator(PartTree tree,
-			DynamoDBEntityInformation<T, ID> entityMetadata,
-			DynamoDBOperations dynamoDBOperations) {
-		super(tree, entityMetadata, dynamoDBOperations);
-	}
-*/
+
 	public DynamoDBQueryCreator(PartTree tree,
 			ParameterAccessor parameterAccessor,
 			DynamoDBEntityInformation<T, ID> entityMetadata,
+			Optional<String> projection,
 			DynamoDBOperations dynamoDBOperations) {
-		super(tree, parameterAccessor, entityMetadata, dynamoDBOperations);
+		super(tree, parameterAccessor, entityMetadata, projection, dynamoDBOperations);
 	}
 	
 	@Override
 	protected Query<T> complete(DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
-		if (sort != null) {
-			criteria.withSort(sort);
-		}
+		criteria.withSort(sort);
+		criteria.withProjection(projection);
 
 		return criteria.buildQuery(dynamoDBOperations);
-
 	}
 
 }

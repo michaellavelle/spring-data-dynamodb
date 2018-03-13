@@ -27,6 +27,9 @@
       <action dev="derjust" type="fix" date="2018-03-05">
         Fix Javadoc and cast warnings
       </action>
+      <action dev="derjust" issue="142" type="add" date="2018-03-21">
+        Added support for @Query-based projections
+      </action>
     </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">

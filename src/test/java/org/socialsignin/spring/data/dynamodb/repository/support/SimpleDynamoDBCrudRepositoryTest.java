@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -59,8 +59,6 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleDynamoDBCrudRepositoryTest {
-	private static final Random r = new Random();
-
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
@@ -118,7 +116,7 @@ public class SimpleDynamoDBCrudRepositoryTest {
 
 	@Test
 	public void deleteById() {
-		final long id = r.nextLong();
+		final long id = ThreadLocalRandom.current().nextLong();
 		User testResult = new User();
 		testResult.setId(Long.toString(id));
 
@@ -177,7 +175,7 @@ public class SimpleDynamoDBCrudRepositoryTest {
 
 	@Test
 	public void testEntityDelete() {
-		final long id = r.nextLong();
+		final long id = ThreadLocalRandom.current().nextLong();
 		User entity = new User();
 		entity.setId(Long.toString(id));
 
@@ -219,7 +217,7 @@ public class SimpleDynamoDBCrudRepositoryTest {
 
 	@Test
 	public void testSave() {
-		final long id = r.nextLong();
+		final long id = ThreadLocalRandom.current().nextLong();
 		User entity = new User();
 		entity.setId(Long.toString(id));
 

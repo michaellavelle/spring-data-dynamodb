@@ -16,30 +16,39 @@
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
+import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener;
+import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener.DynamoDBCreateTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DynamoDBLocalResource.class, CRUDOperationsIT.TestAppConfig.class})
+@TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
+@DynamoDBCreateTable(entityClasses = {User.class})
 public class CRUDOperationsIT {
-
-    private static final Random r = new Random();
 
     @Configuration
     @EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
@@ -49,29 +58,68 @@ public class CRUDOperationsIT {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private AmazonDynamoDB ddb;
+    @Test
+    public void testProjection() {
+        String postCode = "postCode";
+        String user1 = "projection1" + ThreadLocalRandom.current().nextLong();
+        String user2 = "projection2" + ThreadLocalRandom.current().nextLong();
 
-    @Before
-    public void setUp() {
-        DynamoDBLocalResource.createTable(ddb, User.class);
+        User u1 = new User();
+        u1.setId("Id1" + ThreadLocalRandom.current().nextLong());
+        u1.setName(user1);
+        u1.setLeaveDate(Instant.now());
+        u1.setPostCode(postCode);
+        u1.setNumberOfPlaylists(1);
+
+        User u2 = new User();
+        u2.setId("Id2" + ThreadLocalRandom.current().nextLong());
+        u2.setName(user2);
+        u2.setLeaveDate(Instant.now());
+        u2.setPostCode(postCode + postCode);
+        u2.setNumberOfPlaylists(2);
+
+        userRepository.save(u1);
+        userRepository.save(u2);
+
+
+        List<User> actualList = new ArrayList<>();
+        userRepository.findAll().forEach(actualList::add);
+
+        List<User> projectedActuals = userRepository.findByPostCode(postCode);
+        assertEquals(1, projectedActuals.size());
+        User projectedActual = projectedActuals.get(0);
+        assertNull("Attribute not projected", projectedActual.getName());
+        assertNull("Attribute not projected", projectedActual.getPostCode());
+        assertNull("Attribute not projected", projectedActual.getNumberOfPlaylists());
+        assertNull("Key not projected", projectedActual.getId());
+        assertNotNull("LeaveDate is projected", projectedActual.getLeaveDate());
+
+        List<User> fullActuals = userRepository.findByNameIn(Arrays.asList(user1, user2));
+        assertEquals(2, fullActuals.size());
+        User fullActual = fullActuals.get(0);
+        assertThat(Arrays.asList(user1, user2), hasItems(fullActual.getName()));
+        assertThat(Arrays.asList(user1, user2), hasItems(fullActuals.get(1).getName()));
+        assertNotNull(fullActual.getPostCode());
+        assertNotNull(fullActual.getNumberOfPlaylists());
+        assertNotNull(fullActual.getId());
+        assertNotNull(fullActual.getLeaveDate());
     }
 
     @Test
     public void testDelete() throws InterruptedException {
         // Prepare
         User u1 = new User();
-        String name1 = "name1" + r.nextLong();
+        String name1 = "name1" + ThreadLocalRandom.current().nextLong();
         u1.setName(name1);
         u1.setId("u1");
 
         User u2 = new User();
-        String name2 = "name1" + r.nextLong();
+        String name2 = "name1" + ThreadLocalRandom.current().nextLong();
         u2.setId("u2");
         u2.setName(name2);
 
         User u3 = new User();
-        String name3 = "name1" + r.nextLong();
+        String name3 = "name1" + ThreadLocalRandom.current().nextLong();
         u3.setId("u3");
         u3.setName(name3);
 
