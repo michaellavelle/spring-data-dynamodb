@@ -6,7 +6,7 @@
 
 <img align="left" src="https://derjust.github.io/spring-data-dynamodb/banner/spring-data-dynamodb.png" />
 
-The primary goal of the [Spring® Data](http://www.springsource.org/spring-data) project is to make it easier to build Spring-powered applications that use data access technologies.
+The primary goal of the [Spring® Data](https://projects.spring.io/spring-data/) project is to make it easier to build Spring-powered applications that use data access technologies.
 
 This module deals with enhanced support for a data access layer built on [AWS DynamoDB](https://aws.amazon.com/dynamodb/).
 
