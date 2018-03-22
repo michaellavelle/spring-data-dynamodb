@@ -6,6 +6,7 @@ language:
 
 jdk:
   - oraclejdk8
+  - openjdk9
 
 before_script:
   - pip install --user codecov
@@ -19,6 +20,6 @@ after_success:
 deploy:
   # deploy master to OSSHR Snapshot
   - provider: script
-    script: mvn deploy
+    script: mvn clean deploy
     on:
       branch: master
