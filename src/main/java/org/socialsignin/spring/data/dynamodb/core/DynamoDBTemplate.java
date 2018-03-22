@@ -28,6 +28,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.amazonaws.services.dynamodbv2.model.Select;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.socialsignin.spring.data.dynamodb.mapping.event.AfterDeleteEvent;
 import org.socialsignin.spring.data.dynamodb.mapping.event.AfterLoadEvent;
 import org.socialsignin.spring.data.dynamodb.mapping.event.AfterQueryEvent;
@@ -48,7 +50,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextAware {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBTemplate.class);
 	private final DynamoDBMapper dynamoDBMapper;
 	private final AmazonDynamoDB amazonDynamoDB;
 	private final DynamoDBMapperConfig dynamoDBMapperConfig;
@@ -92,7 +94,29 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 		if (dynamoDBMapperConfig == null) {
 			this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
 		} else {
-			this.dynamoDBMapperConfig = dynamoDBMapperConfig;
+
+			// #146, #81 #157
+			// Trying to fix half-initialized DynamoDBMapperConfigs here.
+			// The old documentation advised to start with an empty builder. Therefore we
+			// try here to set required fields to their defaults -
+			// As the documentation at https://github.com/derjust/spring-data-dynamodb/wiki/Alter-table-name-during-runtime (same as https://git.io/DynamoDBMapperConfig)
+			// now does: Start with #DEFAULT and add what's required
+			DynamoDBMapperConfig.Builder emptyBuilder = DynamoDBMapperConfig.builder(); // empty (!) builder
+
+			if (dynamoDBMapperConfig.getConversionSchema() == null) {
+				LOGGER.warn("No ConversionSchema set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
+				// DynamoDBMapperConfig#DEFAULT comes with a  ConversionSchema
+				emptyBuilder.withConversionSchema(DynamoDBMapperConfig.DEFAULT.getConversionSchema());
+			}
+
+			if (dynamoDBMapperConfig.getTypeConverterFactory() == null) {
+				LOGGER.warn("No TypeConverterFactory set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
+				// DynamoDBMapperConfig#DEFAULT comes with a TypeConverterFactory
+				emptyBuilder.withTypeConverterFactory(DynamoDBMapperConfig.DEFAULT.getTypeConverterFactory());
+			}
+
+			// Deprecated but the only way how DynamoDBMapperConfig#merge is exposed
+			this.dynamoDBMapperConfig = new DynamoDBMapperConfig(dynamoDBMapperConfig, emptyBuilder.build());
 		}
 
 		if (dynamoDBMapper == null) {
