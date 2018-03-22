@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,13 +15,12 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import org.springframework.util.Assert;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import org.springframework.util.Assert;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Encapsulates minimal information needed to load DynamoDB entities.
@@ -38,17 +37,24 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
  * annotated with @DynamoDBHashKey to ensure correct behavior
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
-public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable> extends
+public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
 		FieldAndGetterReflectionEntityInformation<T, ID> implements DynamoDBEntityInformation<T, ID> {
 
 	private DynamoDBHashKeyExtractingEntityMetadata<T> metadata;
 	private HashKeyExtractor<ID, ID> hashKeyExtractor;
+	private Optional<String> projection = Optional.empty();
 
 	public DynamoDBIdIsHashKeyEntityInformationImpl(Class<T> domainClass, DynamoDBHashKeyExtractingEntityMetadata<T> metadata) {
 		super(domainClass, DynamoDBHashKey.class);
 		this.metadata = metadata;
 		this.hashKeyExtractor = new HashKeyIsIdHashKeyExtractor<ID>(getIdType());
+	}
+
+	@Override
+	public Optional<String> getProjection() {
+		return projection;
 	}
 
 	@Override
@@ -62,12 +68,7 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable
 	// constants
 
 	@Override
-	public boolean isRangeKeyAware() {
-		return false;
-	}
-
-	@Override
-	public String getOverriddenAttributeName(String attributeName) {
+	public Optional<String> getOverriddenAttributeName(String attributeName) {
 		return metadata.getOverriddenAttributeName(attributeName);
 	}
 
@@ -84,11 +85,6 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID extends Serializable
 	@Override
 	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
 		return metadata.getMarshallerForProperty(propertyName);
-	}
-
-	@Override
-	public Object getRangeKey(ID id) {
-		return null;
 	}
 
 	@Override

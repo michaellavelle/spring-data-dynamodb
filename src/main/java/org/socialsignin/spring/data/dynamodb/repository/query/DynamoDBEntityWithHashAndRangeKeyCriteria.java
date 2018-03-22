@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,16 +15,13 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.Select;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.CountByHashAndRangeKeyQuery;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityQueryExpressionQuery;
@@ -38,16 +35,20 @@ import org.socialsignin.spring.data.dynamodb.query.SingleEntityLoadByHashAndRang
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBIdIsHashAndRangeKeyEntityInformation;
 import org.springframework.util.Assert;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
-import com.amazonaws.services.dynamodbv2.model.Condition;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
-public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializable> extends AbstractDynamoDBQueryCriteria<T, ID> {
+public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDynamoDBQueryCriteria<T, ID> {
 
 	private Object rangeKeyAttributeValue;
 	private Object rangeKeyPropertyValue;
@@ -67,19 +68,20 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 		return rangeKeyPropertyName.equals(propertyName);
 	}
 
-	public DynamoDBEntityWithHashAndRangeKeyCriteria(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> entityInformation) {
-		super(entityInformation);
+	public DynamoDBEntityWithHashAndRangeKeyCriteria(
+	        DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> entityInformation, DynamoDBMapperTableModel<T> tableModel) {
+
+	    super(entityInformation, tableModel);
 		this.rangeKeyPropertyName = entityInformation.getRangeKeyPropertyName();
 		this.indexRangeKeyPropertyNames = entityInformation.getIndexRangeKeyPropertyNames();
 		if (indexRangeKeyPropertyNames == null) {
-			indexRangeKeyPropertyNames = new HashSet<String>();
+			indexRangeKeyPropertyNames = new HashSet<>();
 		}
 		this.entityInformation = entityInformation;
-
 	}
 
 	public Set<String> getIndexRangeKeyAttributeNames() {
-		Set<String> indexRangeKeyAttributeNames = new HashSet<String>();
+		Set<String> indexRangeKeyAttributeNames = new HashSet<>();
 		for (String indexRangeKeyPropertyName : indexRangeKeyPropertyNames) {
 			indexRangeKeyAttributeNames.add(getAttributeName(indexRangeKeyPropertyName));
 		}
@@ -99,12 +101,12 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 	}
 
 	protected Query<T> buildSingleEntityLoadQuery(DynamoDBOperations dynamoDBOperations) {
-		return new SingleEntityLoadByHashAndRangeKeyQuery<T>(dynamoDBOperations, entityInformation.getJavaType(),
+		return new SingleEntityLoadByHashAndRangeKeyQuery<>(dynamoDBOperations, entityInformation.getJavaType(),
 				getHashKeyPropertyValue(), getRangeKeyPropertyValue());
 	}
 	
 	protected Query<Long> buildSingleEntityCountQuery(DynamoDBOperations dynamoDBOperations) {
-		return new CountByHashAndRangeKeyQuery<T>(dynamoDBOperations, entityInformation.getJavaType(),
+		return new CountByHashAndRangeKeyQuery<>(dynamoDBOperations, entityInformation.getJavaType(),
 				getHashKeyPropertyValue(), getRangeKeyPropertyValue());
 	}
 
@@ -157,7 +159,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 
 			Entry<String, List<Condition>> singlePropertyConditions = propertyConditions.entrySet().iterator().next();
 
-			List<String> allowedSortProperties = new ArrayList<String>();
+			List<String> allowedSortProperties = new ArrayList<>();
 			for (Entry<String, List<Condition>> singlePropertyCondition : propertyConditions.entrySet()) {
 				if (entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet()
 						.contains(singlePropertyCondition.getKey())) {
@@ -182,6 +184,11 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 			applySortIfSpecified(queryExpression, Arrays.asList(new String[] { getRangeKeyPropertyName() }));
 		}
 
+		if (projection.isPresent()) {
+			queryExpression.setSelect(Select.SPECIFIC_ATTRIBUTES);
+			queryExpression.setProjectionExpression(projection.get());
+		}
+
 		return queryExpression;
 	}
 
@@ -200,17 +207,17 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 	protected Query<T> buildFinderQuery(DynamoDBOperations dynamoDBOperations) {
 		if (isApplicableForQuery()) {
 			if (isApplicableForGlobalSecondaryIndex()) {
-				String tableName = dynamoDBOperations.getOverriddenTableName(entityInformation.getDynamoDBTableName());
+				String tableName = dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName());
 				QueryRequest queryRequest = buildQueryRequest(tableName, getGlobalSecondaryIndexName(),
 						getHashKeyAttributeName(), getRangeKeyAttributeName(), this.getRangeKeyPropertyName(),
 						getHashKeyConditions(), getRangeKeyConditions());
-				return new MultipleEntityQueryRequestQuery<T>(dynamoDBOperations,entityInformation.getJavaType(), queryRequest);
+				return new MultipleEntityQueryRequestQuery<>(dynamoDBOperations,entityInformation.getJavaType(), queryRequest);
 			} else {
 				DynamoDBQueryExpression<T> queryExpression = buildQueryExpression();
-				return new MultipleEntityQueryExpressionQuery<T>(dynamoDBOperations, entityInformation.getJavaType(), queryExpression);
+				return new MultipleEntityQueryExpressionQuery<>(dynamoDBOperations, entityInformation.getJavaType(), queryExpression);
 			}
 		} else {
-			return new MultipleEntityScanExpressionQuery<T>(dynamoDBOperations, clazz, buildScanExpression());
+			return new MultipleEntityScanExpressionQuery<>(dynamoDBOperations, clazz, buildScanExpression());
 		}
 	}
 	
@@ -218,15 +225,15 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 	protected Query<Long> buildFinderCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
 		if (isApplicableForQuery()) {
 			if (isApplicableForGlobalSecondaryIndex()) {
-				String tableName = dynamoDBOperations.getOverriddenTableName(entityInformation.getDynamoDBTableName());
+				String tableName = dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName());
 				QueryRequest queryRequest = buildQueryRequest(tableName, getGlobalSecondaryIndexName(),
 						getHashKeyAttributeName(), getRangeKeyAttributeName(), this.getRangeKeyPropertyName(),
 						getHashKeyConditions(), getRangeKeyConditions());
-				return new QueryRequestCountQuery<T>(dynamoDBOperations,entityInformation.getJavaType(), queryRequest);
+				return new QueryRequestCountQuery(dynamoDBOperations, queryRequest);
 		
 			} else {
 				DynamoDBQueryExpression<T> queryExpression = buildQueryExpression();
-				return new QueryExpressionCountQuery<T>(dynamoDBOperations, entityInformation.getJavaType(), queryExpression);
+				return new QueryExpressionCountQuery<>(dynamoDBOperations, entityInformation.getJavaType(), queryExpression);
 		
 			}
 		} else {
@@ -329,9 +336,8 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID extends Serializabl
 
 	public DynamoDBScanExpression buildScanExpression() {
 
-		if (sort != null) {
-			throw new UnsupportedOperationException("Sort not supported for scan expressions");
-		}
+		ensureNoSort(sort);
+
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		if (isHashKeySpecified()) {
 			scanExpression.addFilterCondition(

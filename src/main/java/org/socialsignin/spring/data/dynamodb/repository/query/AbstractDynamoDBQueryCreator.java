@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,8 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Iterator;
-
-import org.apache.commons.lang3.ClassUtils;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
@@ -31,39 +28,45 @@ import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
-import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Optional;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
-public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R> extends
+public abstract class AbstractDynamoDBQueryCreator<T, ID, R> extends
 		AbstractQueryCreator<Query<R>, DynamoDBQueryCriteria<T, ID>> {
 
-	private DynamoDBEntityInformation<T, ID> entityMetadata;
-	protected DynamoDBOperations dynamoDBOperations;
+	protected final DynamoDBEntityInformation<T, ID> entityMetadata;
+	protected final DynamoDBOperations dynamoDBOperations;
+	protected final Optional<String> projection;
 
-	public AbstractDynamoDBQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBOperations dynamoDBOperations) {
+	public AbstractDynamoDBQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata, Optional<String> projection, DynamoDBOperations dynamoDBOperations) {
 		super(tree);
 		this.entityMetadata = entityMetadata;
+		this.projection = projection;
 		this.dynamoDBOperations = dynamoDBOperations;
 	}
 
 	public AbstractDynamoDBQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
-			DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBOperations dynamoDBOperations) {
+			DynamoDBEntityInformation<T, ID> entityMetadata, Optional<String> projection, DynamoDBOperations dynamoDBOperations) {
 		super(tree, parameterAccessor);
 		this.entityMetadata = entityMetadata;
+		this.projection = projection;
 		this.dynamoDBOperations = dynamoDBOperations;
-
 	}
 
 	@Override
 	protected DynamoDBQueryCriteria<T, ID> create(Part part, Iterator<Object> iterator) {
-
+        final DynamoDBMapperTableModel<T> tableModel = dynamoDBOperations.getTableModel(entityMetadata.getJavaType());
 		DynamoDBQueryCriteria<T, ID> criteria = entityMetadata.isRangeKeyAware() ? new DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID>(
-				(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID>) entityMetadata)
-				: new DynamoDBEntityWithHashKeyOnlyCriteria<T, ID>(entityMetadata);
+				(DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID>) entityMetadata, tableModel)
+				: new DynamoDBEntityWithHashKeyOnlyCriteria<>(entityMetadata, tableModel);
 		return addCriteria(criteria, part, iterator);
 	}
 
@@ -87,7 +90,7 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID extends Serializable,R>
 			Object in = iterator.next();
 			Assert.notNull(in, "Creating conditions on null parameters not supported: please specify a value for '"
 					+ leafNodePropertyName + "'");
-			boolean isIterable = ClassUtils.isAssignable(in.getClass(), Iterable.class);
+			boolean isIterable = ClassUtils.isAssignable(Iterable.class, in.getClass());
 			boolean isArray = ObjectUtils.isArray(in);
 			Assert.isTrue(isIterable || isArray, "In criteria can only operate with Iterable or Array parameters");
 			Iterable<?> iterable = isIterable ? ((Iterable<?>) in) : Arrays.asList(ObjectUtils.toObjectArray(in));
