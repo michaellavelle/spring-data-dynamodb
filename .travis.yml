@@ -15,3 +15,10 @@ script:
 
 after_success:
   - codecov
+
+deploy:
+  # deploy master to OSSHR Snapshot
+  - provider: script
+    script: mvn deploy
+    on:
+      branch: master
