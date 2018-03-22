@@ -26,14 +26,14 @@ import java.util.Set;
 public interface DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> extends
 		DynamoDBHashKeyExtractingEntityMetadata<T> {
 
-	public <H> HashAndRangeKeyExtractor<ID, H> getHashAndRangeKeyExtractor(Class<ID> idClass);
+	<H> HashAndRangeKeyExtractor<ID, H> getHashAndRangeKeyExtractor(Class<ID> idClass);
 
-	public String getRangeKeyPropertyName();
+	String getRangeKeyPropertyName();
 
-	public Set<String> getIndexRangeKeyPropertyNames();
+	Set<String> getIndexRangeKeyPropertyNames();
 
 	boolean isCompositeHashAndRangeKeyProperty(String propertyName);
 
-	public <H> T getHashKeyPropotypeEntityForHashKey(H hashKey);
+	<H> T getHashKeyPropotypeEntityForHashKey(H hashKey);
 
 }

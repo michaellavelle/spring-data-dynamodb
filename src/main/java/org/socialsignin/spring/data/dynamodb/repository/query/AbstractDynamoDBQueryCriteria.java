@@ -48,6 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * @author Michael Lavelle
@@ -68,6 +69,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	protected Object hashKeyPropertyValue;
 	protected String globalSecondaryIndexName;
 	protected Sort sort = Sort.unsorted();
+	protected Optional<String> projection = Optional.empty();
 
 	public abstract boolean isApplicableForLoad();
 
@@ -120,7 +122,14 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 			}
 
 			queryRequest.setKeyConditions(keyConditions);
-			queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);
+			// Might be overwritten in the actual Query classes
+			if (projection.isPresent()) {
+				queryRequest.setSelect(Select.SPECIFIC_ATTRIBUTES);
+				queryRequest.setProjectionExpression(projection.get());
+			} else {
+				queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);
+			}
+
 			applySortIfSpecified(queryRequest, new ArrayList<>(new HashSet<>(allowedSortProperties)));
 		}
 		return queryRequest;
@@ -322,7 +331,6 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	protected String getHashKeyAttributeName() {
 		return getAttributeName(getHashKeyPropertyName());
 	}
-
 
 	protected boolean hasIndexHashKeyEqualCondition()
 	{
@@ -677,4 +685,9 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 		return this;
 	}
 
+	@Override
+	public DynamoDBQueryCriteria<T, ID> withProjection(Optional<String> projection) {
+		this.projection = projection;
+		return this;
+	}
 }

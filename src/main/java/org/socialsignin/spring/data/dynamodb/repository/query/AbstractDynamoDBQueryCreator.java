@@ -33,6 +33,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Optional;
 
 /**
  * @author Michael Lavelle
@@ -41,21 +42,23 @@ import java.util.Iterator;
 public abstract class AbstractDynamoDBQueryCreator<T, ID, R> extends
 		AbstractQueryCreator<Query<R>, DynamoDBQueryCriteria<T, ID>> {
 
-	private DynamoDBEntityInformation<T, ID> entityMetadata;
-	protected DynamoDBOperations dynamoDBOperations;
+	protected final DynamoDBEntityInformation<T, ID> entityMetadata;
+	protected final DynamoDBOperations dynamoDBOperations;
+	protected final Optional<String> projection;
 
-	public AbstractDynamoDBQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBOperations dynamoDBOperations) {
+	public AbstractDynamoDBQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata, Optional<String> projection, DynamoDBOperations dynamoDBOperations) {
 		super(tree);
 		this.entityMetadata = entityMetadata;
+		this.projection = projection;
 		this.dynamoDBOperations = dynamoDBOperations;
 	}
 
 	public AbstractDynamoDBQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
-			DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBOperations dynamoDBOperations) {
+			DynamoDBEntityInformation<T, ID> entityMetadata, Optional<String> projection, DynamoDBOperations dynamoDBOperations) {
 		super(tree, parameterAccessor);
 		this.entityMetadata = entityMetadata;
+		this.projection = projection;
 		this.dynamoDBOperations = dynamoDBOperations;
-
 	}
 
 	@Override

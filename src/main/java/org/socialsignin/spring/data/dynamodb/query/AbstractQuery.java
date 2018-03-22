@@ -25,8 +25,8 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
  */
 public abstract class AbstractQuery<T> implements Query<T> {
 
-	protected DynamoDBOperations dynamoDBOperations;
-	protected Class<T> clazz;
+	protected final DynamoDBOperations dynamoDBOperations;
+	protected final Class<T> clazz;
 	protected boolean scanEnabled = false;
 	protected boolean scanCountEnabled = false;
 

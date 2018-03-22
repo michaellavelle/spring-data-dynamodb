@@ -44,11 +44,17 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
 
 	private DynamoDBHashKeyExtractingEntityMetadata<T> metadata;
 	private HashKeyExtractor<ID, ID> hashKeyExtractor;
+	private Optional<String> projection = Optional.empty();
 
 	public DynamoDBIdIsHashKeyEntityInformationImpl(Class<T> domainClass, DynamoDBHashKeyExtractingEntityMetadata<T> metadata) {
 		super(domainClass, DynamoDBHashKey.class);
 		this.metadata = metadata;
 		this.hashKeyExtractor = new HashKeyIsIdHashKeyExtractor<ID>(getIdType());
+	}
+
+	@Override
+	public Optional<String> getProjection() {
+		return projection;
 	}
 
 	@Override
@@ -60,11 +66,6 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
 
 	// The following methods simply delegate to metadata, or always return
 	// constants
-
-	@Override
-	public boolean isRangeKeyAware() {
-		return false;
-	}
 
 	@Override
 	public Optional<String> getOverriddenAttributeName(String attributeName) {
@@ -84,11 +85,6 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
 	@Override
 	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
 		return metadata.getMarshallerForProperty(propertyName);
-	}
-
-	@Override
-	public Object getRangeKey(ID id) {
-		return null;
 	}
 
 	@Override

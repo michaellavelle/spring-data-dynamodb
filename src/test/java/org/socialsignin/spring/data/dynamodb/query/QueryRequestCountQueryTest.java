@@ -23,15 +23,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QueryRequestCountQueryTest {
-
-    private static final Random r = new Random();
     @Mock
     private DynamoDBOperations dynamoDBOperations;
     @Mock
@@ -46,7 +44,7 @@ public class QueryRequestCountQueryTest {
 
     @Test
     public void testGetSingleResult() {
-        int expected = r.nextInt();
+        int expected = ThreadLocalRandom.current().nextInt();
         when(dynamoDBOperations.count(Long.class, queryRequest)).thenReturn(expected);
 
         Long actual = underTest.getSingleResult();

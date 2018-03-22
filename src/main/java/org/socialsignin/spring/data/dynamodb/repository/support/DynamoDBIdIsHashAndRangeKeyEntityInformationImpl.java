@@ -38,12 +38,18 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends
 
 	private DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata;
 	private HashAndRangeKeyExtractor<ID, ?> hashAndRangeKeyExtractor;
+	private Optional<String> projection = Optional.empty();
 
 	public DynamoDBIdIsHashAndRangeKeyEntityInformationImpl(Class<T> domainClass,
 			DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata) {
 		super(domainClass, Id.class);
 		this.metadata = metadata;
 		this.hashAndRangeKeyExtractor = metadata.getHashAndRangeKeyExtractor(getIdType());
+	}
+
+	@Override
+	public Optional<String> getProjection() {
+		return projection;
 	}
 
 	@Override

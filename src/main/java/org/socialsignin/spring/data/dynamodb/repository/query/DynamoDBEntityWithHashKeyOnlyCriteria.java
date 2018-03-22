@@ -20,6 +20,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.Select;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.CountByHashKeyQuery;
 import org.socialsignin.spring.data.dynamodb.query.MultipleEntityQueryRequestQuery;
@@ -47,11 +48,11 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 	}
 
 	protected Query<T> buildSingleEntityLoadQuery(DynamoDBOperations dynamoDBOperations) {
-		return new SingleEntityLoadByHashKeyQuery<T>(dynamoDBOperations, clazz, getHashKeyPropertyValue());
+		return new SingleEntityLoadByHashKeyQuery<>(dynamoDBOperations, clazz, getHashKeyPropertyValue());
 	}
 	
 	protected Query<Long> buildSingleEntityCountQuery(DynamoDBOperations dynamoDBOperations) {
-		return new CountByHashKeyQuery<T>(dynamoDBOperations, clazz, getHashKeyPropertyValue());
+		return new CountByHashKeyQuery<>(dynamoDBOperations, clazz, getHashKeyPropertyValue());
 	}
 
 	protected Query<T> buildFinderQuery(DynamoDBOperations dynamoDBOperations) {
@@ -72,6 +73,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 			List<Condition> hashKeyConditions = getHashKeyConditions();
 			QueryRequest queryRequest = buildQueryRequest(dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName()),
 					getGlobalSecondaryIndexName(), getHashKeyAttributeName(), null, null, hashKeyConditions, null);
+			queryRequest.setSelect(Select.COUNT);
 			return new QueryRequestCountQuery(dynamoDBOperations, queryRequest);
 
 		} else {
@@ -105,6 +107,11 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 			for (Condition condition : conditionEntry.getValue()) {
 				scanExpression.addFilterCondition(conditionEntry.getKey(), condition);
 			}
+		}
+
+		if (projection.isPresent()) {
+			scanExpression.setSelect(Select.SPECIFIC_ATTRIBUTES);
+			scanExpression.setProjectionExpression(projection.get());
 		}
 		return scanExpression;
 	}

@@ -22,14 +22,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.PartTree;
 
+import java.util.Optional;
+
 public class DynamoDBCountQueryCreator<T ,ID> extends AbstractDynamoDBQueryCreator<T, ID, Long> {
 
 	private boolean pageQuery;
-	
+
 	public DynamoDBCountQueryCreator(PartTree tree,
 			DynamoDBEntityInformation<T, ID> entityMetadata,
 			DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
-		super(tree, entityMetadata, dynamoDBOperations);
+		super(tree, entityMetadata, Optional.empty(), dynamoDBOperations);
 		this.pageQuery = pageQuery;
 	}
 
@@ -37,7 +39,7 @@ public class DynamoDBCountQueryCreator<T ,ID> extends AbstractDynamoDBQueryCreat
 			ParameterAccessor parameterAccessor,
 			DynamoDBEntityInformation<T, ID> entityMetadata,
 			DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
-		super(tree, parameterAccessor, entityMetadata, dynamoDBOperations);
+		super(tree, parameterAccessor, entityMetadata, Optional.empty(), dynamoDBOperations);
 		this.pageQuery = pageQuery;
 
 	}

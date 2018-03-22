@@ -18,9 +18,8 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper.FailedBatch;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
-
-import org.socialsignin.spring.data.dynamodb.exception.BatchWriteException;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+import org.socialsignin.spring.data.dynamodb.exception.BatchWriteException;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
 import org.socialsignin.spring.data.dynamodb.utils.SortHandler;
 import org.springframework.dao.DataAccessException;

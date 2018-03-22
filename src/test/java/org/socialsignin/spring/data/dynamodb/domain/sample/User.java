@@ -16,6 +16,8 @@
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import org.socialsignin.spring.data.dynamodb.marshaller.Instant2IsoDynamoDBMarshaller;
@@ -39,7 +41,7 @@ public class User {
 	private Date joinYear;
 	
 	private Instant leaveDate;
-	
+
 	private String postCode;
 	
 	private Set<String> testSet;
@@ -52,7 +54,6 @@ public class User {
 		this.testSet = testSet;
 	}
 
-	
 	public Date getJoinDate() {
 		return joinDate;
 	}
@@ -77,7 +78,8 @@ public class User {
 	public void setLeaveDate(Instant leaveDate) {
 		this.leaveDate = leaveDate;
 	}
-	
+
+	@DynamoDBIndexHashKey(globalSecondaryIndexName = "idx_postCode_numberOfPlaylist")
 	public String getPostCode() {
 		return postCode;
 	}
@@ -103,6 +105,7 @@ public class User {
 		this.name = name;
 	}
 
+	@DynamoDBIndexRangeKey(globalSecondaryIndexName = "idx_postCode_numberOfPlaylist")
 	public Integer getNumberOfPlaylists() {
 		return numberOfPlaylists;
 	}
