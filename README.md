@@ -48,6 +48,7 @@ Spring-Boot projects.
 ## Quick Start ##
 
 Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb):
+(`SNAPSHOT` buids are available via the [OSSRH snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/com/github/derjust/spring-data-dynamodb/) - please find [further help here](https://stackoverflow.com/a/7717234/25332) 
 
 ```xml
 <dependency>
