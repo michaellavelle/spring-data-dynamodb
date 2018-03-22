@@ -86,20 +86,20 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
      * @param dynamoDBMapperConfig can be {@code null} - {@link DynamoDBMapperConfig#DEFAULT} is used if {@code null} is passed in
      * @param dynamoDBMapper can be {@code null} - {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB, DynamoDBMapperConfig)} is used if {@code null} is passed in */
 	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig, DynamoDBMapper dynamoDBMapper) {
-       Assert.notNull(amazonDynamoDB, "amazonDynamoDB must not be null!");
-	   this.amazonDynamoDB = amazonDynamoDB;
-	   
-	  if (dynamoDBMapperConfig == null) {
-		  this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;		  
-	  } else {
-		  this.dynamoDBMapperConfig = dynamoDBMapperConfig;
-	  }
-	  
-	  if (dynamoDBMapper == null) {
-          this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
-	  } else {
-          this.dynamoDBMapper = dynamoDBMapper;
-	  }
+		Assert.notNull(amazonDynamoDB, "amazonDynamoDB must not be null!");
+		this.amazonDynamoDB = amazonDynamoDB;
+
+		if (dynamoDBMapperConfig == null) {
+			this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
+		} else {
+			this.dynamoDBMapperConfig = dynamoDBMapperConfig;
+		}
+
+		if (dynamoDBMapper == null) {
+			this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
+		} else {
+			this.dynamoDBMapper = dynamoDBMapper;
+		}
     }
 	
 	@Override
