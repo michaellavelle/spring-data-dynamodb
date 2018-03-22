@@ -20,6 +20,6 @@ after_success:
 deploy:
   # deploy master to OSSHR Snapshot
   - provider: script
-    script: mvn clean deploy
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy"
     on:
       branch: master
