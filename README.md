@@ -14,8 +14,8 @@ Technical infos can be found on the [project page](https://derjust.github.io/spr
 
 ## Supported Features ##
 
-* Implementation of CRUD methods for DynamoDB Entities
-* Dynamic query generation from query method names  (Only a limited number of keywords and comparison operators currently supported)
+* Implementation of [CRUD methods for](https://docs.spring.io/spring-data/commons/docs/current/reference/html/#repositories.definition) DynamoDB Entities
+* Dynamic query generation from [query method names](https://docs.spring.io/spring-data/commons/docs/current/reference/html/#repositories.query-methods.query-creation) ([Supported keywords and comparison operators](https://github.com/derjust/spring-data-dynamodb/wiki/Supported-Spring-Data-Comparison-Operators))
 * [Projections](https://github.com/derjust/spring-data-dynamodb/wiki/Projections)
 * Possibility to integrate [custom repository code](https://github.com/derjust/spring-data-dynamodb/wiki/Custom-repository-implementations)
 * Easy Spring annotation based integration
@@ -25,31 +25,9 @@ Technical infos can be found on the [project page](https://derjust.github.io/spr
 For a demo of spring-data-dynamodb, using spring-data-rest to showcase DynamoDB repositories exposed with REST,
 please see [spring-data-dynamodb-examples](https://github.com/derjust/spring-data-dynamodb-examples).
 
-## Version & Spring Framework compatibility ##
-
-The major and minor number of this library refers to the compatible Spring framework version. The build number is used as specified by SEMVER.
-
-API changes will follow SEMVER and loosly the Spring Framework releases.
-
-| `spring-data-dynamodb` version  | Spring Boot compatibility      |Spring Framework compatibility  | Spring Data compatibility |
-| ------------------------------- | ------------------------------ | ------------------------------ | ------------------------- |
-| 1.0.x                           |                                | >= 3.1 && < 4.2                |                           |
-| 4.2.x                           | >= 1.3.0 && < 1.4.0            | >= 4.2 && < 4.3                | Gosling-SR1               |
-| 4.3.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Gosling-SR1               |
-| 4.4.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Hopper-SR2                |
-| 4.5.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Ingalls                   |
-| 5.0.x                           | >= 2.0                         | >= 5.0                         | Kay-SR1                   |
-
-`spring-data-dynamodb` depends directly on `spring-data` as also `spring-context`, `spring-data` and `spring-tx`.
-
-`compile` and `runtime` dependencies are kept to a minimum to allow easy integartion, for example into 
-Spring-Boot projects.
-
 ## Quick Start ##
 
-Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb):
-
-(`SNAPSHOT` buids are available via the [OSSRH snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/com/github/derjust/spring-data-dynamodb/) - please find [further help here](https://stackoverflow.com/a/7717234/25332) )
+Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.github.derjust/spring-data-dynamodb) ([`SNAPSHOT` builds](https://oss.sonatype.org/content/repositories/snapshots/com/github/derjust/spring-data-dynamodb/) are available via the [OSSRH snapshot repository](https://stackoverflow.com/a/7717234/25332) ):
 
 ```xml
 <dependency>
@@ -59,7 +37,7 @@ Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.gi
 </dependency>
 ```
 
-Setup DynamoDB configuration as well as enabling Spring Data DynamoDB repository support.
+Setup DynamoDB configuration as well as enabling Spring-Data DynamoDB repository support via Annotation ([XML-based configuration](wiki/Quick-Start---XML-based-configuration))
 
 ```java
 @Configuration
@@ -94,36 +72,6 @@ public class DynamoDBConfig {
 }
 ```
 
-or in XML...
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:dynamodb="http://docs.socialsignin.org/schema/data/dynamodb"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://docs.socialsignin.org/schema/data/dynamodb
-                           http://derjust.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd">
-
-  <bean id="amazonDynamoDB" class="com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient">
-    <constructor-arg ref="amazonAWSCredentials" />
-    <property name="endpoint" value="${amazon.dynamodb.endpoint}" />
-  </bean>
-  
-  <bean id="amazonAWSCredentials" class="com.amazonaws.auth.BasicAWSCredentials">
-    <constructor-arg value="${amazon.aws.accesskey}" />
-    <constructor-arg value="${amazon.aws.secretkey}" />
-  </bean>
-  
-  <dynamodb:repositories base-package="com.acme.repositories" amazon-dynamodb-ref="amazonDynamoDB" />
-  
-</beans>
-
-```
-
-Create a DynamoDB hash-key only table in AWS console, with table name `User` and with hash key attribute name `id`.
-
 Create a DynamoDB entity for this table:
 
 ```java
@@ -133,14 +81,6 @@ public class User {
   private String id;
   private String firstName;
   private String lastName;
-
-  public User() {
-  }
-  
-  public User(String firstName, String lastName) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-  }
 
   @DynamoDBHashKey
   @DynamoDBAutoGeneratedKey 
@@ -168,21 +108,6 @@ public class User {
 
   public void setLastName(String lastName) {
     this.lastName = lastName;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-
-      User user = (User) o;
-
-      return id.equals(user.id);
-  }
-
-  @Override
-  public int hashCode() {
-      return id.hashCode();
   }
 }
 ```
@@ -219,44 +144,10 @@ And finally write a test client
 @SpringApplicationConfiguration(classes = { 
     PropertyPlaceholderAutoConfiguration.class, DynamoDBConfig.class})
     public class UserRepositoryIntegrationTest {
-     
-    private static final String KEY_NAME = "id";
-    private static final Long READ_CAPACITY_UNITS = 5L;
-    private static final Long WRITE_CAPACITY_UNITS = 5L;
-    
+       
     @Autowired
     UserRepository repository;
-    
-    @Autowired
-    private AmazonDynamoDB amazonDynamoDB;
-    
-    @Before
-    public void init() throws Exception {
-    
-        ListTablesResult listTablesResult = amazonDynamoDB.listTables();
-    
-        listTablesResult.getTableNames().stream().
-                filter(tableName -> tableName.equals(User.TABLE_NAME)).forEach(tableName -> {
-            amazonDynamoDB.deleteTable(tableName);
-        });
-    
-        List<AttributeDefinition> attributeDefinitions = new ArrayList<AttributeDefinition>();
-        attributeDefinitions.add(new AttributeDefinition().withAttributeName(KEY_NAME).withAttributeType("S"));
-    
-        List<KeySchemaElement> keySchemaElements = new ArrayList<KeySchemaElement>();
-        keySchemaElements.add(new KeySchemaElement().withAttributeName(KEY_NAME).withKeyType(KeyType.HASH));
-    
-        CreateTableRequest request = new CreateTableRequest()
-                .withTableName(TABLE_NAME)
-                .withKeySchema(keySchemaElements)
-                .withAttributeDefinitions(attributeDefinitions)
-                .withProvisionedThroughput(new ProvisionedThroughput().withReadCapacityUnits(READ_CAPACITY_UNITS)
-                        .withWriteCapacityUnits(WRITE_CAPACITY_UNITS));
-    
-        amazonDynamoDB.createTable(request);
-    
-    }
-    
+        
     @Test
     public void sampleTestCase() {
         User dave = new User("Dave", "Matthews");
@@ -269,8 +160,48 @@ And finally write a test client
         Assert.assertThat(result.size(), is(1));
         Assert.assertThat(result, hasItem(dave));
     }
+    
+    private static final long CAPACITY = 5L;
+    
+    @Autowired
+    private AmazonDynamoDB amazonDynamoDB;
+    
+    @Before
+    public void init() throws Exception {
+        // Delete User table in case it exists
+        amazonDynamoDB.listTables().getTableNames().stream().
+                filter(tableName -> tableName.equals(User.TABLE_NAME)).forEach(tableName -> {
+            amazonDynamoDB.deleteTable(tableName);
+        });
+	
+	//Create User table
+        amazonDynamoDB.createTable(new DynamoDBMapper(amazonDynamoDB)
+            .generateCreateTableRequest(User.class)
+	    .withProvisionedThroughput(new ProvisionedThroughput(CAPACITY, CAPACITY)));
+    }
+    
 }
 ```
+
+## Version & Spring Framework compatibility ##
+
+The major and minor number of this library refers to the compatible Spring framework version. The build number is used as specified by SEMVER.
+
+API changes will follow SEMVER and loosly the Spring Framework releases.
+
+| `spring-data-dynamodb` version  | Spring Boot compatibility      |Spring Framework compatibility  | Spring Data compatibility |
+| ------------------------------- | ------------------------------ | ------------------------------ | ------------------------- |
+| 1.0.x                           |                                | >= 3.1 && < 4.2                |                           |
+| 4.2.x                           | >= 1.3.0 && < 1.4.0            | >= 4.2 && < 4.3                | Gosling-SR1               |
+| 4.3.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Gosling-SR1               |
+| 4.4.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Hopper-SR2                |
+| 4.5.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Ingalls                   |
+| 5.0.x                           | >= 2.0                         | >= 5.0                         | Kay-SR1                   |
+
+`spring-data-dynamodb` depends directly on `spring-data` as also `spring-context`, `spring-data` and `spring-tx`.
+
+`compile` and `runtime` dependencies are kept to a minimum to allow easy integartion, for example into 
+Spring-Boot projects.
 
 ## History
 The code base has some history already in it - let's clarify it a bit:
