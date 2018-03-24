@@ -18,6 +18,7 @@ package org.socialsignin.spring.data.dynamodb.core;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.TableNameOverride;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.TableNameResolver;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
@@ -33,11 +34,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -53,8 +56,6 @@ public class DynamoDBTemplateTest {
 	@Mock
 	private AmazonDynamoDB dynamoDB;
 	@Mock
-	private DynamoDBMapperConfig dynamoDBMapperConfig;
-	@Mock
 	private ApplicationContext applicationContext;
 	@Mock
 	private DynamoDBQueryExpression<User> countUserQuery;
@@ -63,7 +64,7 @@ public class DynamoDBTemplateTest {
 
 	@Before
 	public void setUp() {
-		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapperConfig, dynamoDBMapper);
+		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapper);
 		this.dynamoDBTemplate.setApplicationContext(applicationContext);
 	}
 	
@@ -137,33 +138,65 @@ public class DynamoDBTemplateTest {
 		DynamoDBScanExpression scan = mock(DynamoDBScanExpression.class);
 		int actual = dynamoDBTemplate.count(User.class, scan);
 
+		assertEquals(0, actual);
 		verify(dynamoDBMapper).count(User.class, scan);
 	}
 
 	@Test
-	public void testGetOverriddenTableName_WhenConfigIsNull()
-	{
-	    String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(User.class, "someTableName");
-		Assert.assertEquals("someTableName", overriddenTableName);
+	public void testGetOverriddenTableName_WithTableNameResolver_defaultConfig() {
+		final String overridenTableName = "someOtherTableName";
+
+		DynamoDBMapperConfig.Builder builder = DynamoDBMapperConfig.builder();
+		// Inject the table name overrider bean
+		builder.setTableNameOverride(new TableNameOverride(overridenTableName));
+
+		DynamoDBMapperConfig config = new DynamoDBMapperConfig(DynamoDBMapperConfig.DEFAULT, builder.build());
+		DynamoDBTemplate tmpl = new DynamoDBTemplate(dynamoDB, config, dynamoDBMapper);
+
+		String overriddenTableName = tmpl.getOverriddenTableName(User.class, "someTableName");
+		assertEquals(overridenTableName, overriddenTableName);
+
+		DynamoDBMapperConfig effectiveConfig = (DynamoDBMapperConfig) ReflectionTestUtils.getField(tmpl,
+				"dynamoDBMapperConfig");
+		assertDynamoDBMapperConfigCompletness(tmpl);
 	}
-	
-    @Test
-    public void testGetOverriddenTableName()
-    {
-        String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(User.class, "someTableName");
-        Assert.assertEquals("someTableName", overriddenTableName);
-    }
 
     @Test
-    public void testGetOverriddenTableName_WithTableNameResolver()
-    {
-        TableNameResolver tableNameResolver = mock(TableNameResolver.class);
-        Mockito.when(tableNameResolver.getTableName(Object.class, dynamoDBMapperConfig)).thenReturn(
-            "someOtherTableName");
-        Mockito.when(dynamoDBMapperConfig.getTableNameResolver()).thenReturn(tableNameResolver);
-        String overriddenTableName = dynamoDBTemplate.getOverriddenTableName(Object.class, "someTableName");
-        Assert.assertEquals("someOtherTableName", overriddenTableName);
+    public void testGetOverriddenTableName_WithTableNameResolver_defaultBuilder() {
+		final String overridenTableName = "someOtherTableName";
+
+		DynamoDBMapperConfig.Builder builder = new DynamoDBMapperConfig.Builder();
+		// Inject the table name overrider bean
+		builder.setTableNameOverride(new TableNameOverride(overridenTableName));
+
+		DynamoDBTemplate tmpl = new DynamoDBTemplate(dynamoDB, builder.build(), dynamoDBMapper);
+
+		String overriddenTableName = tmpl.getOverriddenTableName(User.class, "someTableName");
+		assertEquals(overridenTableName, overriddenTableName);
+		assertDynamoDBMapperConfigCompletness(tmpl);
     }
+
+	@Test
+	public void testGetOverriddenTableName_WithTableNameResolver_emptyBuilder() {
+		final String overridenTableName = "someOtherTableName";
+
+		DynamoDBMapperConfig.Builder builder = DynamoDBMapperConfig.builder();
+		// Inject the table name overrider bean
+		builder.setTableNameOverride(new TableNameOverride(overridenTableName));
+
+		DynamoDBTemplate tmpl = new DynamoDBTemplate(dynamoDB, builder.build(), dynamoDBMapper);
+
+		String overriddenTableName = tmpl.getOverriddenTableName(User.class, "someTableName");
+		assertEquals(overridenTableName, overriddenTableName);
+		assertDynamoDBMapperConfigCompletness(tmpl);
+	}
+
+	private void assertDynamoDBMapperConfigCompletness(DynamoDBTemplate tmpl) {
+		DynamoDBMapperConfig effectiveConfig = (DynamoDBMapperConfig) ReflectionTestUtils.getField(tmpl,
+				"dynamoDBMapperConfig");
+		assertNotNull(effectiveConfig.getConversionSchema());
+		assertNotNull(effectiveConfig.getTypeConverterFactory());
+	}
 
 	@Test
 	public void testLoadByHashKey_WhenDynamoDBMapperReturnsNull()
