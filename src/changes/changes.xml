@@ -36,6 +36,9 @@
       <action dev="derjust" issue="146" type="fix" date="2018-03-24">
         Fix incomplete AWS DynamoDBMapper initialization
       </action>
+      <action dev="derjust" issue="57" type="fix" date="2018-03-25">
+        Fix compatibility with AWS SDK 1.11.36 (NullPointerException)
+      </action>
     </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">
