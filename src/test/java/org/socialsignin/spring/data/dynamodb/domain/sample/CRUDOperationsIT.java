@@ -106,7 +106,17 @@ public class CRUDOperationsIT {
     }
 
     @Test
-    public void testDelete() throws InterruptedException {
+    public void testEmptyResult() {
+
+        Optional<User> actual1 = userRepository.findByNameAndPostCode("does not", "exist");
+        assertFalse(actual1.isPresent());
+
+        User actual2 = userRepository.findByNameAndLeaveDate("does not exist", Instant.now());
+        assertNull(actual2);
+    }
+
+    @Test
+    public void testDelete() {
         // Prepare
         User u1 = new User();
         String name1 = "name1" + ThreadLocalRandom.current().nextLong();
