@@ -49,4 +49,9 @@ public interface UserRepository extends CrudRepository<User, String> {
 	@Query(fields = "leaveDate")
 	List<User> findByPostCode(String postCode);
 
+	@EnableScan
+    Optional<User> findByNameAndPostCode(String name, String postcode);
+	@EnableScan
+	User findByNameAndLeaveDate(String name, Instant leaveDate);
+
 }
