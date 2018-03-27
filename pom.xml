@@ -38,7 +38,7 @@
 
     <properties>
         <spring.version>5.0.4.RELEASE</spring.version>
-        <spring-data.version>Kay-SR5</spring-data.version>
+        <spring-data.version>2.0.1.RELEASE</spring-data.version>
 
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
         <aws-java-sdk.version>1.11.301</aws-java-sdk.version>
@@ -66,10 +66,8 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-releasetrain</artifactId>
+                <artifactId>spring-data-commons</artifactId>
                 <version>${spring-data.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
 
             <dependency>

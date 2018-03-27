@@ -84,11 +84,8 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 			result = dynamoDBOperations.load(domainType,
 					entityInformation.getHashKey(id));
 		}
-		if (result == null) {
-			return Optional.empty();
-		} else {
-			return Optional.of(result);
-		}
+
+		return Optional.ofNullable(result);
 	}
 
 	@Override
