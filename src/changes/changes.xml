@@ -49,6 +49,9 @@
         Use just Spring-Data Commons dependency inspired by
         https://github.com/sheradmin/spring-data-dynamodb/commit/57efbce2978481cbaf374f01d88424766a314662
       </action>
+      <action dev="blx" type="add" date="2018-03-26">
+        Add support for DynamoDBTypeConverted annotations on hash key
+      </action>
     </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">

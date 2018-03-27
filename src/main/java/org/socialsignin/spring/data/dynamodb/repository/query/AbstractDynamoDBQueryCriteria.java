@@ -19,6 +19,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperFieldModel;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperTableModel;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
@@ -488,7 +489,13 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
     @SuppressWarnings({"deprecation", "unchecked"})
     protected <V extends Object> Object getPropertyAttributeValue(final String propertyName, final V value) {
         // TODO consider removing DynamoDBMarshaller code altogether as table model will handle accordingly
-        final DynamoDBMarshaller<V> marshaller = (DynamoDBMarshaller<V>) entityInformation.getMarshallerForProperty(propertyName);
+		DynamoDBTypeConverter<Object, V> converter = (DynamoDBTypeConverter<Object, V>)entityInformation.getTypeConverterForProperty(propertyName);
+
+		if (converter != null) {
+			return converter.convert((V) value);
+		}
+
+		DynamoDBMarshaller<V> marshaller = (DynamoDBMarshaller<V>) entityInformation.getMarshallerForProperty(propertyName);
 
         if (marshaller != null) {
             return marshaller.marshall(value);
@@ -549,7 +556,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 		}
 		return list;
 	}
-	
+
 	private List<String> getBooleanListAsStringList(List<Boolean> booleanList) {
 		List<String> list = new ArrayList<>();
 		for (Boolean booleanValue : booleanList) {

@@ -17,6 +17,7 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import org.springframework.util.Assert;
 
 import java.util.Map;
@@ -24,18 +25,18 @@ import java.util.Optional;
 
 /**
  * Encapsulates minimal information needed to load DynamoDB entities.
- * 
+ *
  * This default implementation is NOT range-key aware - getRangeKey(ID id) will
  * always return null
- * 
+ *
  * Delegates to wrapped DynamoDBHashKeyExtractingEntityMetadata component for
  * many operations - it is the responsibility of calling clients to ensure they
  * pass in a valid DynamoDBHashKeyExtractingEntityMetadata implementation for
  * this entity.
- * 
+ *
  * Entities of type T must have a public getter method of return type ID
  * annotated with @DynamoDBHashKey to ensure correct behavior
- * 
+ *
  * @author Michael Lavelle
  * @author Sebastian Just
  */
@@ -88,6 +89,16 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
 	}
 
 	@Override
+	public DynamoDBTypeConverter<?, ?> getTypeConverterForProperty(String propertyName) {
+		return metadata.getTypeConverterForProperty(propertyName);
+	}
+
+	@Override
+	public Object getRangeKey(ID id) {
+		return null;
+	}
+
+	@Override
 	public String getDynamoDBTableName() {
 		return metadata.getDynamoDBTableName();
 	}
@@ -101,7 +112,7 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
 	public Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName() {
 		return metadata.getGlobalSecondaryIndexNamesByPropertyName();
 	}
-	
+
 	@Override
 	public boolean isGlobalIndexHashKeyProperty(String propertyName) {
 		return metadata.isGlobalIndexHashKeyProperty(propertyName);

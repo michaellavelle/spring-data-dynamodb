@@ -23,6 +23,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBVersionAttribute;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -305,6 +307,33 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 			try {
 				return annotation.marshallerClass().getDeclaredConstructor().newInstance();
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public DynamoDBTypeConverter<?, ?> getTypeConverterForProperty(final String propertyName) {
+		DynamoDBTypeConverted annotation = null;
+
+		Method method = findMethod(propertyName);
+		if (method != null) {
+			annotation = method.getAnnotation(DynamoDBTypeConverted.class);
+		}
+
+		if (annotation == null) {
+			Field field = findField(propertyName);
+			if (field != null) {
+				annotation = field.getAnnotation(DynamoDBTypeConverted.class);
+			}
+ 		}
+
+		if (annotation != null) {
+			try {
+				return annotation.converter().newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 		}
