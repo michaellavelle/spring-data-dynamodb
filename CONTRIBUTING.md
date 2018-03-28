@@ -1,6 +1,6 @@
 ## How can I contribute?
 
-* If you think this project is great, you would like to help, but you don't know how - you can become project's stargazer. By starring you're making project more popular. Visit [https://blog.github.com/2012-08-06-notifications-stars](this link) if you would like to learn more about how notifications and stars works on Github.
+* If you think this project is great, you would like to help, but you don't know how - you can become project's stargazer. By starring you're making project more popular. Visit [this link](https://blog.github.com/2012-08-06-notifications-stars) if you would like to learn more about how notifications and stars works on Github.
 * create issues for bugs you find
 * create pull requests to fix bigs, add features, clean up code, etc.
 * improve the documentation or the wiki
