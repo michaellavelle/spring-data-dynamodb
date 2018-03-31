@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 /**
- * CDI support for Spring Data DynamoDB Repositories. 
+ * CDI support for Spring Data DynamoDB Repositories.
  */
 package org.socialsignin.spring.data.dynamodb.repository.cdi;
-

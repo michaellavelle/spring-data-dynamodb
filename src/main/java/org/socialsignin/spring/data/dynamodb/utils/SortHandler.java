@@ -25,25 +25,29 @@ import org.springframework.data.domain.Sort;
  */
 public interface SortHandler {
 
-    /**
-     * @param pageable The {@link Pageable} to check that no sort is specified
-     */
-     default void ensureNoSort(Pageable pageable) {
-        Sort sort = pageable.getSort();
-        ensureNoSort(sort);
-    }
+	/**
+	 * @param pageable
+	 *            The {@link Pageable} to check that no sort is specified
+	 */
+	default void ensureNoSort(Pageable pageable) {
+		Sort sort = pageable.getSort();
+		ensureNoSort(sort);
+	}
 
-    /**
-     * @param sort The {@link Sort} to check that no sort is specified
-     * @throws UnsupportedOperationException if a {@code sort} is initialized (non-null &amp;&amp; not {@link Sort#unsorted()}
-     */
-    default void ensureNoSort(Sort sort) throws UnsupportedOperationException {
-        if (!Sort.unsorted().equals(sort)) {
-            throwUnsupportedSortOperationException();
-        }
-    }
+	/**
+	 * @param sort
+	 *            The {@link Sort} to check that no sort is specified
+	 * @throws UnsupportedOperationException
+	 *             if a {@code sort} is initialized (non-null &amp;&amp; not
+	 *             {@link Sort#unsorted()}
+	 */
+	default void ensureNoSort(Sort sort) throws UnsupportedOperationException {
+		if (!Sort.unsorted().equals(sort)) {
+			throwUnsupportedSortOperationException();
+		}
+	}
 
-    default <T> T throwUnsupportedSortOperationException() {
-        throw new UnsupportedOperationException("Sorting not supported for scan expressions");
-    }
+	default <T> T throwUnsupportedSortOperationException() {
+		throw new UnsupportedOperationException("Sorting not supported for scan expressions");
+	}
 }

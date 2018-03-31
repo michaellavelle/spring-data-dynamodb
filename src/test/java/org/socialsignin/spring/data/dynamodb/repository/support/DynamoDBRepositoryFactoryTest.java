@@ -22,26 +22,26 @@ import static org.junit.Assert.assertTrue;
 
 public class DynamoDBRepositoryFactoryTest {
 
-    @Test
-    public void testVersionNullNull() {
-        assertFalse(DynamoDBRepositoryFactory.isCompatible(null, null));
-    }
+	@Test
+	public void testVersionNullNull() {
+		assertFalse(DynamoDBRepositoryFactory.isCompatible(null, null));
+	}
 
-    @Test
-    public void testVersionNullValue() {
-        assertFalse(DynamoDBRepositoryFactory.isCompatible(null, "1.0."));
-        assertFalse(DynamoDBRepositoryFactory.isCompatible("1.0", null));
-    }
+	@Test
+	public void testVersionNullValue() {
+		assertFalse(DynamoDBRepositoryFactory.isCompatible(null, "1.0."));
+		assertFalse(DynamoDBRepositoryFactory.isCompatible("1.0", null));
+	}
 
-    @Test
-    public void testVersionCompatible() {
-        assertTrue(DynamoDBRepositoryFactory.isCompatible("1.0", "1.0"));
-        assertTrue(DynamoDBRepositoryFactory.isCompatible("1.0.0.0.1", "1.0..0.0.1"));
+	@Test
+	public void testVersionCompatible() {
+		assertTrue(DynamoDBRepositoryFactory.isCompatible("1.0", "1.0"));
+		assertTrue(DynamoDBRepositoryFactory.isCompatible("1.0.0.0.1", "1.0..0.0.1"));
 
-        assertFalse(DynamoDBRepositoryFactory.isCompatible("1.1", "1.0"));
-        assertFalse(DynamoDBRepositoryFactory.isCompatible("1.0", "2.0"));
+		assertFalse(DynamoDBRepositoryFactory.isCompatible("1.1", "1.0"));
+		assertFalse(DynamoDBRepositoryFactory.isCompatible("1.0", "2.0"));
 
-        assertTrue(DynamoDBRepositoryFactory.isCompatible("1.0.0-SR", "1.0.0-SR"));
-    }
+		assertTrue(DynamoDBRepositoryFactory.isCompatible("1.0.0-SR", "1.0.0-SR"));
+	}
 
 }

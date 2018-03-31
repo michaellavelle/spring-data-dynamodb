@@ -31,51 +31,51 @@ import java.util.UUID;
  * Integration test that interacts with DynamoDB Local instance.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={DynamoDBResource.class})
+@ContextConfiguration(classes = {DynamoDBResource.class})
 public class DynamoDBTemplateIT {
 
-    @Autowired
-    private AmazonDynamoDB amazonDynamoDB;
-    private DynamoDBTemplate dynamoDBTemplate;
+	@Autowired
+	private AmazonDynamoDB amazonDynamoDB;
+	private DynamoDBTemplate dynamoDBTemplate;
 
-    @Before
-    public void setUp() {
-        this.dynamoDBTemplate = new DynamoDBTemplate(amazonDynamoDB);
-    }
+	@Before
+	public void setUp() {
+		this.dynamoDBTemplate = new DynamoDBTemplate(amazonDynamoDB);
+	}
 
-    @Test
-    public void testUser_CRUD() {
+	@Test
+	public void testUser_CRUD() {
 
-        // Given a entity to save.
-        User user = new User();
-        user.setName("John Doe");
-        user.setNumberOfPlaylists(10);
-        user.setId(UUID.randomUUID().toString());
+		// Given a entity to save.
+		User user = new User();
+		user.setName("John Doe");
+		user.setNumberOfPlaylists(10);
+		user.setId(UUID.randomUUID().toString());
 
-        // Save it to DB.
-        dynamoDBTemplate.save(user);
+		// Save it to DB.
+		dynamoDBTemplate.save(user);
 
-        // Retrieve it from DB.
-        User retrievedUser = dynamoDBTemplate.load(User.class, user.getId());
+		// Retrieve it from DB.
+		User retrievedUser = dynamoDBTemplate.load(User.class, user.getId());
 
-        // Verify the details on the entity.
-        assert retrievedUser.getName().equals(user.getName());
-        assert retrievedUser.getId().equals(user.getId());
-        assert retrievedUser.getNumberOfPlaylists() == user.getNumberOfPlaylists();
+		// Verify the details on the entity.
+		assert retrievedUser.getName().equals(user.getName());
+		assert retrievedUser.getId().equals(user.getId());
+		assert retrievedUser.getNumberOfPlaylists() == user.getNumberOfPlaylists();
 
-        // Update the entity and save.
-        retrievedUser.setNumberOfPlaylists(20);
-        dynamoDBTemplate.save(retrievedUser);
+		// Update the entity and save.
+		retrievedUser.setNumberOfPlaylists(20);
+		dynamoDBTemplate.save(retrievedUser);
 
-        retrievedUser = dynamoDBTemplate.load(User.class, user.getId());
+		retrievedUser = dynamoDBTemplate.load(User.class, user.getId());
 
-        assert retrievedUser.getNumberOfPlaylists() == 20;
+		assert retrievedUser.getNumberOfPlaylists() == 20;
 
-        // Delete.
-        dynamoDBTemplate.delete(retrievedUser);
+		// Delete.
+		dynamoDBTemplate.delete(retrievedUser);
 
-        // Get again.
-        assert dynamoDBTemplate.load(User.class, user.getId()) == null;
-    }
+		// Get again.
+		assert dynamoDBTemplate.load(User.class, user.getId()) == null;
+	}
 
 }

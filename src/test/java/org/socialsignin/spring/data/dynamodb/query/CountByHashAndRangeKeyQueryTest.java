@@ -30,35 +30,35 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CountByHashAndRangeKeyQueryTest {
-    private static final Class<User> DOMAIN_CLASS = User.class;
-    @Mock
-    private DynamoDBOperations dynamoDBOperations;
-    @Mock
-    private User sampleEntity;
-    private Object hashKey;
-    private Object rangeKey;
-    private CountByHashAndRangeKeyQuery underTest;
+	private static final Class<User> DOMAIN_CLASS = User.class;
+	@Mock
+	private DynamoDBOperations dynamoDBOperations;
+	@Mock
+	private User sampleEntity;
+	private Object hashKey;
+	private Object rangeKey;
+	private CountByHashAndRangeKeyQuery underTest;
 
-    @Before
-    public void setUp() {
-        hashKey = ThreadLocalRandom.current().nextLong();
-        rangeKey = ThreadLocalRandom.current().nextLong();
-        underTest = new CountByHashAndRangeKeyQuery(dynamoDBOperations, DOMAIN_CLASS, hashKey, rangeKey);
-    }
+	@Before
+	public void setUp() {
+		hashKey = ThreadLocalRandom.current().nextLong();
+		rangeKey = ThreadLocalRandom.current().nextLong();
+		underTest = new CountByHashAndRangeKeyQuery(dynamoDBOperations, DOMAIN_CLASS, hashKey, rangeKey);
+	}
 
-    @Test
-    public void testGetSingleResultExists() {
-        when(dynamoDBOperations.load(DOMAIN_CLASS, hashKey, rangeKey)).thenReturn(sampleEntity);
-        Long actual = underTest.getSingleResult();
+	@Test
+	public void testGetSingleResultExists() {
+		when(dynamoDBOperations.load(DOMAIN_CLASS, hashKey, rangeKey)).thenReturn(sampleEntity);
+		Long actual = underTest.getSingleResult();
 
-        assertEquals(Long.valueOf(1), actual);
-    }
+		assertEquals(Long.valueOf(1), actual);
+	}
 
-    @Test
-    public void testGetSingleResultDoesntExist() {
-        when(dynamoDBOperations.load(DOMAIN_CLASS, hashKey, rangeKey)).thenReturn(null);
-        Long actual = underTest.getSingleResult();
+	@Test
+	public void testGetSingleResultDoesntExist() {
+		when(dynamoDBOperations.load(DOMAIN_CLASS, hashKey, rangeKey)).thenReturn(null);
+		Long actual = underTest.getSingleResult();
 
-        assertEquals(Long.valueOf(0), actual);
-    }
+		assertEquals(Long.valueOf(0), actual);
+	}
 }

@@ -43,7 +43,8 @@ public class DynamoDBQueryMethod<T, ID> extends QueryMethod {
 		super(method, metadata, factory);
 		this.method = method;
 		this.scanEnabledForRepository = metadata.getRepositoryInterface().isAnnotationPresent(EnableScan.class);
-		this.scanCountEnabledForRepository = metadata.getRepositoryInterface().isAnnotationPresent(EnableScanCount.class);
+		this.scanCountEnabledForRepository = metadata.getRepositoryInterface()
+				.isAnnotationPresent(EnableScanCount.class);
 
 		Query query = method.getAnnotation(Query.class);
 		if (query != null) {
@@ -71,7 +72,7 @@ public class DynamoDBQueryMethod<T, ID> extends QueryMethod {
 	public boolean isScanEnabled() {
 		return scanEnabledForRepository || method.isAnnotationPresent(EnableScan.class);
 	}
-	
+
 	public boolean isScanCountEnabled() {
 		return scanCountEnabledForRepository || method.isAnnotationPresent(EnableScanCount.class);
 	}
@@ -80,11 +81,10 @@ public class DynamoDBQueryMethod<T, ID> extends QueryMethod {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.springframework.data.repository.query.QueryMethod#getEntityInformation
-	 * ()
+	 * org.springframework.data.repository.query.QueryMethod#getEntityInformation ()
 	 */
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public DynamoDBEntityInformation<T, ID> getEntityInformation() {
 		return new DynamoDBEntityMetadataSupport(getDomainClass()).getEntityInformation();
 	}

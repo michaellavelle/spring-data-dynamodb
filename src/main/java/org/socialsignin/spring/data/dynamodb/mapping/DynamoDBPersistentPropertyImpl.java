@@ -38,8 +38,9 @@ import java.util.Set;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<DynamoDBPersistentProperty> implements
-		DynamoDBPersistentProperty {
+class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<DynamoDBPersistentProperty>
+		implements
+			DynamoDBPersistentProperty {
 
 	private static final Collection<Class<? extends Annotation>> ASSOCIATION_ANNOTATIONS;
 	private static final Collection<Class<? extends Annotation>> ID_ANNOTATIONS;
@@ -68,7 +69,8 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	 *            must not be {@literal null}.
 	 */
 
-	public DynamoDBPersistentPropertyImpl(Property property, DynamoDBPersistentEntityImpl<?> owner, SimpleTypeHolder simpleTypeHolder) {
+	public DynamoDBPersistentPropertyImpl(Property property, DynamoDBPersistentEntityImpl<?> owner,
+			SimpleTypeHolder simpleTypeHolder) {
 		super(property, owner, simpleTypeHolder);
 	}
 
@@ -76,7 +78,6 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	public boolean isWritable() {
 		return !isAnnotationPresent(DynamoDBIgnore.class);
 	}
-
 
 	public boolean isHashKeyProperty() {
 		return isAnnotationPresent(DynamoDBHashKey.class);
@@ -89,8 +90,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
+	 * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
 	 * #isIdProperty()
 	 */
 	@Override
@@ -109,8 +109,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.springframework.data.mapping.model.AbstractPersistentProperty#isEntity
-	 * ()
+	 * org.springframework.data.mapping.model.AbstractPersistentProperty#isEntity ()
 	 */
 	// @Override
 
@@ -129,8 +128,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
+	 * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
 	 * #isAssociation()
 	 */
 	@Override
@@ -151,8 +149,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
+	 * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
 	 * #isTransient()
 	 */
 	@Override

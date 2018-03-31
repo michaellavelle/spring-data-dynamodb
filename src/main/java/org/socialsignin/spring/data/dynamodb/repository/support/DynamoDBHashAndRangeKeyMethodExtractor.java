@@ -29,7 +29,7 @@ public interface DynamoDBHashAndRangeKeyMethodExtractor<ID> extends EntityMetada
 	Method getHashKeyMethod();
 
 	Method getRangeKeyMethod();
-	
+
 	Field getHashKeyField();
 
 	Field getRangeKeyField();

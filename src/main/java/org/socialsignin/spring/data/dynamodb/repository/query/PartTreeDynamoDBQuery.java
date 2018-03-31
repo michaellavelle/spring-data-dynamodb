@@ -41,8 +41,9 @@ public class PartTreeDynamoDBQuery<T, ID> extends AbstractDynamoDBQuery<T, ID> i
 		return new DynamoDBQueryCreator<>(tree, accessor, getQueryMethod().getEntityInformation(),
 				getQueryMethod().getProjectionExpression(), dynamoDBOperations);
 	}
-	
-	protected DynamoDBCountQueryCreator<T, ID> createCountQueryCreator(ParametersParameterAccessor accessor,boolean pageQuery) {
+
+	protected DynamoDBCountQueryCreator<T, ID> createCountQueryCreator(ParametersParameterAccessor accessor,
+			boolean pageQuery) {
 		return new DynamoDBCountQueryCreator<>(tree, accessor, getQueryMethod().getEntityInformation(),
 				dynamoDBOperations, pageQuery);
 	}
@@ -55,28 +56,30 @@ public class PartTreeDynamoDBQuery<T, ID> extends AbstractDynamoDBQuery<T, ID> i
 		return queryCreator.createQuery();
 
 	}
-	
+
 	@Override
-	public Query<Long> doCreateCountQuery(Object[] values,boolean pageQuery) {
+	public Query<Long> doCreateCountQuery(Object[] values, boolean pageQuery) {
 
 		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
-		DynamoDBCountQueryCreator<T, ID> queryCreator = createCountQueryCreator(accessor,pageQuery);
+		DynamoDBCountQueryCreator<T, ID> queryCreator = createCountQueryCreator(accessor, pageQuery);
 		return queryCreator.createQuery();
 
 	}
 
-    @Override
-    protected boolean isCountQuery() {
-        return tree.isCountProjection();
-    }
+	@Override
+	protected boolean isCountQuery() {
+		return tree.isCountProjection();
+	}
 
-    @Override
-    protected boolean isExistsQuery() {
-        return tree.isExistsProjection();
-    }
+	@Override
+	protected boolean isExistsQuery() {
+		return tree.isExistsProjection();
+	}
 
-    @Override
-    protected boolean isDeleteQuery() { return tree.isDelete(); }
+	@Override
+	protected boolean isDeleteQuery() {
+		return tree.isDelete();
+	}
 
 	@Override
 	protected Integer getResultsRestrictionIfApplicable() {

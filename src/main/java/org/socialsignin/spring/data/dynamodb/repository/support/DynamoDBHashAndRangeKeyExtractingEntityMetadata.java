@@ -23,8 +23,9 @@ import java.util.Set;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-public interface DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> extends
-		DynamoDBHashKeyExtractingEntityMetadata<T> {
+public interface DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID>
+		extends
+			DynamoDBHashKeyExtractingEntityMetadata<T> {
 
 	<H> HashAndRangeKeyExtractor<ID, H> getHashAndRangeKeyExtractor(Class<ID> idClass);
 

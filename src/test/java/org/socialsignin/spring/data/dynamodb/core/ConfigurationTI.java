@@ -23,9 +23,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConfigurationTI {
 
-    @Bean
-    public AmazonDynamoDB amazonDynamoDB() {
-        AmazonDynamoDB ddb = DynamoDBEmbedded.create().amazonDynamoDB();
-        return ddb;
-    }
+	@Bean
+	public AmazonDynamoDB amazonDynamoDB() {
+		AmazonDynamoDB ddb = DynamoDBEmbedded.create().amazonDynamoDB();
+		return ddb;
+	}
 }

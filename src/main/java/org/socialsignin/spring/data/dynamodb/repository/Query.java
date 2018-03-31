@@ -26,11 +26,14 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Query {
 
-    /**
-     * A string that identifies the attributes you want. To retrieve a single attribute, specify its name.
-     * For multiple attributes, the names must be comma-separated.
-     *
-     * @see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ProjectionExpressions.html">Projection Expressions</a>
-     */
-    String fields() default "";
+	/**
+	 * A string that identifies the attributes you want. To retrieve a single
+	 * attribute, specify its name. For multiple attributes, the names must be
+	 * comma-separated.
+	 *
+	 * @see <a href=
+	 *      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ProjectionExpressions.html">Projection
+	 *      Expressions</a>
+	 */
+	String fields() default "";
 }

@@ -33,8 +33,9 @@ import java.util.Set;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends
-		DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> {
+public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends DynamoDBEntityMetadataSupport<T, ID>
+		implements
+			DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> {
 
 	private DynamoDBHashAndRangeKeyMethodExtractor<T> hashAndRangeKeyMethodExtractor;
 
@@ -49,7 +50,8 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
 					String setterMethodName = toSetterMethodNameFromAccessorMethod(method);
 					if (setterMethodName != null) {
-						hashKeySetterMethod = ReflectionUtils.findMethod(domainType, setterMethodName, method.getReturnType());
+						hashKeySetterMethod = ReflectionUtils.findMethod(domainType, setterMethodName,
+								method.getReturnType());
 					}
 				}
 			}
@@ -57,14 +59,16 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends
 		ReflectionUtils.doWithFields(domainType, new FieldCallback() {
 			public void doWith(Field field) {
 				if (field.getAnnotation(DynamoDBHashKey.class) != null) {
-					
+
 					hashKeyField = ReflectionUtils.findField(domainType, field.getName());
-					
+
 				}
 			}
 		});
-		Assert.isTrue(hashKeySetterMethod != null || hashKeyField != null, "Unable to find hash key field or setter method on " + domainType + "!");
-		Assert.isTrue(hashKeySetterMethod == null || hashKeyField == null, "Found both hash key field and setter method on " + domainType + "!");
+		Assert.isTrue(hashKeySetterMethod != null || hashKeyField != null,
+				"Unable to find hash key field or setter method on " + domainType + "!");
+		Assert.isTrue(hashKeySetterMethod == null || hashKeyField == null,
+				"Found both hash key field and setter method on " + domainType + "!");
 
 	}
 
@@ -86,8 +90,9 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends
 				if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
 					if ((method.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName() != null && method
 							.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName().trim().length() > 0)
-							|| (method.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames() != null && method
-									.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames().length > 0)) {
+							|| (method.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames() != null
+									&& method.getAnnotation(DynamoDBIndexRangeKey.class)
+											.localSecondaryIndexNames().length > 0)) {
 						propertyNames.add(getPropertyNameForAccessorMethod(method));
 					}
 				}
@@ -98,8 +103,9 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends
 				if (field.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
 					if ((field.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName() != null && field
 							.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName().trim().length() > 0)
-							|| (field.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames() != null && field
-									.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames().length > 0)) {
+							|| (field.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames() != null
+									&& field.getAnnotation(DynamoDBIndexRangeKey.class)
+											.localSecondaryIndexNames().length > 0)) {
 						propertyNames.add(getPropertyNameForField(field));
 					}
 				}
@@ -112,22 +118,18 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends
 
 		try {
 			T entity = getJavaType().getDeclaredConstructor().newInstance();
-			if (hashKeySetterMethod != null)
-			{
+			if (hashKeySetterMethod != null) {
 				ReflectionUtils.invokeMethod(hashKeySetterMethod, entity, hashKey);
-			}
-			else
-			{
-				ReflectionUtils.setField(hashKeyField, entity, hashKey);	
+			} else {
+				ReflectionUtils.setField(hashKeyField, entity, hashKey);
 			}
 
 			return entity;
-		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+				| InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	
 
 	@Override
 	public boolean isCompositeHashAndRangeKeyProperty(String propertyName) {

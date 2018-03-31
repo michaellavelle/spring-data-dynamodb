@@ -52,6 +52,9 @@
       <action dev="blx" type="add" date="2018-03-26">
         Add support for DynamoDBTypeConverted annotations on hash key
       </action>
+      <action dev="derjust" type="fix" date="">
+        Fixed NullPointerException for findAllByOrderByProperty queries
+      </action>
     </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">

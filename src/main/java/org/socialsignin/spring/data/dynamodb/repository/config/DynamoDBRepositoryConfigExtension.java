@@ -35,7 +35,7 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 	private static final String DEFAULT_AMAZON_DYNAMO_DB_BEAN_NAME = "amazonDynamoDB";
 
 	private static final String DYNAMO_DB_MAPPER_CONFIG_REF = "dynamodb-mapper-config-ref";
-	
+
 	private static final String DYNAMO_DB_OPERATIONS_REF = "dynamodb-operations-ref";
 
 	private static final String AMAZON_DYNAMODB_REF = "amazon-dynamodb-ref";
@@ -49,7 +49,8 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 	public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
 		AnnotationAttributes attributes = config.getAttributes();
 
-		postProcess(builder, attributes.getString("amazonDynamoDBRef"), attributes.getString("dynamoDBMapperConfigRef"),attributes.getString("dynamoDBOperationsRef"));
+		postProcess(builder, attributes.getString("amazonDynamoDBRef"), attributes.getString("dynamoDBMapperConfigRef"),
+				attributes.getString("dynamoDBOperationsRef"));
 
 	}
 
@@ -59,8 +60,7 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 	 * @see org.springframework.data.repository.config.
 	 * RepositoryConfigurationExtensionSupport
 	 * #postProcess(org.springframework.beans
-	 * .factory.support.BeanDefinitionBuilder,
-	 * org.springframework.data.repository
+	 * .factory.support.BeanDefinitionBuilder, org.springframework.data.repository
 	 * .config.XmlRepositoryConfigurationSource)
 	 */
 	@Override
@@ -72,21 +72,22 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 		ParsingUtils.setPropertyReference(builder, element, DYNAMO_DB_MAPPER_CONFIG_REF, "dynamoDBMapperConfig");
 		ParsingUtils.setPropertyReference(builder, element, DYNAMO_DB_OPERATIONS_REF, "dynamoDBOperations");
 
-
 	}
 
-	private void postProcess(BeanDefinitionBuilder builder, String amazonDynamoDBRef, String dynamoDBMapperConfigRef,String dynamoDBOperationsRef) {
+	private void postProcess(BeanDefinitionBuilder builder, String amazonDynamoDBRef, String dynamoDBMapperConfigRef,
+			String dynamoDBOperationsRef) {
 
-		if (StringUtils.hasText(dynamoDBOperationsRef))
-		{
+		if (StringUtils.hasText(dynamoDBOperationsRef)) {
 			builder.addPropertyReference("dynamoDBOperations", dynamoDBOperationsRef);
-			Assert.isTrue(!StringUtils.hasText(amazonDynamoDBRef),"Cannot specify both amazonDynamoDB bean and dynamoDBOperationsBean in repository configuration");
-			Assert.isTrue(!StringUtils.hasText(dynamoDBMapperConfigRef),"Cannot specify both dynamoDBMapperConfigBean bean and dynamoDBOperationsBean in repository configuration");
-		}
-		else
-		{
-			
-			amazonDynamoDBRef = StringUtils.hasText(amazonDynamoDBRef) ? amazonDynamoDBRef : DEFAULT_AMAZON_DYNAMO_DB_BEAN_NAME;
+			Assert.isTrue(!StringUtils.hasText(amazonDynamoDBRef),
+					"Cannot specify both amazonDynamoDB bean and dynamoDBOperationsBean in repository configuration");
+			Assert.isTrue(!StringUtils.hasText(dynamoDBMapperConfigRef),
+					"Cannot specify both dynamoDBMapperConfigBean bean and dynamoDBOperationsBean in repository configuration");
+		} else {
+
+			amazonDynamoDBRef = StringUtils.hasText(amazonDynamoDBRef)
+					? amazonDynamoDBRef
+					: DEFAULT_AMAZON_DYNAMO_DB_BEAN_NAME;
 
 			builder.addPropertyReference("amazonDynamoDB", amazonDynamoDBRef);
 
@@ -94,7 +95,7 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 				builder.addPropertyReference("dynamoDBMapperConfig", dynamoDBMapperConfigRef);
 			}
 		}
-		
+
 	}
 
 	@Override

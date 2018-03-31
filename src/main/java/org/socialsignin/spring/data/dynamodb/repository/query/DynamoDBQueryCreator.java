@@ -24,16 +24,14 @@ import org.springframework.data.repository.query.parser.PartTree;
 
 import java.util.Optional;
 
-public class DynamoDBQueryCreator<T,ID> extends AbstractDynamoDBQueryCreator<T, ID,T> {
+public class DynamoDBQueryCreator<T, ID> extends AbstractDynamoDBQueryCreator<T, ID, T> {
 
-	public DynamoDBQueryCreator(PartTree tree,
-			ParameterAccessor parameterAccessor,
-			DynamoDBEntityInformation<T, ID> entityMetadata,
-			Optional<String> projection,
+	public DynamoDBQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
+			DynamoDBEntityInformation<T, ID> entityMetadata, Optional<String> projection,
 			DynamoDBOperations dynamoDBOperations) {
 		super(tree, parameterAccessor, entityMetadata, projection, dynamoDBOperations);
 	}
-	
+
 	@Override
 	protected Query<T> complete(DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
 		criteria.withSort(sort);

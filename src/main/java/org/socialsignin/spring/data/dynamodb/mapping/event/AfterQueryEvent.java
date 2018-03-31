@@ -17,7 +17,6 @@ package org.socialsignin.spring.data.dynamodb.mapping.event;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 
-
 /**
  * @author Michael Lavelle
  * @author Sebastian Just

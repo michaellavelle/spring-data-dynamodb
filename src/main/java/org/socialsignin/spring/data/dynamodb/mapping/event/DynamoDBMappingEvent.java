@@ -29,7 +29,7 @@ public class DynamoDBMappingEvent<T> extends ApplicationEvent {
 		super(source);
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Override
 	public T getSource() {
 		return (T) super.getSource();

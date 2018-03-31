@@ -74,7 +74,7 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 		return new String[]{"org.socialsignin.spring.data.dynamodb.domain.sample"};
 	}
 
-	@Bean(name="auditorProvider")
+	@Bean(name = "auditorProvider")
 	@SuppressWarnings("unchecked")
 	public AuditorAware<AuditableUser> auditorProvider() {
 		LOGGER.info("auditorProvider");
@@ -92,9 +92,10 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 	}
 
 	/**
-	 * Must return the same credential as {@link org.socialsignin.spring.data.dynamodb.core.ConfigurationTI}
-	 * otherwise the repository will connect to different local DynamoDB instance
-	 * hence it will return no table found
+	 * Must return the same credential as
+	 * {@link org.socialsignin.spring.data.dynamodb.core.ConfigurationTI} otherwise
+	 * the repository will connect to different local DynamoDB instance hence it
+	 * will return no table found
 	 *
 	 * @return
 	 */
@@ -110,8 +111,8 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 		this.auditor = auditableUserRepository.save(new AuditableUser("auditor"));
 		assertThat(this.auditor, is(notNullValue()));
 
-        Optional<AuditableUser> auditorUser = auditableUserRepository.findById(this.auditor.getId());
-        assertTrue(auditorUser.isPresent());
+		Optional<AuditableUser> auditorUser = auditableUserRepository.findById(this.auditor.getId());
+		assertTrue(auditorUser.isPresent());
 
 	}
 
@@ -125,10 +126,9 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 		assertThat(savedUser.getCreatedAt(), is(notNullValue()));
 		assertThat(savedUser.getCreatedBy(), is(this.auditor.getId()));
 
-        assertThat(savedUser.getLastModifiedAt(), is(notNullValue()));
-        assertThat(savedUser.getLastModifiedBy(), is(this.auditor.getId()));
+		assertThat(savedUser.getLastModifiedAt(), is(notNullValue()));
+		assertThat(savedUser.getLastModifiedBy(), is(this.auditor.getId()));
 
 	}
-
 
 }

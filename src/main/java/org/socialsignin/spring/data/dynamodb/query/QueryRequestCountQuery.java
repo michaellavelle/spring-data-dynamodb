@@ -22,13 +22,13 @@ public class QueryRequestCountQuery extends AbstractSingleEntityQuery<Long> {
 
 	private final DynamoDBOperations dynamoDBOperations;
 	private final QueryRequest queryRequest;
-	
+
 	public QueryRequestCountQuery(DynamoDBOperations dynamoDBOperations, QueryRequest queryRequest) {
 		super(null, Long.class);
 		this.queryRequest = queryRequest;
 		this.dynamoDBOperations = dynamoDBOperations;
 	}
-	
+
 	@Override
 	public Long getSingleResult() {
 

@@ -18,7 +18,8 @@ package org.socialsignin.spring.data.dynamodb.query;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 /**
- * {@link org.socialsignin.spring.data.dynamodb.mapping.DynamoDBPersistentProperty} implementation
+ * {@link org.socialsignin.spring.data.dynamodb.mapping.DynamoDBPersistentProperty}
+ * implementation
  *
  * @author Michael Lavelle
  * @author Sebastian Just
@@ -30,19 +31,17 @@ public abstract class AbstractQuery<T> implements Query<T> {
 	protected boolean scanEnabled = false;
 	protected boolean scanCountEnabled = false;
 
-
-
 	public boolean isScanCountEnabled() {
 		return scanCountEnabled;
 	}
 
 	@Override
-    public void setScanCountEnabled(boolean scanCountEnabled) {
+	public void setScanCountEnabled(boolean scanCountEnabled) {
 		this.scanCountEnabled = scanCountEnabled;
 	}
 
 	@Override
-    public void setScanEnabled(boolean scanEnabled) {
+	public void setScanEnabled(boolean scanEnabled) {
 		this.scanEnabled = scanEnabled;
 	}
 

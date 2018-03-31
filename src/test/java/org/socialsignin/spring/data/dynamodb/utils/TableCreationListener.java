@@ -35,84 +35,83 @@ import java.util.Arrays;
 
 public class TableCreationListener extends AbstractTestExecutionListener {
 
-    public static <T> CreateTableResult createTable(AmazonDynamoDB ddb, Class<T> domainType) {
-        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+	public static <T> CreateTableResult createTable(AmazonDynamoDB ddb, Class<T> domainType) {
+		DynamoDBMapper mapper = new DynamoDBMapper(ddb);
 
-        ProvisionedThroughput pt = new ProvisionedThroughput(10L, 10L);
+		ProvisionedThroughput pt = new ProvisionedThroughput(10L, 10L);
 
-        CreateTableRequest ctr = mapper.generateCreateTableRequest(domainType);
-        ctr.setProvisionedThroughput(pt);
-        if (ctr.getGlobalSecondaryIndexes() != null) {
-            ctr.getGlobalSecondaryIndexes().forEach(gsi -> {
-                gsi.setProjection(new Projection().withProjectionType(ProjectionType.ALL));
-                gsi.setProvisionedThroughput(pt);
-            });
-        }
+		CreateTableRequest ctr = mapper.generateCreateTableRequest(domainType);
+		ctr.setProvisionedThroughput(pt);
+		if (ctr.getGlobalSecondaryIndexes() != null) {
+			ctr.getGlobalSecondaryIndexes().forEach(gsi -> {
+				gsi.setProjection(new Projection().withProjectionType(ProjectionType.ALL));
+				gsi.setProvisionedThroughput(pt);
+			});
+		}
 
-        CreateTableResult ctResponse = ddb.createTable(ctr);
+		CreateTableResult ctResponse = ddb.createTable(ctr);
 
-        do {
-            try {
-                Thread.sleep(1 * 1000L);
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Couldn't wait detect table " + ctr.getTableName());
-            }
-        }
-        while (!ddb.describeTable(ctr.getTableName()).getTable().getTableStatus().equals("ACTIVE"));
+		do {
+			try {
+				Thread.sleep(1 * 1000L);
+			} catch (InterruptedException e) {
+				throw new RuntimeException("Couldn't wait detect table " + ctr.getTableName());
+			}
+		} while (!ddb.describeTable(ctr.getTableName()).getTable().getTableStatus().equals("ACTIVE"));
 
-        return ctResponse;
-    }
+		return ctResponse;
+	}
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    @Documented
-    public @interface DynamoDBCreateTable {
-        Class<?>[] entityClasses();
-    }
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@Documented
+	public @interface DynamoDBCreateTable {
+		Class<?>[] entityClasses();
+	}
 
-    protected Class<?>[] getEntityClasses() {
-        return new Class<?>[0];
-    }
+	protected Class<?>[] getEntityClasses() {
+		return new Class<?>[0];
+	}
 
-    private void createExpliclitEntities(TestContext testContext) {
-        BeanFactory bf = testContext.getApplicationContext().getAutowireCapableBeanFactory();
+	private void createExpliclitEntities(TestContext testContext) {
+		BeanFactory bf = testContext.getApplicationContext().getAutowireCapableBeanFactory();
 
-        AmazonDynamoDB ddb = bf.getBean(AmazonDynamoDB.class);
+		AmazonDynamoDB ddb = bf.getBean(AmazonDynamoDB.class);
 
-        Arrays.stream(getEntityClasses()).forEach(clazz -> createTable(ddb, clazz));
-    }
+		Arrays.stream(getEntityClasses()).forEach(clazz -> createTable(ddb, clazz));
+	}
 
-    @Override
-    public void beforeTestClass(TestContext testContext) {
-        createExpliclitEntities(testContext);
-        createAnnotationEntities(testContext);
-    }
+	@Override
+	public void beforeTestClass(TestContext testContext) {
+		createExpliclitEntities(testContext);
+		createAnnotationEntities(testContext);
+	}
 
-    private void createAnnotationEntities(TestContext testContext) {
+	private void createAnnotationEntities(TestContext testContext) {
 
-        Class<?> testClass = testContext.getTestClass();
-        if (testClass.isAnnotationPresent(DynamoDBCreateTable.class)) {
+		Class<?> testClass = testContext.getTestClass();
+		if (testClass.isAnnotationPresent(DynamoDBCreateTable.class)) {
 
-            DynamoDBCreateTable createTableAnnotation = testClass.getAnnotation(DynamoDBCreateTable.class);
+			DynamoDBCreateTable createTableAnnotation = testClass.getAnnotation(DynamoDBCreateTable.class);
 
-            AmazonDynamoDB ddb = getAmazonDynamoDB(testContext);
+			AmazonDynamoDB ddb = getAmazonDynamoDB(testContext);
 
-            for (Class<?> entityClass : createTableAnnotation.entityClasses()) {
-                createTable(ddb, entityClass);
-            }
-        }
-    }
+			for (Class<?> entityClass : createTableAnnotation.entityClasses()) {
+				createTable(ddb, entityClass);
+			}
+		}
+	}
 
-    @Override
-    public void afterTestClass(TestContext testContext) throws Exception {
-        getAmazonDynamoDB(testContext).shutdown();
-    }
+	@Override
+	public void afterTestClass(TestContext testContext) throws Exception {
+		getAmazonDynamoDB(testContext).shutdown();
+	}
 
-    private BeanFactory getBeanFactory(TestContext testContext) {
-        return testContext.getApplicationContext().getAutowireCapableBeanFactory();
-    }
+	private BeanFactory getBeanFactory(TestContext testContext) {
+		return testContext.getApplicationContext().getAutowireCapableBeanFactory();
+	}
 
-    private AmazonDynamoDB getAmazonDynamoDB(TestContext testContext) {
-        return getBeanFactory(testContext).getBean(AmazonDynamoDB.class);
-    }
+	private AmazonDynamoDB getAmazonDynamoDB(TestContext testContext) {
+		return getBeanFactory(testContext).getBean(AmazonDynamoDB.class);
+	}
 }

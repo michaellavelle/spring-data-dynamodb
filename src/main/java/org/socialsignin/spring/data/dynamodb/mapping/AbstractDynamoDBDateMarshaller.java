@@ -24,9 +24,13 @@ import java.util.Date;
 /**
  * @author Michael Lavelle
  * @author Sebastian Just
- * @deprecated According to {@code com.amazonaws.services.dynamodbv2.datamodeling.marshallers.CustomMarshaller.marshall(Object)}
- * at some point {@link DynamoDBMarshaller} might be cached - whereas {@link DateFormat} is not thread-safe. <br>
- * Use {@link org.socialsignin.spring.data.dynamodb.marshaller.DateDynamoDBMarshaller} instead.
+ * @deprecated According to
+ *             {@code com.amazonaws.services.dynamodbv2.datamodeling.marshallers.CustomMarshaller.marshall(Object)}
+ *             at some point {@link DynamoDBMarshaller} might be cached -
+ *             whereas {@link DateFormat} is not thread-safe. <br>
+ *             Use
+ *             {@link org.socialsignin.spring.data.dynamodb.marshaller.DateDynamoDBMarshaller}
+ *             instead.
  * @see org.socialsignin.spring.data.dynamodb.marshaller.DateDynamoDBMarshaller
  */
 @Deprecated

@@ -21,7 +21,10 @@ import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 
-public class Instant2EpocheDynamoDBMarshaller implements DynamoDBTypeConverter<String, Instant>, DynamoDBMarshaller<Instant> {
+public class Instant2EpocheDynamoDBMarshaller
+		implements
+			DynamoDBTypeConverter<String, Instant>,
+			DynamoDBMarshaller<Instant> {
 
 	@Override
 	public String convert(Instant object) {

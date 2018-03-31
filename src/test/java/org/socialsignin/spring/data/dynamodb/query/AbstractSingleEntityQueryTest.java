@@ -27,29 +27,29 @@ import static org.junit.Assert.assertEquals;
 
 public class AbstractSingleEntityQueryTest {
 
-    @Mock
-    private DynamoDBOperations dynamoDBOperations;
-    @Mock
-    private User entity;
+	@Mock
+	private DynamoDBOperations dynamoDBOperations;
+	@Mock
+	private User entity;
 
-    private AbstractSingleEntityQuery<User> underTest;
+	private AbstractSingleEntityQuery<User> underTest;
 
-    @Before
-    public void setUp() {
-        underTest = new AbstractSingleEntityQuery<User>(dynamoDBOperations, User.class) {
-            @Override
-            public User getSingleResult() {
-                return entity;
-            }
-        };
-    }
+	@Before
+	public void setUp() {
+		underTest = new AbstractSingleEntityQuery<User>(dynamoDBOperations, User.class) {
+			@Override
+			public User getSingleResult() {
+				return entity;
+			}
+		};
+	}
 
-    @Test
-    public void testGetResultList() {
-        List<User> actual = underTest.getResultList();
+	@Test
+	public void testGetResultList() {
+		List<User> actual = underTest.getResultList();
 
-        assertEquals(1, actual.size());
-        assertEquals(entity, actual.get(0));
-    }
+		assertEquals(1, actual.size());
+		assertEquals(entity, actual.get(0));
+	}
 
 }

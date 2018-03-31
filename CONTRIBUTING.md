@@ -20,10 +20,12 @@ At the time of writing this is JDK8 (binary compatibility).
 
 ## Code Style
 
-A dedicated and holistic code style is not yet defined.
-Changes to existing classes should follow the style that is found in that specific class.
+Google's Java code style is followed available [here](https://github.com/google/styleguide).
 
-In gernal, the Google Code style should be followed.
+The proper formatting is checked during compile time. To easily follow the style use **one** of those options:
+1. Use [Eclipse Formatter](https://help.eclipse.org/neon/topic/org.eclipse.jdt.doc.user/reference/preferences/java/codestyle/ref-preferences-formatter.htm) with the `src/eclipse-java-google-style.xml` file.
+1. Use [IntelliJ Formatter](https://blog.jetbrains.com/idea/2014/01/intellij-idea-13-importing-code-formatter-settings-from-eclipse/) with the `src/eclipse-java-google-style.xml` file.
+1. Use `mvn formatter:format` to apply the style to the source files.
 
 ## Merging
 

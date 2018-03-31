@@ -26,8 +26,7 @@ public class Date2EpocheDynamoDBMarshaller extends DateDynamoDBMarshaller {
 		private static final long serialVersionUID = 2969564523817434535L;
 
 		@Override
-		public StringBuffer format(Date date, StringBuffer toAppendTo,
-				FieldPosition fieldPosition) {
+		public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
 			long epoche = date.getTime();
 			toAppendTo.append(epoche);
 			return toAppendTo;
@@ -39,7 +38,7 @@ public class Date2EpocheDynamoDBMarshaller extends DateDynamoDBMarshaller {
 			pos.setIndex(source.length());
 			return new Date(epoche);
 		}
-		
+
 	};
 
 	@Override

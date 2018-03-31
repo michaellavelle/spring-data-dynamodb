@@ -41,7 +41,7 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 	private final Bean<AmazonDynamoDB> amazonDynamoDBBean;
 
 	private final Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean;
-		
+
 	private final Bean<DynamoDBOperations> dynamoDBOperationsBean;
 
 	/**
@@ -59,18 +59,17 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 	 *            must not be {@literal null}.
 	 */
 	DynamoDBRepositoryBean(BeanManager beanManager, Bean<AmazonDynamoDB> amazonDynamoDBBean,
-						   Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean, Bean<DynamoDBOperations> dynamoDBOperationsBean,
-						   Set<Annotation> qualifiers, Class<T> repositoryType) {
+			Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean, Bean<DynamoDBOperations> dynamoDBOperationsBean,
+			Set<Annotation> qualifiers, Class<T> repositoryType) {
 
 		super(qualifiers, repositoryType, beanManager);
-		if (dynamoDBOperationsBean == null)
-		{
+		if (dynamoDBOperationsBean == null) {
 			Assert.notNull(amazonDynamoDBBean, "amazonDynamoDBBean must not be null!");
-		}
-		else
-		{
-			Assert.isNull(amazonDynamoDBBean,"Cannot specify both amazonDynamoDB bean and dynamoDBOperationsBean in repository configuration");
-			Assert.isNull(dynamoDBMapperConfigBean,"Cannot specify both dynamoDBMapperConfigBean bean and dynamoDBOperationsBean in repository configuration");
+		} else {
+			Assert.isNull(amazonDynamoDBBean,
+					"Cannot specify both amazonDynamoDB bean and dynamoDBOperationsBean in repository configuration");
+			Assert.isNull(dynamoDBMapperConfigBean,
+					"Cannot specify both dynamoDBMapperConfigBean bean and dynamoDBOperationsBean in repository configuration");
 
 		}
 		this.amazonDynamoDBBean = amazonDynamoDBBean;
@@ -91,18 +90,18 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 		AmazonDynamoDB amazonDynamoDB = getDependencyInstance(amazonDynamoDBBean, AmazonDynamoDB.class);
 
 		// Get an instance from the associated optional AmazonDynamoDB bean.
-		DynamoDBMapperConfig dynamoDBMapperConfig = dynamoDBMapperConfigBean == null ? null : getDependencyInstance(
-				dynamoDBMapperConfigBean, DynamoDBMapperConfig.class);
-		
-		DynamoDBOperations dynamoDBOperations = dynamoDBOperationsBean == null ? null
-				:  getDependencyInstance(
-						dynamoDBOperationsBean, DynamoDBOperations.class);
+		DynamoDBMapperConfig dynamoDBMapperConfig = dynamoDBMapperConfigBean == null
+				? null
+				: getDependencyInstance(dynamoDBMapperConfigBean, DynamoDBMapperConfig.class);
 
-		if (dynamoDBOperations == null)
-		{
-			dynamoDBOperations = new DynamoDBTemplate(amazonDynamoDB,dynamoDBMapperConfig);
+		DynamoDBOperations dynamoDBOperations = dynamoDBOperationsBean == null
+				? null
+				: getDependencyInstance(dynamoDBOperationsBean, DynamoDBOperations.class);
+
+		if (dynamoDBOperations == null) {
+			dynamoDBOperations = new DynamoDBTemplate(amazonDynamoDB, dynamoDBMapperConfig);
 		}
-		
+
 		DynamoDBRepositoryFactory factory = new DynamoDBRepositoryFactory(dynamoDBOperations);
 		return factory.getRepository(repositoryType);
 	}

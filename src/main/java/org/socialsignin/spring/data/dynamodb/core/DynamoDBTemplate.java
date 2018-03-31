@@ -55,39 +55,59 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	private final AmazonDynamoDB amazonDynamoDB;
 	private final DynamoDBMapperConfig dynamoDBMapperConfig;
 	private ApplicationEventPublisher eventPublisher;
-	
-	/** Convenient constructor to use the default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)}
-	 * @param amazonDynamoDB The AWS SDK instance to talk to DynamoDB
-	 * @param dynamoDBMapperConfig The config to use
-	 * */
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig)
-	{
-	    this(amazonDynamoDB, dynamoDBMapperConfig, null);
+
+	/**
+	 * Convenient constructor to use the default
+	 * {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)}
+	 * 
+	 * @param amazonDynamoDB
+	 *            The AWS SDK instance to talk to DynamoDB
+	 * @param dynamoDBMapperConfig
+	 *            The config to use
+	 */
+	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig) {
+		this(amazonDynamoDB, dynamoDBMapperConfig, null);
 	}
-    
-	/** Convenient constructor to use the {@link DynamoDBMapperConfig#DEFAULT}
-	 * @param amazonDynamoDB The AWS SDK instance to talk to DynamoDB
-	 * @param dynamoDBMapper The Mapper to use
-	 * */
-    public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper)
-    {
-        this(amazonDynamoDB, null, dynamoDBMapper);
-    }
-    
-    /** Convenient construcotr to thse the {@link DynamoDBMapperConfig#DEFAULT} and default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)}
-	 * @param amazonDynamoDB The AWS SDK instance to talk to DynamoDB
-	 * */
-    public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB)
-    {
-        this(amazonDynamoDB, null, null);
-    }
-	
-    /** Initializes a new {@code DynamoDBTemplate}.
-     * The following combinations are valid:
-     * @param amazonDynamoDB must not be {@code null}
-     * @param dynamoDBMapperConfig can be {@code null} - {@link DynamoDBMapperConfig#DEFAULT} is used if {@code null} is passed in
-     * @param dynamoDBMapper can be {@code null} - {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB, DynamoDBMapperConfig)} is used if {@code null} is passed in */
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig, DynamoDBMapper dynamoDBMapper) {
+
+	/**
+	 * Convenient constructor to use the {@link DynamoDBMapperConfig#DEFAULT}
+	 * 
+	 * @param amazonDynamoDB
+	 *            The AWS SDK instance to talk to DynamoDB
+	 * @param dynamoDBMapper
+	 *            The Mapper to use
+	 */
+	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper) {
+		this(amazonDynamoDB, null, dynamoDBMapper);
+	}
+
+	/**
+	 * Convenient construcotr to thse the {@link DynamoDBMapperConfig#DEFAULT} and
+	 * default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)}
+	 * 
+	 * @param amazonDynamoDB
+	 *            The AWS SDK instance to talk to DynamoDB
+	 */
+	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB) {
+		this(amazonDynamoDB, null, null);
+	}
+
+	/**
+	 * Initializes a new {@code DynamoDBTemplate}. The following combinations are
+	 * valid:
+	 * 
+	 * @param amazonDynamoDB
+	 *            must not be {@code null}
+	 * @param dynamoDBMapperConfig
+	 *            can be {@code null} - {@link DynamoDBMapperConfig#DEFAULT} is used
+	 *            if {@code null} is passed in
+	 * @param dynamoDBMapper
+	 *            can be {@code null} -
+	 *            {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB, DynamoDBMapperConfig)}
+	 *            is used if {@code null} is passed in
+	 */
+	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig,
+			DynamoDBMapper dynamoDBMapper) {
 		Assert.notNull(amazonDynamoDB, "amazonDynamoDB must not be null!");
 		this.amazonDynamoDB = amazonDynamoDB;
 
@@ -99,18 +119,22 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 			// Trying to fix half-initialized DynamoDBMapperConfigs here.
 			// The old documentation advised to start with an empty builder. Therefore we
 			// try here to set required fields to their defaults -
-			// As the documentation at https://github.com/derjust/spring-data-dynamodb/wiki/Alter-table-name-during-runtime (same as https://git.io/DynamoDBMapperConfig)
+			// As the documentation at
+			// https://github.com/derjust/spring-data-dynamodb/wiki/Alter-table-name-during-runtime
+			// (same as https://git.io/DynamoDBMapperConfig)
 			// now does: Start with #DEFAULT and add what's required
 			DynamoDBMapperConfig.Builder emptyBuilder = DynamoDBMapperConfig.builder(); // empty (!) builder
 
 			if (dynamoDBMapperConfig.getConversionSchema() == null) {
-				LOGGER.warn("No ConversionSchema set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
-				// DynamoDBMapperConfig#DEFAULT comes with a  ConversionSchema
+				LOGGER.warn(
+						"No ConversionSchema set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
+				// DynamoDBMapperConfig#DEFAULT comes with a ConversionSchema
 				emptyBuilder.withConversionSchema(DynamoDBMapperConfig.DEFAULT.getConversionSchema());
 			}
 
 			if (dynamoDBMapperConfig.getTypeConverterFactory() == null) {
-				LOGGER.warn("No TypeConverterFactory set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
+				LOGGER.warn(
+						"No TypeConverterFactory set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
 				// DynamoDBMapperConfig#DEFAULT comes with a TypeConverterFactory
 				emptyBuilder.withTypeConverterFactory(DynamoDBMapperConfig.DEFAULT.getTypeConverterFactory());
 			}
@@ -124,37 +148,33 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 		} else {
 			this.dynamoDBMapper = dynamoDBMapper;
 		}
-    }
-	
+	}
+
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.eventPublisher = applicationContext;
 	}
-	
+
 	@Override
-	public <T> int count(Class<T> domainClass,
-			DynamoDBQueryExpression<T> queryExpression) {
+	public <T> int count(Class<T> domainClass, DynamoDBQueryExpression<T> queryExpression) {
 		return dynamoDBMapper.count(domainClass, queryExpression);
 	}
 
 	@Override
-	public <T> PaginatedQueryList<T> query(Class<T> domainClass,
-			DynamoDBQueryExpression<T> queryExpression) {
+	public <T> PaginatedQueryList<T> query(Class<T> domainClass, DynamoDBQueryExpression<T> queryExpression) {
 		PaginatedQueryList<T> results = dynamoDBMapper.query(domainClass, queryExpression);
 		maybeEmitEvent(results, AfterQueryEvent::new);
 		return results;
 	}
 
 	@Override
-	public <T> int count(Class<T> domainClass,
-			DynamoDBScanExpression scanExpression) {
+	public <T> int count(Class<T> domainClass, DynamoDBScanExpression scanExpression) {
 		return dynamoDBMapper.count(domainClass, scanExpression);
 	}
 
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey, Object rangeKey) {
-		T entity =  dynamoDBMapper.load(domainClass, hashKey,rangeKey);
+		T entity = dynamoDBMapper.load(domainClass, hashKey, rangeKey);
 		maybeEmitEvent(entity, AfterLoadEvent::new);
 
 		return entity;
@@ -162,15 +182,14 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 
 	@Override
 	public <T> T load(Class<T> domainClass, Object hashKey) {
-		T entity =  dynamoDBMapper.load(domainClass, hashKey);
+		T entity = dynamoDBMapper.load(domainClass, hashKey);
 		maybeEmitEvent(entity, AfterLoadEvent::new);
 
 		return entity;
 	}
 
 	@Override
-	public <T> PaginatedScanList<T> scan(Class<T> domainClass,
-			DynamoDBScanExpression scanExpression) {
+	public <T> PaginatedScanList<T> scan(Class<T> domainClass, DynamoDBScanExpression scanExpression) {
 		PaginatedScanList<T> results = dynamoDBMapper.scan(domainClass, scanExpression);
 		maybeEmitEvent(results, AfterScanEvent::new);
 		return results;
@@ -178,11 +197,9 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 
 	@Override
 	public Map<String, List<Object>> batchLoad(Map<Class<?>, List<KeyPair>> itemsToGet) {
-		Map<String,List<Object>> results = dynamoDBMapper.batchLoad(itemsToGet);
-		for (List<Object> resultList : results.values())
-		{
-			for (Object entity : resultList)
-			{
+		Map<String, List<Object>> results = dynamoDBMapper.batchLoad(itemsToGet);
+		for (List<Object> resultList : results.values()) {
+			for (Object entity : resultList) {
 				maybeEmitEvent(entity, AfterLoadEvent::new);
 			}
 		}
@@ -197,7 +214,7 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 		return entity;
 
 	}
-	
+
 	@Override
 	public List<FailedBatch> batchSave(Iterable<?> entities) {
 		entities.forEach(it -> maybeEmitEvent(it, BeforeSaveEvent::new));
@@ -205,8 +222,8 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 		List<FailedBatch> result = dynamoDBMapper.batchSave(entities);
 
 		entities.forEach(it -> maybeEmitEvent(it, AfterSaveEvent::new));
-        return result;
-    }
+		return result;
+	}
 
 	@Override
 	public <T> T delete(T entity) {
@@ -215,20 +232,19 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 		maybeEmitEvent(entity, AfterDeleteEvent::new);
 		return entity;
 	}
-	
+
 	@Override
 	public List<FailedBatch> batchDelete(Iterable<?> entities) {
 		entities.forEach(it -> maybeEmitEvent(it, BeforeDeleteEvent::new));
 
-	    List<FailedBatch> result = dynamoDBMapper.batchDelete(entities);
+		List<FailedBatch> result = dynamoDBMapper.batchDelete(entities);
 
 		entities.forEach(it -> maybeEmitEvent(it, AfterDeleteEvent::new));
 		return result;
 	}
 
 	@Override
-	public <T> PaginatedQueryList<T> query(Class<T> clazz,
-			QueryRequest queryRequest) {
+	public <T> PaginatedQueryList<T> query(Class<T> clazz, QueryRequest queryRequest) {
 		QueryResult queryResult = amazonDynamoDB.query(queryRequest);
 		return new PaginatedQueryList<T>(dynamoDBMapper, clazz, amazonDynamoDB, queryRequest, queryResult,
 				dynamoDBMapperConfig.getPaginationLoadingStrategy(), dynamoDBMapperConfig);
@@ -238,16 +254,16 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	public <T> int count(Class<T> clazz, QueryRequest mutableQueryRequest) {
 		mutableQueryRequest.setSelect(Select.COUNT);
 
-        // Count queries can also be truncated for large datasets
-        int count = 0;
-        QueryResult queryResult = null;
-        do {
-            queryResult = amazonDynamoDB.query(mutableQueryRequest);
-            count += queryResult.getCount();
-            mutableQueryRequest.setExclusiveStartKey(queryResult.getLastEvaluatedKey());
-        } while (queryResult.getLastEvaluatedKey() != null);
+		// Count queries can also be truncated for large datasets
+		int count = 0;
+		QueryResult queryResult = null;
+		do {
+			queryResult = amazonDynamoDB.query(mutableQueryRequest);
+			count += queryResult.getCount();
+			mutableQueryRequest.setExclusiveStartKey(queryResult.getLastEvaluatedKey());
+		} while (queryResult.getLastEvaluatedKey() != null);
 
-        return count;
+		return count;
 	}
 
 	@Override
@@ -259,23 +275,23 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 				tableName = dynamoDBMapperConfig.getTableNameOverride().getTableNamePrefix() + tableName;
 			}
 		} else if (dynamoDBMapperConfig.getTableNameResolver() != null) {
-		  tableName = dynamoDBMapperConfig.getTableNameResolver().getTableName(domainClass, dynamoDBMapperConfig);
+			tableName = dynamoDBMapperConfig.getTableNameResolver().getTableName(domainClass, dynamoDBMapperConfig);
 		}
 
 		return tableName;
 	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T> DynamoDBMapperTableModel<T> getTableModel(Class<T> domainClass) {
-        return dynamoDBMapper.getTableModel(domainClass, dynamoDBMapperConfig);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <T> DynamoDBMapperTableModel<T> getTableModel(Class<T> domainClass) {
+		return dynamoDBMapper.getTableModel(domainClass, dynamoDBMapperConfig);
+	}
 
-    protected <T> void maybeEmitEvent(@Nullable T source, Function<T, DynamoDBMappingEvent<T>> factory) {
-    	if (eventPublisher != null) {
-    		if (source != null) {
+	protected <T> void maybeEmitEvent(@Nullable T source, Function<T, DynamoDBMappingEvent<T>> factory) {
+		if (eventPublisher != null) {
+			if (source != null) {
 				DynamoDBMappingEvent<T> event = factory.apply(source);
 
 				eventPublisher.publishEvent(event);

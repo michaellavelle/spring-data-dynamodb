@@ -36,24 +36,29 @@ import java.lang.annotation.Target;
 @Import(DynamoDBAuditingRegistrar.class)
 public @interface EnableDynamoDBAuditing {
 
-    /**
-     * @return Configures the {@link org.springframework.data.domain.AuditorAware} bean to be used to lookup the current principal.
-     */
-    String auditorAwareRef() default "";
+	/**
+	 * @return Configures the {@link org.springframework.data.domain.AuditorAware}
+	 *         bean to be used to lookup the current principal.
+	 */
+	String auditorAwareRef() default "";
 
-    /**
-     * @return Configures whether the creation and modification dates are set. Defaults to {@literal true}.
-     */
-    boolean setDates() default true;
+	/**
+	 * @return Configures whether the creation and modification dates are set.
+	 *         Defaults to {@literal true}.
+	 */
+	boolean setDates() default true;
 
-    /**
-     * @return Configures whether the entity shall be marked as modified on creation. Defaults to {@literal true}.
-     */
-    boolean modifyOnCreate() default true;
+	/**
+	 * @return Configures whether the entity shall be marked as modified on
+	 *         creation. Defaults to {@literal true}.
+	 */
+	boolean modifyOnCreate() default true;
 
-    /**
-     * @return Configures a {@link org.springframework.data.auditing.DateTimeProvider} bean name that allows customizing the {@link org.joda.time.DateTime} to be
-     * used for setting creation and modification dates.
-     */
-    String dateTimeProviderRef() default "";
+	/**
+	 * @return Configures a
+	 *         {@link org.springframework.data.auditing.DateTimeProvider} bean name
+	 *         that allows customizing the {@link org.joda.time.DateTime} to be used
+	 *         for setting creation and modification dates.
+	 */
+	String dateTimeProviderRef() default "";
 }

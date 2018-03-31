@@ -24,9 +24,9 @@ import org.springframework.test.context.TestExecutionListener;
 @Configuration
 public class DynamoDBLocalResource implements TestExecutionListener {
 
-    @Bean
-    public AmazonDynamoDB amazonDynamoDB() {
-        return DynamoDBEmbedded.create().amazonDynamoDB();
-    }
+	@Bean
+	public AmazonDynamoDB amazonDynamoDB() {
+		return DynamoDBEmbedded.create().amazonDynamoDB();
+	}
 
 }

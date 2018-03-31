@@ -27,22 +27,25 @@ import java.util.Comparator;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-public class DynamoDBPersistentEntityImpl<T> extends BasicPersistentEntity<T, DynamoDBPersistentProperty> implements
-		DynamoDBPersistentEntity<T> {
-	public DynamoDBPersistentEntityImpl(TypeInformation<T> information, Comparator<DynamoDBPersistentProperty> comparator) {
+public class DynamoDBPersistentEntityImpl<T> extends BasicPersistentEntity<T, DynamoDBPersistentProperty>
+		implements
+			DynamoDBPersistentEntity<T> {
+	public DynamoDBPersistentEntityImpl(TypeInformation<T> information,
+			Comparator<DynamoDBPersistentProperty> comparator) {
 		super(information, comparator);
 	}
 
 	/**
-	 * Returns the given property if it is a better candidate for the id
-	 * property than the current id property.
+	 * Returns the given property if it is a better candidate for the id property
+	 * than the current id property.
 	 * 
 	 * @param property
 	 *            the new id property candidate, will never be {@literal null}.
-	 * @return the given id property or {@literal null} if the given property is
-	 *         not an id property.
+	 * @return the given id property or {@literal null} if the given property is not
+	 *         an id property.
 	 */
-	protected DynamoDBPersistentProperty returnPropertyIfBetterIdPropertyCandidateOrNull(DynamoDBPersistentProperty property) {
+	protected DynamoDBPersistentProperty returnPropertyIfBetterIdPropertyCandidateOrNull(
+			DynamoDBPersistentProperty property) {
 
 		if (!property.isIdProperty()) {
 			return null;
@@ -56,8 +59,10 @@ public class DynamoDBPersistentEntityImpl<T> extends BasicPersistentEntity<T, Dy
 			} else if (getIdProperty().isHashKeyProperty() && property.isCompositeIdProperty()) {
 				return property;
 			} else {
-				throw new MappingException(String.format("Attempt to add id property %s but already have property %s registered "
-						+ "as id. Check your mapping configuration!", property.getField(), getIdProperty().getField()));
+				throw new MappingException(String.format(
+						"Attempt to add id property %s but already have property %s registered "
+								+ "as id. Check your mapping configuration!",
+						property.getField(), getIdProperty().getField()));
 			}
 		}
 

@@ -42,7 +42,8 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 
 	private DynamoDBEntityInformation<T, ID> entityInformation;
 
-	public DynamoDBEntityWithHashKeyOnlyCriteria(DynamoDBEntityInformation<T, ID> entityInformation, DynamoDBMapperTableModel<T> tableModel) {
+	public DynamoDBEntityWithHashKeyOnlyCriteria(DynamoDBEntityInformation<T, ID> entityInformation,
+			DynamoDBMapperTableModel<T> tableModel) {
 		super(entityInformation, tableModel);
 		this.entityInformation = entityInformation;
 	}
@@ -50,7 +51,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 	protected Query<T> buildSingleEntityLoadQuery(DynamoDBOperations dynamoDBOperations) {
 		return new SingleEntityLoadByHashKeyQuery<>(dynamoDBOperations, clazz, getHashKeyPropertyValue());
 	}
-	
+
 	protected Query<Long> buildSingleEntityCountQuery(DynamoDBOperations dynamoDBOperations) {
 		return new CountByHashKeyQuery<>(dynamoDBOperations, clazz, getHashKeyPropertyValue());
 	}
@@ -59,25 +60,28 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 		if (isApplicableForGlobalSecondaryIndex()) {
 
 			List<Condition> hashKeyConditions = getHashKeyConditions();
-			QueryRequest queryRequest = buildQueryRequest(dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName()),
+			QueryRequest queryRequest = buildQueryRequest(
+					dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName()),
 					getGlobalSecondaryIndexName(), getHashKeyAttributeName(), null, null, hashKeyConditions, null);
-			return new MultipleEntityQueryRequestQuery<>(dynamoDBOperations,entityInformation.getJavaType(), queryRequest);
+			return new MultipleEntityQueryRequestQuery<>(dynamoDBOperations, entityInformation.getJavaType(),
+					queryRequest);
 		} else {
 			return new MultipleEntityScanExpressionQuery<>(dynamoDBOperations, clazz, buildScanExpression());
 		}
 	}
-	
-	protected Query<Long> buildFinderCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
+
+	protected Query<Long> buildFinderCountQuery(DynamoDBOperations dynamoDBOperations, boolean pageQuery) {
 		if (isApplicableForGlobalSecondaryIndex()) {
 
 			List<Condition> hashKeyConditions = getHashKeyConditions();
-			QueryRequest queryRequest = buildQueryRequest(dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName()),
+			QueryRequest queryRequest = buildQueryRequest(
+					dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName()),
 					getGlobalSecondaryIndexName(), getHashKeyAttributeName(), null, null, hashKeyConditions, null);
 			queryRequest.setSelect(Select.COUNT);
 			return new QueryRequestCountQuery(dynamoDBOperations, queryRequest);
 
 		} else {
-			return new ScanExpressionCountQuery<>(dynamoDBOperations, clazz, buildScanExpression(),pageQuery);
+			return new ScanExpressionCountQuery<>(dynamoDBOperations, clazz, buildScanExpression(), pageQuery);
 		}
 	}
 
@@ -97,10 +101,9 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		if (isHashKeySpecified()) {
-			scanExpression.addFilterCondition(
-					getHashKeyAttributeName(),
-					createSingleValueCondition(getHashKeyPropertyName(), ComparisonOperator.EQ, getHashKeyAttributeValue(),
-							getHashKeyAttributeValue().getClass(), true));
+			scanExpression.addFilterCondition(getHashKeyAttributeName(),
+					createSingleValueCondition(getHashKeyPropertyName(), ComparisonOperator.EQ,
+							getHashKeyAttributeValue(), getHashKeyAttributeValue().getClass(), true));
 		}
 
 		for (Map.Entry<String, List<Condition>> conditionEntry : attributeConditions.entrySet()) {
@@ -121,7 +124,8 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 		if (isHashKeyProperty(propertyName)) {
 			return withHashKeyEquals(value);
 		} else {
-			Condition condition = createSingleValueCondition(propertyName, ComparisonOperator.EQ, value, propertyType, false);
+			Condition condition = createSingleValueCondition(propertyName, ComparisonOperator.EQ, value, propertyType,
+					false);
 			return withCondition(propertyName, condition);
 		}
 	}

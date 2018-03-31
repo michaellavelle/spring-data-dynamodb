@@ -27,7 +27,8 @@ public class CountByHashAndRangeKeyQuery<T> extends AbstractSingleEntityQuery<Lo
 	private Object rangeKey;
 	private Class<T> entityClass;
 
-	public CountByHashAndRangeKeyQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz, Object hashKey, Object rangeKey) {
+	public CountByHashAndRangeKeyQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz, Object hashKey,
+			Object rangeKey) {
 		super(dynamoDBOperations, Long.class);
 		this.hashKey = hashKey;
 		this.rangeKey = rangeKey;

@@ -67,7 +67,7 @@ public class DynamoDBTemplateTest {
 		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapper);
 		this.dynamoDBTemplate.setApplicationContext(applicationContext);
 	}
-	
+
 	@Test
 	public void testConstructorMandatory() {
 		expectedException.expect(IllegalArgumentException.class);
@@ -78,7 +78,7 @@ public class DynamoDBTemplateTest {
 	@Test
 	public void testConstructorOptionalAllNull() {
 		dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, null, null);
-		
+
 		// check that the defaults are properly initialized - #108
 		String userTableName = dynamoDBTemplate.getOverriddenTableName(User.class, "UserTable");
 		assertEquals("user", userTableName);
@@ -101,11 +101,10 @@ public class DynamoDBTemplateTest {
 	}
 
 	@Test
-	public void testBatchDelete_CallsCorrectDynamoDBMapperMethod()
-	{
-			List<User> users = new ArrayList<>();
-			dynamoDBTemplate.batchDelete(users);
-			verify(dynamoDBMapper).batchDelete(any(List.class));
+	public void testBatchDelete_CallsCorrectDynamoDBMapperMethod() {
+		List<User> users = new ArrayList<>();
+		dynamoDBTemplate.batchDelete(users);
+		verify(dynamoDBMapper).batchDelete(any(List.class));
 	}
 
 	@Test
@@ -117,12 +116,11 @@ public class DynamoDBTemplateTest {
 	}
 
 	@Test
-	public void testBatchSave_CallsCorrectDynamoDBMapperMethod()
-	{
-			List<User> users = new ArrayList<>();
-			dynamoDBTemplate.batchSave(users);
+	public void testBatchSave_CallsCorrectDynamoDBMapperMethod() {
+		List<User> users = new ArrayList<>();
+		dynamoDBTemplate.batchSave(users);
 
-			verify(dynamoDBMapper).batchSave(eq(users));
+		verify(dynamoDBMapper).batchSave(eq(users));
 	}
 
 	@Test
@@ -161,8 +159,8 @@ public class DynamoDBTemplateTest {
 		assertDynamoDBMapperConfigCompletness(tmpl);
 	}
 
-    @Test
-    public void testGetOverriddenTableName_WithTableNameResolver_defaultBuilder() {
+	@Test
+	public void testGetOverriddenTableName_WithTableNameResolver_defaultBuilder() {
 		final String overridenTableName = "someOtherTableName";
 
 		DynamoDBMapperConfig.Builder builder = new DynamoDBMapperConfig.Builder();
@@ -174,7 +172,7 @@ public class DynamoDBTemplateTest {
 		String overriddenTableName = tmpl.getOverriddenTableName(User.class, "someTableName");
 		assertEquals(overridenTableName, overriddenTableName);
 		assertDynamoDBMapperConfigCompletness(tmpl);
-    }
+	}
 
 	@Test
 	public void testGetOverriddenTableName_WithTableNameResolver_emptyBuilder() {
@@ -199,16 +197,14 @@ public class DynamoDBTemplateTest {
 	}
 
 	@Test
-	public void testLoadByHashKey_WhenDynamoDBMapperReturnsNull()
-	{
+	public void testLoadByHashKey_WhenDynamoDBMapperReturnsNull() {
 		User user = dynamoDBTemplate.load(User.class, "someHashKey");
 		Assert.assertNull(user);
 	}
-	
+
 	@Test
-	public void testLoadByHashKeyAndRangeKey_WhenDynamoDBMapperReturnsNull()
-	{
-		Playlist playlist = dynamoDBTemplate.load(Playlist.class, "someHashKey","someRangeKey");
+	public void testLoadByHashKeyAndRangeKey_WhenDynamoDBMapperReturnsNull() {
+		Playlist playlist = dynamoDBTemplate.load(Playlist.class, "someHashKey", "someRangeKey");
 		Assert.assertNull(playlist);
 	}
 
