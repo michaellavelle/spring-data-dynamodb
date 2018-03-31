@@ -37,7 +37,7 @@ public class PlaylistId implements Serializable {
 		this.userName = userName;
 		this.playlistName = playlistName;
 	}
-	
+
 	@DynamoDBHashKey
 	public String getUserName() {
 		return userName;

@@ -90,21 +90,24 @@ public class DynamoDBMappingContextTest {
 	@Test
 	public void detectsPropertyAnnotation() {
 
-		DynamoDBPersistentEntityImpl<?> entity = underTest.getPersistentEntity(DynamoDBMappingContextTestFieldEntity.class);
+		DynamoDBPersistentEntityImpl<?> entity = underTest
+				.getPersistentEntity(DynamoDBMappingContextTestFieldEntity.class);
 		assertThat(entity.getIdProperty(), is(notNullValue()));
 	}
 
 	@Test
 	@Ignore
 	public void detectdMethodsAnnotation() {
-		DynamoDBPersistentEntityImpl<?> entity = underTest.getPersistentEntity(DynamoDBMappingContextTestMethodEntity.class);
+		DynamoDBPersistentEntityImpl<?> entity = underTest
+				.getPersistentEntity(DynamoDBMappingContextTestMethodEntity.class);
 		assertThat(entity.getIdProperty(), is(notNullValue()));
 
 	}
 
 	@Test
 	public void detectdMethodsId() {
-		DynamoDBPersistentEntityImpl<?> entity = underTest.getPersistentEntity(DynamoDBMappingContextTestIdEntity.class);
+		DynamoDBPersistentEntityImpl<?> entity = underTest
+				.getPersistentEntity(DynamoDBMappingContextTestIdEntity.class);
 		assertThat(entity.getIdProperty(), is(notNullValue()));
 
 	}

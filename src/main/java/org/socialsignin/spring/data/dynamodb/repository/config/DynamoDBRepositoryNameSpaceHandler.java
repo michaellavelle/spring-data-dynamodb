@@ -39,7 +39,7 @@ public class DynamoDBRepositoryNameSpaceHandler extends NamespaceHandlerSupport 
 		RepositoryBeanDefinitionParser repositoryBeanDefinitionParser = new RepositoryBeanDefinitionParser(extension);
 
 		registerBeanDefinitionParser("repositories", repositoryBeanDefinitionParser);
-        registerBeanDefinitionParser("auditing", new DynamoDBAuditingBeanDefinitionParser());
+		registerBeanDefinitionParser("auditing", new DynamoDBAuditingBeanDefinitionParser());
 
 	}
 }

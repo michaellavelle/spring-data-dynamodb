@@ -44,13 +44,11 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 		this.dynamoDBOperations = dynamoDBOperations;
 		this.method = method;
 	}
-	
 
 	protected QueryExecution<T, ID> getExecution() {
 		if (method.isCollectionQuery() && !isSingleEntityResultsRestriction()) {
 			return new CollectionExecution();
-		}
-		else if (method.isSliceQuery() && !isSingleEntityResultsRestriction()) {
+		} else if (method.isSliceQuery() && !isSingleEntityResultsRestriction()) {
 			return new SlicedExecution(method.getParameters());
 		} else if (method.isPageQuery() && !isSingleEntityResultsRestriction()) {
 			return new PagedExecution(method.getParameters());
@@ -70,19 +68,18 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 	protected abstract boolean isCountQuery();
 	protected abstract boolean isExistsQuery();
 	protected abstract boolean isDeleteQuery();
-	
+
 	protected abstract Integer getResultsRestrictionIfApplicable();
 	protected abstract boolean isSingleEntityResultsRestriction();
 
-	
 	protected Query<T> doCreateQueryWithPermissions(Object values[]) {
 		Query<T> query = doCreateQuery(values);
 		query.setScanEnabled(method.isScanEnabled());
 		return query;
 	}
-	
+
 	protected Query<Long> doCreateCountQueryWithPermissions(Object values[], boolean pageQuery) {
-		Query<Long> query = doCreateCountQuery(values,pageQuery);
+		Query<Long> query = doCreateCountQuery(values, pageQuery);
 		query.setScanCountEnabled(method.isScanCountEnabled());
 		return query;
 	}
@@ -91,19 +88,15 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 		Object execute(AbstractDynamoDBQuery<T, ID> query, Object[] values);
 	}
 
-	
 	class CollectionExecution implements QueryExecution<T, ID> {
 
-		
-		
 		@Override
 		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
 			Query<T> query = dynamoDBQuery.doCreateQueryWithPermissions(values);
-			if (getResultsRestrictionIfApplicable() != null)
-			{
+			if (getResultsRestrictionIfApplicable() != null) {
 				return restrictMaxResultsIfNecessary(query.getResultList().iterator());
-			}
-			else return query.getResultList();
+			} else
+				return query.getResultList();
 		}
 
 		private List<T> restrictMaxResultsIfNecessary(Iterator<T> iterator) {
@@ -113,7 +106,7 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 				resultsPage.add(iterator.next());
 				processed++;
 			}
-			return resultsPage;		
+			return resultsPage;
 		}
 
 	}
@@ -142,7 +135,9 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 
 		private List<T> readPageOfResultsRestrictMaxResultsIfNecessary(Iterator<T> iterator, int pageSize) {
 			int processed = 0;
-			int toProcess = getResultsRestrictionIfApplicable() != null ? Math.min(pageSize,getResultsRestrictionIfApplicable()) : pageSize;
+			int toProcess = getResultsRestrictionIfApplicable() != null
+					? Math.min(pageSize, getResultsRestrictionIfApplicable())
+					: pageSize;
 			List<T> resultsPage = new ArrayList<>();
 			while (iterator.hasNext() && processed < toProcess) {
 				resultsPage.add(iterator.next());
@@ -159,12 +154,12 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 			Query<T> query = dynamoDBQuery.doCreateQueryWithPermissions(values);
 
 			List<T> results = query.getResultList();
-			return createPage(results, pageable,dynamoDBQuery,values);
+			return createPage(results, pageable, dynamoDBQuery, values);
 		}
 
-		private Page<T> createPage(List<T> allResults, Pageable pageable,AbstractDynamoDBQuery<T, ID> dynamoDBQuery,Object[] values) {
+		private Page<T> createPage(List<T> allResults, Pageable pageable, AbstractDynamoDBQuery<T, ID> dynamoDBQuery,
+				Object[] values) {
 
-			
 			Iterator<T> iterator = allResults.iterator();
 			if (pageable.getOffset() > 0) {
 				long processedCount = scanThroughResults(iterator, pageable.getOffset());
@@ -172,21 +167,19 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 					return new PageImpl<>(new ArrayList<T>());
 			}
 			List<T> results = readPageOfResultsRestrictMaxResultsIfNecessary(iterator, pageable.getPageSize());
-			
-			
-			Query<Long> countQuery = dynamoDBQuery.doCreateCountQueryWithPermissions(values,true);
+
+			Query<Long> countQuery = dynamoDBQuery.doCreateCountQueryWithPermissions(values, true);
 			long count = countQuery.getSingleResult();
-			
-			if (getResultsRestrictionIfApplicable() != null)
-			{
-				count = Math.min(count,getResultsRestrictionIfApplicable());
+
+			if (getResultsRestrictionIfApplicable() != null) {
+				count = Math.min(count, getResultsRestrictionIfApplicable());
 			}
-			
+
 			return new PageImpl<>(results, pageable, count);
 
 		}
 	}
-	
+
 	class SlicedExecution implements QueryExecution<T, ID> {
 
 		private final Parameters<?, ?> parameters;
@@ -207,7 +200,9 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 
 		private List<T> readPageOfResultsRestrictMaxResultsIfNecessary(Iterator<T> iterator, int pageSize) {
 			int processed = 0;
-			int toProcess = getResultsRestrictionIfApplicable() != null ? Math.min(pageSize,getResultsRestrictionIfApplicable()) : pageSize;
+			int toProcess = getResultsRestrictionIfApplicable() != null
+					? Math.min(pageSize, getResultsRestrictionIfApplicable())
+					: pageSize;
 
 			List<T> resultsPage = new ArrayList<>();
 			while (iterator.hasNext() && processed < toProcess) {
@@ -238,7 +233,9 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 			List<T> results = readPageOfResultsRestrictMaxResultsIfNecessary(iterator, pageable.getPageSize());
 			// Scan ahead to retrieve the next page count
 			boolean hasMoreResults = scanThroughResults(iterator, 1) > 0;
-			if (getResultsRestrictionIfApplicable() != null && getResultsRestrictionIfApplicable().intValue() <= results.size()) hasMoreResults = false;
+			if (getResultsRestrictionIfApplicable() != null
+					&& getResultsRestrictionIfApplicable().intValue() <= results.size())
+				hasMoreResults = false;
 			return new SliceImpl<>(results, pageable, hasMoreResults);
 		}
 	}
@@ -257,33 +254,25 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 
 		@Override
 		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
-			if (isCountQuery())
-			{
-				return dynamoDBQuery.doCreateCountQueryWithPermissions(values,false).getSingleResult();
-			}
-            else if (isExistsQuery())
-            {
+			if (isCountQuery()) {
+				return dynamoDBQuery.doCreateCountQueryWithPermissions(values, false).getSingleResult();
+			} else if (isExistsQuery()) {
 				return !dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList().isEmpty();
-			}
-			else
-			{
+			} else {
 				return dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
-            }
+			}
 
 		}
 	}
-	
+
 	class SingleEntityLimitedExecution implements QueryExecution<T, ID> {
 
 		@Override
 		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
-			if (isCountQuery())
-			{
-				return dynamoDBQuery.doCreateCountQueryWithPermissions(values,false).getSingleResult();
-			}
-			else
-			{
-				List<T> resultList =  dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList();
+			if (isCountQuery()) {
+				return dynamoDBQuery.doCreateCountQueryWithPermissions(values, false).getSingleResult();
+			} else {
+				List<T> resultList = dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList();
 				return resultList.size() == 0 ? null : resultList.get(0);
 
 			}
@@ -294,8 +283,7 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.repository.query.RepositoryQuery#execute(java
+	 * @see org.springframework.data.repository.query.RepositoryQuery#execute(java
 	 * .lang.Object[])
 	 */
 	public Object execute(Object[] parameters) {

@@ -27,14 +27,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * Default implementation of a {@link org.springframework.data.mapping.context.MappingContext} for DynamoDB using
- * {@link DynamoDBPersistentEntityImpl} and {@link DynamoDBPersistentProperty}
- * as primary abstractions.
+ * Default implementation of a
+ * {@link org.springframework.data.mapping.context.MappingContext} for DynamoDB
+ * using {@link DynamoDBPersistentEntityImpl} and
+ * {@link DynamoDBPersistentProperty} as primary abstractions.
  *
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-public class DynamoDBMappingContext extends AbstractMappingContext<DynamoDBPersistentEntityImpl<?>, DynamoDBPersistentProperty> {
+public class DynamoDBMappingContext
+		extends
+			AbstractMappingContext<DynamoDBPersistentEntityImpl<?>, DynamoDBPersistentProperty> {
 	/*
 	 * (non-Javadoc)
 	 *
@@ -59,8 +62,7 @@ public class DynamoDBMappingContext extends AbstractMappingContext<DynamoDBPersi
 	 */
 	@Override
 	protected DynamoDBPersistentProperty createPersistentProperty(Property property,
-																  DynamoDBPersistentEntityImpl<?> owner,
-																  SimpleTypeHolder simpleTypeHolder) {
+			DynamoDBPersistentEntityImpl<?> owner, SimpleTypeHolder simpleTypeHolder) {
 		return new DynamoDBPersistentPropertyImpl(property, owner, simpleTypeHolder);
 	}
 

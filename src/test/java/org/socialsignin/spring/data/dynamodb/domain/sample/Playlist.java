@@ -35,7 +35,7 @@ public class Playlist {
 		this.playlistId = playlistId;
 	}
 
-	@DynamoDBAttribute(attributeName="DisplayName")
+	@DynamoDBAttribute(attributeName = "DisplayName")
 	public String getDisplayName() {
 		return displayName;
 	}

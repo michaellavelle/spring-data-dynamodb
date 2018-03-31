@@ -26,7 +26,8 @@ public class SingleEntityLoadByHashAndRangeKeyQuery<T> extends AbstractSingleEnt
 	private Object hashKey;
 	private Object rangeKey;
 
-	public SingleEntityLoadByHashAndRangeKeyQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz, Object hashKey, Object rangeKey) {
+	public SingleEntityLoadByHashAndRangeKeyQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz, Object hashKey,
+			Object rangeKey) {
 		super(dynamoDBOperations, clazz);
 		this.hashKey = hashKey;
 		this.rangeKey = rangeKey;

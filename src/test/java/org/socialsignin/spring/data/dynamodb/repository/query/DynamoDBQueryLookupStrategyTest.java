@@ -30,35 +30,35 @@ import static org.junit.Assert.assertSame;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBQueryLookupStrategyTest {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-    @Mock
-    private DynamoDBOperations dynamoDBOperations;
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	@Mock
+	private DynamoDBOperations dynamoDBOperations;
 
-    @Test
-    public void testCreate() {
-        QueryLookupStrategy actual;
-        actual = DynamoDBQueryLookupStrategy.create(dynamoDBOperations, Key.CREATE);
-        assertNotNull(actual);
+	@Test
+	public void testCreate() {
+		QueryLookupStrategy actual;
+		actual = DynamoDBQueryLookupStrategy.create(dynamoDBOperations, Key.CREATE);
+		assertNotNull(actual);
 
-        actual = DynamoDBQueryLookupStrategy.create(dynamoDBOperations, Key.CREATE_IF_NOT_FOUND);
-        assertNotNull(actual);
-    }
+		actual = DynamoDBQueryLookupStrategy.create(dynamoDBOperations, Key.CREATE_IF_NOT_FOUND);
+		assertNotNull(actual);
+	}
 
-    @Test
-    public void testNull() {
-        QueryLookupStrategy actualNull = DynamoDBQueryLookupStrategy.create(dynamoDBOperations, null);
-        QueryLookupStrategy actualCreate = DynamoDBQueryLookupStrategy.create(dynamoDBOperations, Key.CREATE);
+	@Test
+	public void testNull() {
+		QueryLookupStrategy actualNull = DynamoDBQueryLookupStrategy.create(dynamoDBOperations, null);
+		QueryLookupStrategy actualCreate = DynamoDBQueryLookupStrategy.create(dynamoDBOperations, Key.CREATE);
 
-        assertSame(actualNull.getClass(), actualCreate.getClass());
-    }
+		assertSame(actualNull.getClass(), actualCreate.getClass());
+	}
 
-    @Test
-    public void testDeclaredQuery() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Unsupported query lookup strategy USE_DECLARED_QUERY!");
+	@Test
+	public void testDeclaredQuery() {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Unsupported query lookup strategy USE_DECLARED_QUERY!");
 
-        DynamoDBQueryLookupStrategy.create(dynamoDBOperations, Key.USE_DECLARED_QUERY);
-    }
+		DynamoDBQueryLookupStrategy.create(dynamoDBOperations, Key.USE_DECLARED_QUERY);
+	}
 
 }

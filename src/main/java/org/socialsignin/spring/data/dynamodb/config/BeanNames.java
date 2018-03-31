@@ -22,6 +22,6 @@ package org.socialsignin.spring.data.dynamodb.config;
  */
 public abstract class BeanNames {
 
-    public static final String MAPPING_CONTEXT_BEAN_NAME = "dynamoDBMappingContext";
+	public static final String MAPPING_CONTEXT_BEAN_NAME = "dynamoDBMappingContext";
 
 }

@@ -47,19 +47,17 @@ import java.util.function.Consumer;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-public abstract class AbstractDynamoDBEventListener<E> implements
-		ApplicationListener<DynamoDBMappingEvent<?>> {
+public abstract class AbstractDynamoDBEventListener<E> implements ApplicationListener<DynamoDBMappingEvent<?>> {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(AbstractDynamoDBEventListener.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractDynamoDBEventListener.class);
 	private final Class<?> domainClass;
 
 	/**
 	 * Creates a new {@link AbstractDynamoDBEventListener}.
 	 */
 	public AbstractDynamoDBEventListener() {
-		Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(
-				this.getClass(), AbstractDynamoDBEventListener.class);
+		Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(this.getClass(),
+				AbstractDynamoDBEventListener.class);
 		this.domainClass = typeArgument == null ? Object.class : typeArgument;
 	}
 
@@ -70,26 +68,26 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * org.springframework.context.ApplicationListener#onApplicationEvent(org
+	 * @see org.springframework.context.ApplicationListener#onApplicationEvent(org
 	 * .springframework.context.ApplicationEvent)
 	 */
 	@Override
-    public void onApplicationEvent(DynamoDBMappingEvent<?> event) {
+	public void onApplicationEvent(DynamoDBMappingEvent<?> event) {
 
 		@SuppressWarnings("unchecked")
 		E source = (E) event.getSource();
 
-		// source can not be null as java.util.EventObject can not be constructed with null
+		// source can not be null as java.util.EventObject can not be constructed with
+		// null
 		assert source != null;
 
 		if (event instanceof AfterScanEvent) {
 
-			publishEachElement((PaginatedScanList<?>)source, this::onAfterScan);
+			publishEachElement((PaginatedScanList<?>) source, this::onAfterScan);
 			return;
 		} else if (event instanceof AfterQueryEvent) {
 
-			publishEachElement((PaginatedQueryList<?>)source, this::onAfterQuery);
+			publishEachElement((PaginatedQueryList<?>) source, this::onAfterQuery);
 			return;
 		}
 		// Check for matching domain type and invoke callbacks
@@ -117,10 +115,7 @@ public abstract class AbstractDynamoDBEventListener<E> implements
 
 	@SuppressWarnings("unchecked")
 	private void publishEachElement(List<?> list, Consumer<E> publishMethod) {
-		list.stream()
-				.filter(o -> domainClass.isAssignableFrom(o.getClass()))
-				.map(o -> (E)o)
-				.forEach(publishMethod);
+		list.stream().filter(o -> domainClass.isAssignableFrom(o.getClass())).map(o -> (E) o).forEach(publishMethod);
 	}
 
 	public void onBeforeSave(E source) {

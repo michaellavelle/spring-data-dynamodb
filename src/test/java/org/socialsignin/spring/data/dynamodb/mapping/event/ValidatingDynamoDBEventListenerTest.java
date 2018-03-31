@@ -38,50 +38,49 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ValidatingDynamoDBEventListenerTest {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-    private final User sampleEntity = new User();
-    @Mock
-    private Validator validator;
-    private ValidatingDynamoDBEventListener underTest;
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	private final User sampleEntity = new User();
+	@Mock
+	private Validator validator;
+	private ValidatingDynamoDBEventListener underTest;
 
-    @Before
-    public void setUp() {
-        underTest = new ValidatingDynamoDBEventListener(validator);
-    }
+	@Before
+	public void setUp() {
+		underTest = new ValidatingDynamoDBEventListener(validator);
+	}
 
-    @Test
-    public void testWrongConstructor() {
-        expectedException.expectMessage("validator must not be null!");
-        expectedException.expect(IllegalArgumentException.class);
+	@Test
+	public void testWrongConstructor() {
+		expectedException.expectMessage("validator must not be null!");
+		expectedException.expect(IllegalArgumentException.class);
 
-        new ValidatingDynamoDBEventListener(null);
-    }
+		new ValidatingDynamoDBEventListener(null);
+	}
 
-    @Test
-    public void testEmptyResult() {
+	@Test
+	public void testEmptyResult() {
 
-        underTest.onBeforeSave(sampleEntity);
+		underTest.onBeforeSave(sampleEntity);
 
-        assertTrue(true);
-    }
+		assertTrue(true);
+	}
 
-    @Test
-    public void testValidationException() {
-        expectedException.expect(ConstraintViolationException.class);
-        expectedException.expectMessage(allOf(
-                containsString("Test Validation Exception 1"),
-                containsString("Test Validation Exception 2")));
+	@Test
+	public void testValidationException() {
+		expectedException.expect(ConstraintViolationException.class);
+		expectedException.expectMessage(
+				allOf(containsString("Test Validation Exception 1"), containsString("Test Validation Exception 2")));
 
-        Set<ConstraintViolation<User>> validationResult = new HashSet<>();
-        ConstraintViolation<User> vc1 = mock(ConstraintViolation.class);
-        when(vc1.toString()).thenReturn("Test Validation Exception 1");
-        validationResult.add(vc1);
-        ConstraintViolation<User> vc2 = mock(ConstraintViolation.class);
-        when(vc2.toString()).thenReturn("Test Validation Exception 2");
-        validationResult.add(vc2);
-        when(validator.validate(sampleEntity)).thenReturn(validationResult);
+		Set<ConstraintViolation<User>> validationResult = new HashSet<>();
+		ConstraintViolation<User> vc1 = mock(ConstraintViolation.class);
+		when(vc1.toString()).thenReturn("Test Validation Exception 1");
+		validationResult.add(vc1);
+		ConstraintViolation<User> vc2 = mock(ConstraintViolation.class);
+		when(vc2.toString()).thenReturn("Test Validation Exception 2");
+		validationResult.add(vc2);
+		when(validator.validate(sampleEntity)).thenReturn(validationResult);
 
-        underTest.onBeforeSave(sampleEntity);
-    }
+		underTest.onBeforeSave(sampleEntity);
+	}
 }

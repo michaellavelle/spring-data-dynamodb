@@ -40,14 +40,16 @@ import java.util.Optional;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends
-		FieldAndGetterReflectionEntityInformation<T, ID> implements DynamoDBEntityInformation<T, ID> {
+public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends FieldAndGetterReflectionEntityInformation<T, ID>
+		implements
+			DynamoDBEntityInformation<T, ID> {
 
 	private DynamoDBHashKeyExtractingEntityMetadata<T> metadata;
 	private HashKeyExtractor<ID, ID> hashKeyExtractor;
 	private Optional<String> projection = Optional.empty();
 
-	public DynamoDBIdIsHashKeyEntityInformationImpl(Class<T> domainClass, DynamoDBHashKeyExtractingEntityMetadata<T> metadata) {
+	public DynamoDBIdIsHashKeyEntityInformationImpl(Class<T> domainClass,
+			DynamoDBHashKeyExtractingEntityMetadata<T> metadata) {
 		super(domainClass, DynamoDBHashKey.class);
 		this.metadata = metadata;
 		this.hashKeyExtractor = new HashKeyIsIdHashKeyExtractor<ID>(getIdType());

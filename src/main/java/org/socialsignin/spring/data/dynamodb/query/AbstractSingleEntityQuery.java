@@ -23,7 +23,7 @@ import java.util.List;
 public abstract class AbstractSingleEntityQuery<T> extends AbstractQuery<T> implements Query<T> {
 
 	public AbstractSingleEntityQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
-		super(dynamoDBOperations,clazz);
+		super(dynamoDBOperations, clazz);
 	}
 
 	@Override

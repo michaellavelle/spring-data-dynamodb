@@ -25,24 +25,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 
 /**
- * Clue {@link Configuration} class for all integration tests.
- * It exposes the {@link AmazonDynamoDB} pre-configured to use the
- * launched local DynamoDB by Maven's integration-test.
+ * Clue {@link Configuration} class for all integration tests. It exposes the
+ * {@link AmazonDynamoDB} pre-configured to use the launched local DynamoDB by
+ * Maven's integration-test.
  */
 @Configuration
 public class DynamoDBResource {
-    private static final String DYNAMODB_PORT_PROPERTY = "dynamodb.port";
-    private static final String PORT = System.getProperty(DYNAMODB_PORT_PROPERTY);
+	private static final String DYNAMODB_PORT_PROPERTY = "dynamodb.port";
+	private static final String PORT = System.getProperty(DYNAMODB_PORT_PROPERTY);
 
-    @Bean
-    public AmazonDynamoDB amazonDynamoDB() {
-        Assert.notNull(PORT, "System property '" + DYNAMODB_PORT_PROPERTY + " not set!");
+	@Bean
+	public AmazonDynamoDB amazonDynamoDB() {
+		Assert.notNull(PORT, "System property '" + DYNAMODB_PORT_PROPERTY + " not set!");
 
-        AmazonDynamoDBClientBuilder builder = AmazonDynamoDBClientBuilder.standard();
-        builder.withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("AWS-Key", "")));
-        builder.withEndpointConfiguration(
-                new AwsClientBuilder.EndpointConfiguration(String.format("http://localhost:%s", PORT), "us-east-1"));
+		AmazonDynamoDBClientBuilder builder = AmazonDynamoDBClientBuilder.standard();
+		builder.withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("AWS-Key", "")));
+		builder.withEndpointConfiguration(
+				new AwsClientBuilder.EndpointConfiguration(String.format("http://localhost:%s", PORT), "us-east-1"));
 
-        return builder.build();
-    }
+		return builder.build();
+	}
 }

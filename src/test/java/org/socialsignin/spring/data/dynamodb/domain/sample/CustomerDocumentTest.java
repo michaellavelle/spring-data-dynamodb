@@ -36,18 +36,18 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
 @DynamoDBCreateTable(entityClasses = {CustomerDocument.class})
 public class CustomerDocumentTest {
 
-    @Configuration
-    @EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
-    public static class TestAppConfig {
-    }
+	@Configuration
+	@EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
+	public static class TestAppConfig {
+	}
 
-    @Autowired
-    private CustomerDocumentRepository customerDocumentRepository;
+	@Autowired
+	private CustomerDocumentRepository customerDocumentRepository;
 
-    @Test
-    public void runTest() {
+	@Test
+	public void runTest() {
 
-        customerDocumentRepository.findByCustomerDocumentKey("a", "b");
-    }
+		customerDocumentRepository.findByCustomerDocumentKey("a", "b");
+	}
 
 }

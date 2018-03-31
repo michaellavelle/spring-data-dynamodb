@@ -39,7 +39,8 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 	private Field rangeKeyField;
 
 	/**
-	 * Creates a new {@link DynamoDBHashAndRangeKeyMethodExtractor} for the given domain type.
+	 * Creates a new {@link DynamoDBHashAndRangeKeyMethodExtractor} for the given
+	 * domain type.
 	 *
 	 * @param idType
 	 *            must not be {@literal null}.
@@ -50,10 +51,10 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 		this.idType = idType;
 		ReflectionUtils.doWithMethods(idType, new MethodCallback() {
 			@Override
-            public void doWith(Method method) {
+			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
-					Assert.isNull(hashKeyMethod, "Multiple methods annotated by @DynamoDBHashKey within type " + idType.getName()
-							+ "!");
+					Assert.isNull(hashKeyMethod,
+							"Multiple methods annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
 					ReflectionUtils.makeAccessible(method);
 					hashKeyMethod = method;
 				}
@@ -61,10 +62,10 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 		});
 		ReflectionUtils.doWithFields(idType, new FieldCallback() {
 			@Override
-            public void doWith(Field field) {
+			public void doWith(Field field) {
 				if (field.getAnnotation(DynamoDBHashKey.class) != null) {
-					Assert.isNull(hashKeyField, "Multiple fields annotated by @DynamoDBHashKey within type " + idType.getName()
-							+ "!");
+					Assert.isNull(hashKeyField,
+							"Multiple fields annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
 					ReflectionUtils.makeAccessible(field);
 
 					hashKeyField = field;
@@ -73,7 +74,7 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 		});
 		ReflectionUtils.doWithMethods(idType, new MethodCallback() {
 			@Override
-            public void doWith(Method method) {
+			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBRangeKey.class) != null) {
 					Assert.isNull(rangeKeyMethod,
 							"Multiple methods annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
@@ -84,7 +85,7 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 		});
 		ReflectionUtils.doWithFields(idType, new FieldCallback() {
 			@Override
-            public void doWith(Field field) {
+			public void doWith(Field field) {
 				if (field.getAnnotation(DynamoDBRangeKey.class) != null) {
 					Assert.isNull(rangeKeyField,
 							"Multiple fields annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
@@ -94,17 +95,21 @@ public class DynamoDBHashAndRangeKeyMethodExtractorImpl<T> implements DynamoDBHa
 			}
 		});
 		if (hashKeyMethod == null && hashKeyField == null) {
-            throw new IllegalArgumentException("No method or field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
-        }
-        if (rangeKeyMethod == null && rangeKeyField == null) {
-            throw new IllegalArgumentException("No method or field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
-        }
-        if (hashKeyMethod != null && hashKeyField != null) {
-            throw new IllegalArgumentException("Both method and field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
-        }
-        if(rangeKeyMethod != null && rangeKeyField != null) {
-            throw new IllegalArgumentException("Both method and field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
-        }
+			throw new IllegalArgumentException(
+					"No method or field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
+		}
+		if (rangeKeyMethod == null && rangeKeyField == null) {
+			throw new IllegalArgumentException(
+					"No method or field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
+		}
+		if (hashKeyMethod != null && hashKeyField != null) {
+			throw new IllegalArgumentException(
+					"Both method and field annotated by @DynamoDBHashKey within type " + idType.getName() + "!");
+		}
+		if (rangeKeyMethod != null && rangeKeyField != null) {
+			throw new IllegalArgumentException(
+					"Both method and field annotated by @DynamoDBRangeKey within type " + idType.getName() + "!");
+		}
 	}
 
 	@Override

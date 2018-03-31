@@ -50,7 +50,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 /**
  * Unit tests for {@link DynamoDBSimpleIdRepository}.
  * 
@@ -80,7 +79,6 @@ public class SimpleDynamoDBCrudRepositoryTest {
 	private SimpleDynamoDBCrudRepository<User, Long> repoForEntityWithOnlyHashKey;
 	private SimpleDynamoDBCrudRepository<Playlist, PlaylistId> repoForEntityWithHashAndRangeKey;
 
-
 	@Before
 	public void setUp() {
 
@@ -94,7 +92,7 @@ public class SimpleDynamoDBCrudRepositoryTest {
 
 		when(entityWithSimpleIdInformation.getJavaType()).thenReturn(User.class);
 		when(entityWithSimpleIdInformation.getHashKey(1l)).thenReturn(1l);
-		
+
 		when(mockEnableScanPermissions.isFindAllUnpaginatedScanEnabled()).thenReturn(true);
 		when(mockEnableScanPermissions.isDeleteAllUnpaginatedScanEnabled()).thenReturn(true);
 		when(mockEnableScanPermissions.isCountUnpaginatedScanEnabled()).thenReturn(true);
@@ -105,9 +103,9 @@ public class SimpleDynamoDBCrudRepositoryTest {
 		when(entityWithCompositeIdInformation.isRangeKeyAware()).thenReturn(true);
 
 		repoForEntityWithOnlyHashKey = new SimpleDynamoDBCrudRepository<>(entityWithSimpleIdInformation,
-				dynamoDBOperations,mockEnableScanPermissions);
-		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBCrudRepository<>(
-				entityWithCompositeIdInformation, dynamoDBOperations,mockEnableScanPermissions);
+				dynamoDBOperations, mockEnableScanPermissions);
+		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBCrudRepository<>(entityWithCompositeIdInformation,
+				dynamoDBOperations, mockEnableScanPermissions);
 
 		when(dynamoDBOperations.load(User.class, 1l)).thenReturn(testUser);
 		when(dynamoDBOperations.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);
@@ -146,8 +144,7 @@ public class SimpleDynamoDBCrudRepositoryTest {
 
 	@Test
 	public void deleteAll() {
-		when(dynamoDBOperations.scan(eq(User.class), any(DynamoDBScanExpression.class)))
-				.thenReturn(findAllResultMock);
+		when(dynamoDBOperations.scan(eq(User.class), any(DynamoDBScanExpression.class))).thenReturn(findAllResultMock);
 
 		repoForEntityWithOnlyHashKey.deleteAll();
 		verify(dynamoDBOperations).batchDelete(findAllResultMock);
@@ -155,8 +152,7 @@ public class SimpleDynamoDBCrudRepositoryTest {
 
 	@Test
 	public void testFindAll() {
-		when(dynamoDBOperations.scan(eq(User.class), any(DynamoDBScanExpression.class)))
-				.thenReturn(findAllResultMock);
+		when(dynamoDBOperations.scan(eq(User.class), any(DynamoDBScanExpression.class))).thenReturn(findAllResultMock);
 
 		List<User> actual = repoForEntityWithOnlyHashKey.findAll();
 
@@ -164,7 +160,8 @@ public class SimpleDynamoDBCrudRepositoryTest {
 	}
 
 	/**
-	/**
+	 * /**
+	 * 
 	 * @see DATAJPA-177
 	 */
 	@Test(expected = EmptyResultDataAccessException.class)
@@ -205,7 +202,7 @@ public class SimpleDynamoDBCrudRepositoryTest {
 	@Test
 	public void findOneEntityWithOnlyHashKey() {
 		Optional<User> user = repoForEntityWithOnlyHashKey.findById(1l);
-		Mockito.verify(dynamoDBOperations).load(User.class,1l);
+		Mockito.verify(dynamoDBOperations).load(User.class, 1l);
 		assertEquals(testUser, user.get());
 	}
 
@@ -268,7 +265,8 @@ public class SimpleDynamoDBCrudRepositoryTest {
 		when(dynamoDBOperations.batchSave(anyIterable())).thenReturn(failures);
 
 		expectedException.expect(BatchWriteException.class);
-		expectedException.expectMessage("Saving of entities failed!; nested exception is java.lang.Exception: First exception");
+		expectedException
+				.expectMessage("Saving of entities failed!; nested exception is java.lang.Exception: First exception");
 
 		repoForEntityWithOnlyHashKey.saveAll(entities);
 	}

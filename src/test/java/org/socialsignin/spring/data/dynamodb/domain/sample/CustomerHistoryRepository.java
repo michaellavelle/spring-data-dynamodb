@@ -19,6 +19,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface CustomerHistoryRepository extends CrudRepository<CustomerHistory, CustomerHistoryId> {
 
-    CustomerHistory findByTag(String tag);
+	CustomerHistory findByTag(String tag);
 
 }

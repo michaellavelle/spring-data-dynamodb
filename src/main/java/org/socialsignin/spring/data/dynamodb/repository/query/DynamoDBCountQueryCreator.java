@@ -24,30 +24,27 @@ import org.springframework.data.repository.query.parser.PartTree;
 
 import java.util.Optional;
 
-public class DynamoDBCountQueryCreator<T ,ID> extends AbstractDynamoDBQueryCreator<T, ID, Long> {
+public class DynamoDBCountQueryCreator<T, ID> extends AbstractDynamoDBQueryCreator<T, ID, Long> {
 
 	private boolean pageQuery;
 
-	public DynamoDBCountQueryCreator(PartTree tree,
-			DynamoDBEntityInformation<T, ID> entityMetadata,
-			DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
+	public DynamoDBCountQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata,
+			DynamoDBOperations dynamoDBOperations, boolean pageQuery) {
 		super(tree, entityMetadata, Optional.empty(), dynamoDBOperations);
 		this.pageQuery = pageQuery;
 	}
 
-	public DynamoDBCountQueryCreator(PartTree tree,
-			ParameterAccessor parameterAccessor,
-			DynamoDBEntityInformation<T, ID> entityMetadata,
-			DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
+	public DynamoDBCountQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
+			DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBOperations dynamoDBOperations, boolean pageQuery) {
 		super(tree, parameterAccessor, entityMetadata, Optional.empty(), dynamoDBOperations);
 		this.pageQuery = pageQuery;
 
 	}
-	
+
 	@Override
 	protected Query<Long> complete(DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
-	
-		return criteria.buildCountQuery(dynamoDBOperations,pageQuery);
+
+		return criteria.buildCountQuery(dynamoDBOperations, pageQuery);
 
 	}
 

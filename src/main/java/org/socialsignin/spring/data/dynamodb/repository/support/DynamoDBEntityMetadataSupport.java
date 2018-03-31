@@ -63,7 +63,8 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 	}
 
 	/**
-	 * Creates a new {@link DynamoDBEntityMetadataSupport} for the given domain type.
+	 * Creates a new {@link DynamoDBEntityMetadataSupport} for the given domain
+	 * type.
 	 *
 	 * @param domainType
 	 *            must not be {@literal null}.
@@ -80,7 +81,7 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 		this.globalIndexRangeKeyPropertyNames = new ArrayList<>();
 		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
 			@Override
-            public void doWith(Method method) {
+			public void doWith(Method method) {
 				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
 					hashKeyPropertyName = getPropertyNameForAccessorMethod(method);
 				}
@@ -100,7 +101,7 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 		});
 		ReflectionUtils.doWithFields(domainType, new FieldCallback() {
 			@Override
-            public void doWith(Field field) {
+			public void doWith(Field field) {
 				if (field.getAnnotation(DynamoDBHashKey.class) != null) {
 					hashKeyPropertyName = getPropertyNameForField(field);
 				}
@@ -135,8 +136,7 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * org.springframework.data.repository.core.EntityMetadata#getJavaType()
+	 * @see org.springframework.data.repository.core.EntityMetadata#getJavaType()
 	 */
 	@Override
 	public Class<T> getJavaType() {
@@ -144,7 +144,7 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 	}
 
 	@Override
-    public boolean isHashKeyProperty(String propertyName) {
+	public boolean isHashKeyProperty(String propertyName) {
 		return hashKeyPropertyName.equals(propertyName);
 	}
 
@@ -296,17 +296,18 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 			annotation = method.getAnnotation(DynamoDBMarshalling.class);
 		}
 
-		if(annotation == null) {
+		if (annotation == null) {
 			Field field = findField(propertyName);
-			if(field != null) {
+			if (field != null) {
 				annotation = field.getAnnotation(DynamoDBMarshalling.class);
 			}
 		}
 
-		if(annotation != null) {
+		if (annotation != null) {
 			try {
 				return annotation.marshallerClass().getDeclaredConstructor().newInstance();
-			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+					| InvocationTargetException e) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -328,7 +329,7 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 			if (field != null) {
 				annotation = field.getAnnotation(DynamoDBTypeConverted.class);
 			}
- 		}
+		}
 
 		if (annotation != null) {
 			try {
@@ -371,8 +372,8 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 				&& dynamoDBIndexRangeKey.globalSecondaryIndexNames().length > 0) {
 			String propertyName = getPropertyNameForAccessorMethod(method);
 
-			globalSecondaryIndexNames.put(propertyName, method.getAnnotation(DynamoDBIndexRangeKey.class)
-					.globalSecondaryIndexNames());
+			globalSecondaryIndexNames.put(propertyName,
+					method.getAnnotation(DynamoDBIndexRangeKey.class).globalSecondaryIndexNames());
 			globalIndexRangeKeyPropertyNames.add(propertyName);
 
 		}
@@ -380,7 +381,7 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 				&& dynamoDBIndexRangeKey.globalSecondaryIndexName().trim().length() > 0) {
 			String propertyName = getPropertyNameForAccessorMethod(method);
 			globalSecondaryIndexNames.put(propertyName,
-					new String[] { method.getAnnotation(DynamoDBIndexRangeKey.class).globalSecondaryIndexName() });
+					new String[]{method.getAnnotation(DynamoDBIndexRangeKey.class).globalSecondaryIndexName()});
 			globalIndexRangeKeyPropertyNames.add(propertyName);
 
 		}
@@ -393,8 +394,8 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 				&& dynamoDBIndexRangeKey.globalSecondaryIndexNames().length > 0) {
 			String propertyName = getPropertyNameForField(field);
 
-			globalSecondaryIndexNames.put(propertyName, field.getAnnotation(DynamoDBIndexRangeKey.class)
-					.globalSecondaryIndexNames());
+			globalSecondaryIndexNames.put(propertyName,
+					field.getAnnotation(DynamoDBIndexRangeKey.class).globalSecondaryIndexNames());
 			globalIndexRangeKeyPropertyNames.add(propertyName);
 
 		}
@@ -402,7 +403,7 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 				&& dynamoDBIndexRangeKey.globalSecondaryIndexName().trim().length() > 0) {
 			String propertyName = getPropertyNameForField(field);
 			globalSecondaryIndexNames.put(propertyName,
-					new String[] { field.getAnnotation(DynamoDBIndexRangeKey.class).globalSecondaryIndexName() });
+					new String[]{field.getAnnotation(DynamoDBIndexRangeKey.class).globalSecondaryIndexName()});
 			globalIndexRangeKeyPropertyNames.add(propertyName);
 
 		}
@@ -415,8 +416,8 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 				&& dynamoDBIndexHashKey.globalSecondaryIndexNames().length > 0) {
 			String propertyName = getPropertyNameForAccessorMethod(method);
 
-			globalSecondaryIndexNames.put(propertyName, method.getAnnotation(DynamoDBIndexHashKey.class)
-					.globalSecondaryIndexNames());
+			globalSecondaryIndexNames.put(propertyName,
+					method.getAnnotation(DynamoDBIndexHashKey.class).globalSecondaryIndexNames());
 			globalIndexHashKeyPropertyNames.add(propertyName);
 
 		}
@@ -425,7 +426,7 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 			String propertyName = getPropertyNameForAccessorMethod(method);
 
 			globalSecondaryIndexNames.put(propertyName,
-					new String[] { method.getAnnotation(DynamoDBIndexHashKey.class).globalSecondaryIndexName() });
+					new String[]{method.getAnnotation(DynamoDBIndexHashKey.class).globalSecondaryIndexName()});
 			globalIndexHashKeyPropertyNames.add(propertyName);
 
 		}
@@ -437,8 +438,8 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 				&& dynamoDBIndexHashKey.globalSecondaryIndexNames().length > 0) {
 			String propertyName = getPropertyNameForField(field);
 
-			globalSecondaryIndexNames.put(propertyName, field.getAnnotation(DynamoDBIndexHashKey.class)
-					.globalSecondaryIndexNames());
+			globalSecondaryIndexNames.put(propertyName,
+					field.getAnnotation(DynamoDBIndexHashKey.class).globalSecondaryIndexNames());
 			globalIndexHashKeyPropertyNames.add(propertyName);
 
 		}
@@ -447,7 +448,7 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 			String propertyName = getPropertyNameForField(field);
 
 			globalSecondaryIndexNames.put(propertyName,
-					new String[] { field.getAnnotation(DynamoDBIndexHashKey.class).globalSecondaryIndexName() });
+					new String[]{field.getAnnotation(DynamoDBIndexHashKey.class).globalSecondaryIndexName()});
 			globalIndexHashKeyPropertyNames.add(propertyName);
 
 		}

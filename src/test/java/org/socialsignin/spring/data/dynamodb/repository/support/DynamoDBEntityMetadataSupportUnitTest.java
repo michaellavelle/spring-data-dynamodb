@@ -25,18 +25,16 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unused")
 public class DynamoDBEntityMetadataSupportUnitTest {
-	
+
 	@Test
-	public void testGetMarshallerForProperty_WhenAnnotationIsOnField_AndReturnsDynamoDBMarshaller()
-	{
+	public void testGetMarshallerForProperty_WhenAnnotationIsOnField_AndReturnsDynamoDBMarshaller() {
 		DynamoDBEntityMetadataSupport support = new DynamoDBEntityMetadataSupport<>(User.class);
 		DynamoDBMarshaller fieldAnnotation = support.getMarshallerForProperty("joinYear");
 		Assert.assertNotNull(fieldAnnotation);
 	}
 
 	@Test
-	public void testGetMarshallerForProperty_WhenAnnotationIsOnMethod_AndReturnsDynamoDBMarshaller()
-	{
+	public void testGetMarshallerForProperty_WhenAnnotationIsOnMethod_AndReturnsDynamoDBMarshaller() {
 		DynamoDBEntityMetadataSupport support = new DynamoDBEntityMetadataSupport<>(User.class);
 		DynamoDBMarshaller methodAnnotation = support.getMarshallerForProperty("leaveDate");
 		Assert.assertNotNull(methodAnnotation);

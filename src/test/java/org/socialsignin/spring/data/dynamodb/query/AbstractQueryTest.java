@@ -31,41 +31,41 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractQueryTest {
 
-    private static class QueryTest<T> extends AbstractQuery<T> {
-        public QueryTest(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
-            super(dynamoDBOperations, clazz);
-        }
+	private static class QueryTest<T> extends AbstractQuery<T> {
+		public QueryTest(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
+			super(dynamoDBOperations, clazz);
+		}
 
-        @Override
-        public List<T> getResultList() {
-            return null;
-        }
+		@Override
+		public List<T> getResultList() {
+			return null;
+		}
 
-        @Override
-        public T getSingleResult() {
-            return null;
-        }
-    }
+		@Override
+		public T getSingleResult() {
+			return null;
+		}
+	}
 
-    @Mock
-    private DynamoDBOperations dynamoDBOperations;
-    private AbstractQuery<User> underTest;
+	@Mock
+	private DynamoDBOperations dynamoDBOperations;
+	private AbstractQuery<User> underTest;
 
-    @Before
-    public void setUp() {
-        underTest = new QueryTest<>(dynamoDBOperations, User.class);
-    }
+	@Before
+	public void setUp() {
+		underTest = new QueryTest<>(dynamoDBOperations, User.class);
+	}
 
-    @Test
-    public void testSetter() {
-        assertFalse(underTest.isScanCountEnabled());
-        assertFalse(underTest.isScanEnabled());
+	@Test
+	public void testSetter() {
+		assertFalse(underTest.isScanCountEnabled());
+		assertFalse(underTest.isScanEnabled());
 
-        underTest.setScanCountEnabled(true);
-        underTest.setScanEnabled(true);
+		underTest.setScanCountEnabled(true);
+		underTest.setScanEnabled(true);
 
-        assertTrue(underTest.isScanCountEnabled());
-        assertTrue(underTest.isScanEnabled());
-    }
-    
+		assertTrue(underTest.isScanCountEnabled());
+		assertTrue(underTest.isScanEnabled());
+	}
+
 }

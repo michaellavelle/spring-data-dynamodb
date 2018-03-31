@@ -42,10 +42,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 /**
- * javax.validation dependant entities validator. When it is registered as Spring component its automatically invoked
- * before entities are saved in database.
+ * javax.validation dependant entities validator. When it is registered as
+ * Spring component its automatically invoked before entities are saved in
+ * database.
  * 
  * @author Michael Lavelle
  * @author Sebastian Just
@@ -57,9 +57,11 @@ public class ValidatingDynamoDBEventListener extends AbstractDynamoDBEventListen
 	private final Validator validator;
 
 	/**
-	 * Creates a new {@link ValidatingDynamoDBEventListener} using the given {@link Validator}.
+	 * Creates a new {@link ValidatingDynamoDBEventListener} using the given
+	 * {@link Validator}.
 	 * 
-	 * @param validator must not be {@literal null}.
+	 * @param validator
+	 *            must not be {@literal null}.
 	 */
 	public ValidatingDynamoDBEventListener(Validator validator) {
 		Assert.notNull(validator, "validator must not be null!");
@@ -68,13 +70,15 @@ public class ValidatingDynamoDBEventListener extends AbstractDynamoDBEventListen
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.socialsignin.spring.data.dynamodb.mapping.event.AbstractDynamoDBEventListener#onBeforeSave(java.lang.Object)
+	 * 
+	 * @see org.socialsignin.spring.data.dynamodb.mapping.event.
+	 * AbstractDynamoDBEventListener#onBeforeSave(java.lang.Object)
 	 */
 	@Override
 	public void onBeforeSave(Object source) {
 
 		LOG.debug("Validating object: {}", source);
-		
+
 		List<String> messages = new ArrayList<>();
 		Set<ConstraintViolation<Object>> violations = validator.validate(source);
 		if (!violations.isEmpty()) {

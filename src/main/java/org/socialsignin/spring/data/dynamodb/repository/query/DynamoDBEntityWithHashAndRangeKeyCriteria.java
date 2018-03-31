@@ -69,9 +69,10 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 	}
 
 	public DynamoDBEntityWithHashAndRangeKeyCriteria(
-	        DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> entityInformation, DynamoDBMapperTableModel<T> tableModel) {
+			DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> entityInformation,
+			DynamoDBMapperTableModel<T> tableModel) {
 
-	    super(entityInformation, tableModel);
+		super(entityInformation, tableModel);
 		this.rangeKeyPropertyName = entityInformation.getRangeKeyPropertyName();
 		this.indexRangeKeyPropertyNames = entityInformation.getIndexRangeKeyPropertyNames();
 		if (indexRangeKeyPropertyNames == null) {
@@ -104,7 +105,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 		return new SingleEntityLoadByHashAndRangeKeyQuery<>(dynamoDBOperations, entityInformation.getJavaType(),
 				getHashKeyPropertyValue(), getRangeKeyPropertyValue());
 	}
-	
+
 	protected Query<Long> buildSingleEntityCountQuery(DynamoDBOperations dynamoDBOperations) {
 		return new CountByHashAndRangeKeyQuery<>(dynamoDBOperations, entityInformation.getJavaType(),
 				getHashKeyPropertyValue(), getRangeKeyPropertyValue());
@@ -114,15 +115,16 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 
 		if (!ComparisonOperator.EQ.equals(comparisonOperator) && !ComparisonOperator.CONTAINS.equals(comparisonOperator)
 				&& !ComparisonOperator.BEGINS_WITH.equals(comparisonOperator)) {
-			throw new UnsupportedOperationException("Only EQ,CONTAINS,BEGINS_WITH supported for composite id comparison");
+			throw new UnsupportedOperationException(
+					"Only EQ,CONTAINS,BEGINS_WITH supported for composite id comparison");
 		}
 
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public DynamoDBQueryCriteria<T, ID> withSingleValueCriteria(String propertyName, ComparisonOperator comparisonOperator,
-			Object value, Class<?> propertyType) {
+	public DynamoDBQueryCriteria<T, ID> withSingleValueCriteria(String propertyName,
+			ComparisonOperator comparisonOperator, Object value, Class<?> propertyType) {
 
 		if (entityInformation.isCompositeHashAndRangeKeyProperty(propertyName)) {
 			checkComparisonOperatorPermittedForCompositeHashAndRangeKey(comparisonOperator);
@@ -152,7 +154,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 			Condition rangeKeyCondition = createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ,
 					getRangeKeyAttributeValue(), getRangeKeyAttributeValue().getClass(), true);
 			queryExpression.withRangeKeyCondition(getRangeKeyAttributeName(), rangeKeyCondition);
-			applySortIfSpecified(queryExpression, Arrays.asList(new String[] { getRangeKeyPropertyName() }));
+			applySortIfSpecified(queryExpression, Arrays.asList(new String[]{getRangeKeyPropertyName()}));
 
 		} else if (isOnlyASingleAttributeConditionAndItIsOnEitherRangeOrIndexRangeKey()
 				|| (isApplicableForGlobalSecondaryIndex())) {
@@ -181,7 +183,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 				queryExpression.setIndexName(getGlobalSecondaryIndexName());
 			}
 		} else {
-			applySortIfSpecified(queryExpression, Arrays.asList(new String[] { getRangeKeyPropertyName() }));
+			applySortIfSpecified(queryExpression, Arrays.asList(new String[]{getRangeKeyPropertyName()}));
 		}
 
 		if (projection.isPresent()) {
@@ -194,11 +196,12 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 
 	protected List<Condition> getRangeKeyConditions() {
 		List<Condition> rangeKeyConditions = null;
-		if (isApplicableForGlobalSecondaryIndex()
-				&& entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet().contains(getRangeKeyPropertyName())) {
-			rangeKeyConditions = getRangeKeyAttributeValue() == null ? null : Arrays.asList(createSingleValueCondition(
-					getRangeKeyPropertyName(), ComparisonOperator.EQ, getRangeKeyAttributeValue(), getRangeKeyAttributeValue()
-							.getClass(), true));
+		if (isApplicableForGlobalSecondaryIndex() && entityInformation.getGlobalSecondaryIndexNamesByPropertyName()
+				.keySet().contains(getRangeKeyPropertyName())) {
+			rangeKeyConditions = getRangeKeyAttributeValue() == null
+					? null
+					: Arrays.asList(createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ,
+							getRangeKeyAttributeValue(), getRangeKeyAttributeValue().getClass(), true));
 
 		}
 		return rangeKeyConditions;
@@ -207,37 +210,41 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 	protected Query<T> buildFinderQuery(DynamoDBOperations dynamoDBOperations) {
 		if (isApplicableForQuery()) {
 			if (isApplicableForGlobalSecondaryIndex()) {
-				String tableName = dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName());
+				String tableName = dynamoDBOperations.getOverriddenTableName(clazz,
+						entityInformation.getDynamoDBTableName());
 				QueryRequest queryRequest = buildQueryRequest(tableName, getGlobalSecondaryIndexName(),
 						getHashKeyAttributeName(), getRangeKeyAttributeName(), this.getRangeKeyPropertyName(),
 						getHashKeyConditions(), getRangeKeyConditions());
-				return new MultipleEntityQueryRequestQuery<>(dynamoDBOperations,entityInformation.getJavaType(), queryRequest);
+				return new MultipleEntityQueryRequestQuery<>(dynamoDBOperations, entityInformation.getJavaType(),
+						queryRequest);
 			} else {
 				DynamoDBQueryExpression<T> queryExpression = buildQueryExpression();
-				return new MultipleEntityQueryExpressionQuery<>(dynamoDBOperations, entityInformation.getJavaType(), queryExpression);
+				return new MultipleEntityQueryExpressionQuery<>(dynamoDBOperations, entityInformation.getJavaType(),
+						queryExpression);
 			}
 		} else {
 			return new MultipleEntityScanExpressionQuery<>(dynamoDBOperations, clazz, buildScanExpression());
 		}
 	}
-	
-	
-	protected Query<Long> buildFinderCountQuery(DynamoDBOperations dynamoDBOperations,boolean pageQuery) {
+
+	protected Query<Long> buildFinderCountQuery(DynamoDBOperations dynamoDBOperations, boolean pageQuery) {
 		if (isApplicableForQuery()) {
 			if (isApplicableForGlobalSecondaryIndex()) {
-				String tableName = dynamoDBOperations.getOverriddenTableName(clazz, entityInformation.getDynamoDBTableName());
+				String tableName = dynamoDBOperations.getOverriddenTableName(clazz,
+						entityInformation.getDynamoDBTableName());
 				QueryRequest queryRequest = buildQueryRequest(tableName, getGlobalSecondaryIndexName(),
 						getHashKeyAttributeName(), getRangeKeyAttributeName(), this.getRangeKeyPropertyName(),
 						getHashKeyConditions(), getRangeKeyConditions());
 				return new QueryRequestCountQuery(dynamoDBOperations, queryRequest);
-		
+
 			} else {
 				DynamoDBQueryExpression<T> queryExpression = buildQueryExpression();
-				return new QueryExpressionCountQuery<>(dynamoDBOperations, entityInformation.getJavaType(), queryExpression);
-		
+				return new QueryExpressionCountQuery<>(dynamoDBOperations, entityInformation.getJavaType(),
+						queryExpression);
+
 			}
 		} else {
-			return new ScanExpressionCountQuery<T>(dynamoDBOperations, clazz, buildScanExpression(),pageQuery);
+			return new ScanExpressionCountQuery<T>(dynamoDBOperations, clazz, buildScanExpression(), pageQuery);
 		}
 	}
 
@@ -264,18 +271,15 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 		return isOnlyASingleAttributeConditionAndItIsOnEitherRangeOrIndexRangeKey;
 
 	}
-	
-	
 
 	@Override
 	protected boolean hasIndexHashKeyEqualCondition() {
-	
+
 		boolean hasCondition = super.hasIndexHashKeyEqualCondition();
-		if (!hasCondition)
-		{
-			if (rangeKeyAttributeValue != null && entityInformation.isGlobalIndexHashKeyProperty(rangeKeyPropertyName))
-			{
-					hasCondition = true;
+		if (!hasCondition) {
+			if (rangeKeyAttributeValue != null
+					&& entityInformation.isGlobalIndexHashKeyProperty(rangeKeyPropertyName)) {
+				hasCondition = true;
 			}
 		}
 		return hasCondition;
@@ -283,12 +287,11 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 
 	@Override
 	protected boolean hasIndexRangeKeyCondition() {
-		boolean hasCondition =  super.hasIndexRangeKeyCondition();
-		if (!hasCondition)
-		{
-			if (rangeKeyAttributeValue != null && entityInformation.isGlobalIndexRangeKeyProperty(rangeKeyPropertyName))
-			{
-					hasCondition = true;
+		boolean hasCondition = super.hasIndexRangeKeyCondition();
+		if (!hasCondition) {
+			if (rangeKeyAttributeValue != null
+					&& entityInformation.isGlobalIndexRangeKeyProperty(rangeKeyPropertyName)) {
+				hasCondition = true;
 			}
 		}
 		return hasCondition;
@@ -296,11 +299,11 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 
 	protected boolean isApplicableForGlobalSecondaryIndex() {
 		boolean global = super.isApplicableForGlobalSecondaryIndex();
-		if (global && getRangeKeyAttributeValue() != null
-				&& !entityInformation.getGlobalSecondaryIndexNamesByPropertyName().keySet().contains(getRangeKeyPropertyName())) {
+		if (global && getRangeKeyAttributeValue() != null && !entityInformation
+				.getGlobalSecondaryIndexNamesByPropertyName().keySet().contains(getRangeKeyPropertyName())) {
 			return false;
 		}
-		
+
 		return global;
 
 	}
@@ -317,9 +320,10 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 		// then set the index range key to be that associated with the range key
 		if (globalSecondaryIndexName == null) {
 			if (this.hashKeyAttributeValue == null && getRangeKeyAttributeValue() != null) {
-				String[] rangeKeyIndexNames = entityInformation.getGlobalSecondaryIndexNamesByPropertyName().get(
-						this.getRangeKeyPropertyName());
-				globalSecondaryIndexName = rangeKeyIndexNames != null && rangeKeyIndexNames.length > 0 ? rangeKeyIndexNames[0]
+				String[] rangeKeyIndexNames = entityInformation.getGlobalSecondaryIndexNamesByPropertyName()
+						.get(this.getRangeKeyPropertyName());
+				globalSecondaryIndexName = rangeKeyIndexNames != null && rangeKeyIndexNames.length > 0
+						? rangeKeyIndexNames[0]
 						: null;
 			}
 		}
@@ -329,7 +333,8 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 	public boolean isApplicableForQuery() {
 
 		return isOnlyHashKeySpecified()
-				|| (isHashKeySpecified() && isOnlyASingleAttributeConditionAndItIsOnEitherRangeOrIndexRangeKey() && comparisonOperatorsPermittedForQuery())
+				|| (isHashKeySpecified() && isOnlyASingleAttributeConditionAndItIsOnEitherRangeOrIndexRangeKey()
+						&& comparisonOperatorsPermittedForQuery())
 				|| isApplicableForGlobalSecondaryIndex();
 
 	}
@@ -340,16 +345,14 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		if (isHashKeySpecified()) {
-			scanExpression.addFilterCondition(
-					getHashKeyAttributeName(),
-					createSingleValueCondition(getHashKeyPropertyName(), ComparisonOperator.EQ, getHashKeyAttributeValue(),
-							getHashKeyAttributeValue().getClass(), true));
+			scanExpression.addFilterCondition(getHashKeyAttributeName(),
+					createSingleValueCondition(getHashKeyPropertyName(), ComparisonOperator.EQ,
+							getHashKeyAttributeValue(), getHashKeyAttributeValue().getClass(), true));
 		}
 		if (isRangeKeySpecified()) {
-			scanExpression.addFilterCondition(
-					getRangeKeyAttributeName(),
-					createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ, getRangeKeyAttributeValue(),
-							getRangeKeyAttributeValue().getClass(), true));
+			scanExpression.addFilterCondition(getRangeKeyAttributeName(),
+					createSingleValueCondition(getRangeKeyPropertyName(), ComparisonOperator.EQ,
+							getRangeKeyAttributeValue(), getRangeKeyAttributeValue().getClass(), true));
 		}
 		for (Map.Entry<String, List<Condition>> conditionEntry : attributeConditions.entrySet()) {
 			for (Condition condition : conditionEntry.getValue()) {
@@ -389,7 +392,8 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 			}
 			return this;
 		} else {
-			Condition condition = createSingleValueCondition(propertyName, ComparisonOperator.EQ, value, propertyType, false);
+			Condition condition = createSingleValueCondition(propertyName, ComparisonOperator.EQ, value, propertyType,
+					false);
 			return withCondition(propertyName, condition);
 		}
 

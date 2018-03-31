@@ -65,8 +65,10 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 				System.getProperty("os.version"));
 
 		if (!DEVELOPMENT.equals(thisImplVersion) && !isCompatible(springDataVersion, thisSpecVersion)) {
-			LOGGER.warn("This Spring Data DynamoDB implementation might not be compatible with the available Spring Data classes on the classpath!"
-					+ System.getProperty("line.separator") + "NoDefClassFoundExceptions or similar might occur!");
+			LOGGER.warn(
+					"This Spring Data DynamoDB implementation might not be compatible with the available Spring Data classes on the classpath!"
+							+ System.getProperty("line.separator")
+							+ "NoDefClassFoundExceptions or similar might occur!");
 		}
 	}
 
@@ -90,7 +92,6 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 		return specMajor.equals(implMajor) && specMinor.equals(implMinor);
 	}
 
-
 	private final DynamoDBOperations dynamoDBOperations;
 
 	public DynamoDBRepositoryFactory(DynamoDBOperations dynamoDBOperations) {
@@ -106,20 +107,25 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	}
 
 	@Override
-	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(Key key, EvaluationContextProvider evaluationContextProvider) {
+	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(Key key,
+			EvaluationContextProvider evaluationContextProvider) {
 		return Optional.of(DynamoDBQueryLookupStrategy.create(dynamoDBOperations, key));
 	}
 
 	/**
-	 * Callback to create a {@link DynamoDBCrudRepository} instance with the given {@link RepositoryMetadata}
+	 * Callback to create a {@link DynamoDBCrudRepository} instance with the given
+	 * {@link RepositoryMetadata}
 	 *
-	 * @param <T> Type of the Entity
-	 * @param <ID> Type of the Hash (Primary) Key
-	 * @param metadata Metadata of the entity
+	 * @param <T>
+	 *            Type of the Entity
+	 * @param <ID>
+	 *            Type of the Hash (Primary) Key
+	 * @param metadata
+	 *            Metadata of the entity
 	 * @see #getTargetRepository(RepositoryInformation)
 	 * @return the created {@link DynamoDBCrudRepository} instance
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	protected <T, ID extends Serializable> DynamoDBCrudRepository<?, ?> getDynamoDBRepository(
 			RepositoryMetadata metadata) {
 		return new SimpleDynamoDBPagingAndSortingRepository(getEntityInformation(metadata.getDomainType()),

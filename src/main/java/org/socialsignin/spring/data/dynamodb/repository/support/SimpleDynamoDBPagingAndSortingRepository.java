@@ -54,12 +54,12 @@ import java.util.List;
  *            the type of the entity's identifier
  */
 public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynamoDBCrudRepository<T, ID>
-		implements DynamoDBPagingAndSortingRepository<T, ID> {
+		implements
+			DynamoDBPagingAndSortingRepository<T, ID> {
 
 	public SimpleDynamoDBPagingAndSortingRepository(DynamoDBEntityInformation<T, ID> entityInformation,
 			DynamoDBOperations dynamoDBOperations, EnableScanPermissions enableScanPermissions) {
 		super(entityInformation, dynamoDBOperations, enableScanPermissions);
-		
 
 	}
 
@@ -76,7 +76,7 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynam
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		// Scan to the end of the page after the requested page
 		long scanTo = pageable.getOffset() + (2 * pageable.getPageSize());
-		scanExpression.setLimit((int)Math.min(scanTo, Integer.MAX_VALUE));
+		scanExpression.setLimit((int) Math.min(scanTo, Integer.MAX_VALUE));
 		PaginatedScanList<T> paginatedScanList = dynamoDBOperations.scan(domainType, scanExpression);
 		Iterator<T> iterator = paginatedScanList.iterator();
 		if (pageable.getOffset() > 0) {
@@ -86,12 +86,13 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynam
 		}
 		// Scan ahead to retrieve the next page count
 		List<T> results = readPageOfResults(iterator, pageable.getPageSize());
-		
+
 		assertScanEnabled(enableScanPermissions.isFindAllPaginatedScanEnabled(), "findAll(Pageable pageable)");
-		assertScanCountEnabled(enableScanPermissions.isFindAllUnpaginatedScanCountEnabled(), "findAll(Pageable pageable)");
+		assertScanCountEnabled(enableScanPermissions.isFindAllUnpaginatedScanCountEnabled(),
+				"findAll(Pageable pageable)");
 
 		int totalCount = dynamoDBOperations.count(domainType, scanExpression);
-		
+
 		return new PageImpl<>(results, pageable, totalCount);
 
 	}
@@ -114,10 +115,10 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynam
 		}
 		return resultsPage;
 	}
-	
+
 	public void assertScanCountEnabled(boolean countScanEnabled, String methodName) {
-		Assert.isTrue(countScanEnabled, "Scanning for the total counts for unpaginated " + methodName + " queries is not enabled.  "
-				+ "To enable, re-implement the " + methodName
+		Assert.isTrue(countScanEnabled, "Scanning for the total counts for unpaginated " + methodName
+				+ " queries is not enabled.  " + "To enable, re-implement the " + methodName
 				+ "() method in your repository interface and annotate with @EnableScanCount, or "
 				+ "enable total count scanning for all repository methods by annotating your repository interface with @EnableScanCount");
 	}

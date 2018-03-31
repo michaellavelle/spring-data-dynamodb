@@ -32,7 +32,8 @@ public class HashKeyIsIdHashKeyExtractor<ID> implements HashKeyExtractor<ID, ID>
 	@Override
 	public ID getHashKey(ID id) {
 		Assert.isAssignable(idAndHashKeyType, id.getClass(),
-				"Expected ID type to be the same as the return type of the hash key method ( " + idAndHashKeyType + " ) : ");
+				"Expected ID type to be the same as the return type of the hash key method ( " + idAndHashKeyType
+						+ " ) : ");
 		return id;
 	}
 

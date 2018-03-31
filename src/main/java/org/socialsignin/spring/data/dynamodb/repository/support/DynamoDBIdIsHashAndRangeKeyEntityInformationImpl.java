@@ -34,8 +34,9 @@ import java.util.Set;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends
-		ReflectionEntityInformation<T, ID> implements DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> {
+public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends ReflectionEntityInformation<T, ID>
+		implements
+			DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> {
 
 	private DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata;
 	private HashAndRangeKeyExtractor<ID, ?> hashAndRangeKeyExtractor;

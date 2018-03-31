@@ -32,8 +32,10 @@ import java.util.Optional;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-public interface DynamoDBEntityInformation<T, ID> extends EntityInformation<T, ID>,
-		DynamoDBHashKeyExtractingEntityMetadata<T> {
+public interface DynamoDBEntityInformation<T, ID>
+		extends
+			EntityInformation<T, ID>,
+			DynamoDBHashKeyExtractingEntityMetadata<T> {
 
 	default boolean isRangeKeyAware() {
 		return false;

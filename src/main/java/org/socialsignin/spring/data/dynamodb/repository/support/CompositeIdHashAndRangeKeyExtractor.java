@@ -35,12 +35,9 @@ public class CompositeIdHashAndRangeKeyExtractor<ID, H> implements HashAndRangeK
 	@Override
 	public H getHashKey(ID id) {
 		Method method = hashAndRangeKeyMethodExtractor.getHashKeyMethod();
-		if (method != null)
-		{
+		if (method != null) {
 			return (H) ReflectionUtils.invokeMethod(method, id);
-		}
-		else
-		{
+		} else {
 			return (H) ReflectionUtils.getField(hashAndRangeKeyMethodExtractor.getHashKeyField(), id);
 		}
 	}
@@ -48,13 +45,11 @@ public class CompositeIdHashAndRangeKeyExtractor<ID, H> implements HashAndRangeK
 	@Override
 	public Object getRangeKey(ID id) {
 		Method method = hashAndRangeKeyMethodExtractor.getRangeKeyMethod();
-		if (method != null)
-		{
+		if (method != null) {
 			return ReflectionUtils.invokeMethod(method, id);
-		}
-		else
-		{
+		} else {
 			return ReflectionUtils.getField(hashAndRangeKeyMethodExtractor.getRangeKeyField(), id);
-		}	}
+		}
+	}
 
 }

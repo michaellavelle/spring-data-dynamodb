@@ -19,10 +19,8 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-
 public interface InstallationRepository extends CrudRepository<Installation, String> {
 
-    public List<Installation> findBySystemIdOrderByUpdatedAtDesc(String systemId);
+	public List<Installation> findBySystemIdOrderByUpdatedAtDesc(String systemId);
 
 }
-

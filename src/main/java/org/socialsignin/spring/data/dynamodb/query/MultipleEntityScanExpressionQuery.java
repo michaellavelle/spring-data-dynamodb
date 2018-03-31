@@ -24,8 +24,9 @@ import java.util.List;
 public class MultipleEntityScanExpressionQuery<T> extends AbstractMultipleEntityQuery<T> {
 
 	private DynamoDBScanExpression scanExpression;
-	
-	public MultipleEntityScanExpressionQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz,DynamoDBScanExpression scanExpression) {
+
+	public MultipleEntityScanExpressionQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz,
+			DynamoDBScanExpression scanExpression) {
 		super(dynamoDBOperations, clazz);
 		this.scanExpression = scanExpression;
 	}
@@ -33,14 +34,13 @@ public class MultipleEntityScanExpressionQuery<T> extends AbstractMultipleEntity
 	@Override
 	public List<T> getResultList() {
 		assertScanEnabled(isScanEnabled());
-		return dynamoDBOperations.scan(clazz,scanExpression);
+		return dynamoDBOperations.scan(clazz, scanExpression);
 	}
-	
-	public void assertScanEnabled(boolean scanEnabled)
-	{
-		Assert.isTrue(scanEnabled,"Scanning for this query is not enabled.  " +
-				"To enable annotate your repository method with @EnableScan, or " +
-				"enable scanning for all repository methods by annotating your repository interface with @EnableScan");
+
+	public void assertScanEnabled(boolean scanEnabled) {
+		Assert.isTrue(scanEnabled, "Scanning for this query is not enabled.  "
+				+ "To enable annotate your repository method with @EnableScan, or "
+				+ "enable scanning for all repository methods by annotating your repository interface with @EnableScan");
 	}
 
 }

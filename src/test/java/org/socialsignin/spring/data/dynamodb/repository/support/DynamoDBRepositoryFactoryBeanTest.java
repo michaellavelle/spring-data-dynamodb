@@ -35,56 +35,56 @@ import static org.mockito.Mockito.spy;
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBRepositoryFactoryBeanTest {
 
-    @Mock
-    private ApplicationContext applicationContext;
-    @Mock
-    private DynamoDBOperations dynamoDBOperations;
-    @Mock
-    private DynamoDBMapperConfig dynamoDBMapperConfig;
-    @Mock
-    private AmazonDynamoDB amazonDynamoDB;
+	@Mock
+	private ApplicationContext applicationContext;
+	@Mock
+	private DynamoDBOperations dynamoDBOperations;
+	@Mock
+	private DynamoDBMapperConfig dynamoDBMapperConfig;
+	@Mock
+	private AmazonDynamoDB amazonDynamoDB;
 
-    private DynamoDBRepositoryFactoryBean underTest;
+	private DynamoDBRepositoryFactoryBean underTest;
 
-    public interface UserRepository extends Repository<User, String> {
+	public interface UserRepository extends Repository<User, String> {
 
-    }
+	}
 
-    @Before
-    public void setUp() {
-        underTest = spy(new DynamoDBRepositoryFactoryBean(UserRepository.class));
-        underTest.setApplicationContext(applicationContext);
-        underTest.setDynamoDBMapperConfig(dynamoDBMapperConfig);
-    }
+	@Before
+	public void setUp() {
+		underTest = spy(new DynamoDBRepositoryFactoryBean(UserRepository.class));
+		underTest.setApplicationContext(applicationContext);
+		underTest.setDynamoDBMapperConfig(dynamoDBMapperConfig);
+	}
 
-    @Test
-    public void testDynamoDBOperations() {
-        try {
-            underTest.getPersistentEntity();
-            fail();
-        } catch (NullPointerException /*IllegalStateException*/ ise) {
-            assertTrue(true);
-        }
+	@Test
+	public void testDynamoDBOperations() {
+		try {
+			underTest.getPersistentEntity();
+			fail();
+		} catch (NullPointerException /* IllegalStateException */ ise) {
+			assertTrue(true);
+		}
 
-        underTest.setDynamoDBOperations(dynamoDBOperations);
-        underTest.afterPropertiesSet();
+		underTest.setDynamoDBOperations(dynamoDBOperations);
+		underTest.afterPropertiesSet();
 
-        assertNotNull(underTest.getPersistentEntity());
-    }
+		assertNotNull(underTest.getPersistentEntity());
+	}
 
-    @Test
-    public void testAmazonDynamoDB() {
-        try {
-            underTest.getPersistentEntity();
-            fail();
-        } catch (NullPointerException /*IllegalStateException*/ ise) {
-            assertTrue(true);
-        }
+	@Test
+	public void testAmazonDynamoDB() {
+		try {
+			underTest.getPersistentEntity();
+			fail();
+		} catch (NullPointerException /* IllegalStateException */ ise) {
+			assertTrue(true);
+		}
 
-        underTest.setAmazonDynamoDB(amazonDynamoDB);
-        underTest.afterPropertiesSet();
+		underTest.setAmazonDynamoDB(amazonDynamoDB);
+		underTest.afterPropertiesSet();
 
-        assertNotNull(underTest.getPersistentEntity());
-    }
-    
+		assertNotNull(underTest.getPersistentEntity());
+	}
+
 }

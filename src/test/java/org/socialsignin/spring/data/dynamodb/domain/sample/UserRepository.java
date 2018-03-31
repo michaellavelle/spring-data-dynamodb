@@ -50,7 +50,7 @@ public interface UserRepository extends CrudRepository<User, String> {
 	List<User> findByPostCode(String postCode);
 
 	@EnableScan
-    Optional<User> findByNameAndPostCode(String name, String postcode);
+	Optional<User> findByNameAndPostCode(String name, String postcode);
 	@EnableScan
 	User findByNameAndLeaveDate(String name, Instant leaveDate);
 

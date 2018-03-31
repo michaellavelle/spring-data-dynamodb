@@ -38,20 +38,20 @@ public class Date2IsoDynamoDBMarshallerTest {
 
 		assertNull(actual);
 	}
-	
+
 	@Test
 	public void testMarshall() {
 		assertEquals("1970-01-01T00:00:00.000Z", underTest.marshall(new Date(0)));
 		assertEquals("1970-01-01T00:00:00.000Z", underTest.convert(new Date(0)));
 	}
-	
+
 	@Test
 	public void testUnmarshallNull() {
 		Date actual = underTest.unmarshall(Date.class, null);
 
 		assertNull(actual);
 	}
-	
+
 	@Test
 	public void testUnmarshall() {
 		assertEquals(new Date(0), underTest.unmarshall(Date.class, "1970-01-01T00:00:00.000Z"));

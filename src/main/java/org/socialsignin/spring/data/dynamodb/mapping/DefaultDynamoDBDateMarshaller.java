@@ -21,7 +21,8 @@ import java.util.TimeZone;
 /**
  * @author Michael Lavelle
  * @author Sebastian Just
- * @deprecated Consider using {@link org.socialsignin.spring.data.dynamodb.marshaller.Date2IsoDynamoDBMarshaller}
+ * @deprecated Consider using
+ *             {@link org.socialsignin.spring.data.dynamodb.marshaller.Date2IsoDynamoDBMarshaller}
  */
 @Deprecated
 public class DefaultDynamoDBDateMarshaller extends AbstractDynamoDBDateMarshaller {

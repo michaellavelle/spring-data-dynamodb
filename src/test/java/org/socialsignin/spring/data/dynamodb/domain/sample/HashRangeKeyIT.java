@@ -34,8 +34,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Show the usage of Hash+Range key as also how to use
- * XML based configuration
+ * Show the usage of Hash+Range key as also how to use XML based configuration
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:META-INF/context/HashRangeKeyIT-context.xml"})
