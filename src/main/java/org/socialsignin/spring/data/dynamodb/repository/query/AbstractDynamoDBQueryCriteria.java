@@ -34,6 +34,7 @@ import org.socialsignin.spring.data.dynamodb.utils.SortHandler;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -480,7 +481,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 				.getTypeConverterForProperty(propertyName);
 
 		if (converter != null) {
-			return converter.convert((V) value);
+			return converter.convert(value);
 		}
 
 		DynamoDBMarshaller<V> marshaller = (DynamoDBMarshaller<V>) entityInformation
@@ -560,7 +561,11 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	}
 
 	@SuppressWarnings("unchecked")
-	private <P> List<P> getAttributeValueAsList(Object attributeValue) {
+	@Nullable
+	private <P> List<P> getAttributeValueAsList(@Nullable Object attributeValue) {
+		if (attributeValue == null) {
+			return null;
+		}
 		boolean isIterable = ClassUtils.isAssignable(Iterable.class, attributeValue.getClass());
 		if (isIterable) {
 			List<P> attributeValueAsList = new ArrayList<>();
@@ -573,8 +578,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 		return null;
 	}
 
-	protected <P> List<AttributeValue> addAttributeValue(List<AttributeValue> attributeValueList, Object attributeValue,
-			String propertyName, Class<P> propertyType, boolean expandCollectionValues) {
+	protected <P> List<AttributeValue> addAttributeValue(List<AttributeValue> attributeValueList,
+			@Nullable Object attributeValue, Class<P> propertyType, boolean expandCollectionValues) {
 		AttributeValue attributeValueObject = new AttributeValue();
 
 		if (ClassUtils.isAssignable(String.class, propertyType)) {
@@ -637,7 +642,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 		Assert.notNull(o, "Creating conditions on null property values not supported: please specify a value for '"
 				+ propertyName + "'");
 
-		List<AttributeValue> attributeValueList = new ArrayList<>();
+		List<AttributeValue> attributeValueList = new ArrayList<>(1);
 		Object attributeValue = !alreadyMarshalledIfRequired ? getPropertyAttributeValue(propertyName, o) : o;
 		if (ClassUtils.isAssignableValue(AttributeValue.class, attributeValue)) {
 			attributeValueList.add((AttributeValue) attributeValue);
@@ -646,8 +651,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 					&& !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);
 
 			Class<?> targetPropertyType = marshalled ? String.class : propertyType;
-			attributeValueList = addAttributeValue(attributeValueList, attributeValue, propertyName, targetPropertyType,
-					true);
+			addAttributeValue(attributeValueList, attributeValue, targetPropertyType, true);
 		}
 
 		return new Condition().withComparisonOperator(comparisonOperator).withAttributeValueList(attributeValueList);
@@ -670,8 +674,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 							&& !entityInformation.isCompositeHashAndRangeKeyProperty(propertyName);
 				}
 				Class<?> targetPropertyType = marshalled ? String.class : propertyType;
-				attributeValueList = addAttributeValue(attributeValueList, attributeValue, propertyName,
-						targetPropertyType, false);
+				addAttributeValue(attributeValueList, attributeValue, targetPropertyType, false);
 			}
 		}
 

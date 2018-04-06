@@ -109,9 +109,14 @@ public abstract class AbstractDynamoDBConfiguration {
 				componentProvider.addIncludeFilter(new AnnotationTypeFilter(DynamoDBTable.class));
 
 				for (BeanDefinition candidate : componentProvider.findCandidateComponents(basePackage)) {
-					LOGGER.trace("getInitialEntitySet. candidate: {}", candidate.getBeanClassName());
-					initialEntitySet.add(ClassUtils.forName(candidate.getBeanClassName(),
-							AbstractDynamoDBConfiguration.class.getClassLoader()));
+					String candidateClass = candidate.getBeanClassName();
+					if (candidateClass != null) {
+						LOGGER.trace("getInitialEntitySet. candidate: {}", candidateClass);
+						initialEntitySet.add(ClassUtils.forName(candidateClass,
+								AbstractDynamoDBConfiguration.class.getClassLoader()));
+					} else {
+						LOGGER.warn("getInitialEntitySet. candidate: {} did not provide a class", candidate);
+					}
 				}
 			}
 		}

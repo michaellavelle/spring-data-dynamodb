@@ -15,8 +15,8 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.AbstractEntityInformation;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -34,23 +34,8 @@ import java.lang.reflect.Method;
  */
 public class FieldAndGetterReflectionEntityInformation<T, ID> extends AbstractEntityInformation<T, ID> {
 
-	private static final Class<Id> DEFAULT_ID_ANNOTATION = Id.class;
-
 	protected Method method;
 	private Field field;
-
-	/**
-	 * Creates a new
-	 * {@link org.springframework.data.repository.core.support.ReflectionEntityInformation}
-	 * inspecting the given domain class for a getter carrying the {@link Id}
-	 * annotation.
-	 *
-	 * @param domainClass
-	 *            must not be {@literal null}.
-	 */
-	public FieldAndGetterReflectionEntityInformation(Class<T> domainClass) {
-		this(domainClass, DEFAULT_ID_ANNOTATION);
-	}
 
 	/**
 	 * Creates a new {@link FieldAndGetterReflectionEntityInformation} inspecting
@@ -61,23 +46,24 @@ public class FieldAndGetterReflectionEntityInformation<T, ID> extends AbstractEn
 	 * @param annotation
 	 *            must not be {@literal null}.
 	 */
-	public FieldAndGetterReflectionEntityInformation(Class<T> domainClass,
-			final Class<? extends Annotation> annotation) {
+	public FieldAndGetterReflectionEntityInformation(@NonNull Class<T> domainClass,
+			@NonNull final Class<? extends Annotation> annotation) {
 
 		super(domainClass);
 		Assert.notNull(annotation, "annotation must not be null!");
 
 		ReflectionUtils.doWithMethods(domainClass, (method) -> {
 			if (method.getAnnotation(annotation) != null) {
-				FieldAndGetterReflectionEntityInformation.this.method = method;
+				this.method = method;
 				return;
 			}
 		});
 
 		if (method == null) {
+			field = null;
 			ReflectionUtils.doWithFields(domainClass, (field) -> {
 				if (field.getAnnotation(annotation) != null) {
-					FieldAndGetterReflectionEntityInformation.this.field = field;
+					this.field = field;
 					return;
 				}
 			});

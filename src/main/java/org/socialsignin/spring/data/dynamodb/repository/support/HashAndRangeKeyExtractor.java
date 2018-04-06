@@ -21,6 +21,6 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
  */
 public interface HashAndRangeKeyExtractor<ID, H> extends HashKeyExtractor<ID, H> {
 
-	public Object getRangeKey(ID id);
+	Object getRangeKey(ID id);
 
 }

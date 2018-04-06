@@ -51,18 +51,19 @@ public class DynamoDBPersistentEntityImpl<T> extends BasicPersistentEntity<T, Dy
 			return null;
 		}
 
-		if (getIdProperty() != null) {
+		DynamoDBPersistentProperty idProperty = getIdProperty();
+		if (idProperty != null) {
 
-			if (getIdProperty().isCompositeIdProperty() && property.isHashKeyProperty()) {
+			if (idProperty.isCompositeIdProperty() && property.isHashKeyProperty()) {
 				// Do nothing - favour id annotated properties over hashkey
 				return null;
-			} else if (getIdProperty().isHashKeyProperty() && property.isCompositeIdProperty()) {
+			} else if (idProperty.isHashKeyProperty() && property.isCompositeIdProperty()) {
 				return property;
 			} else {
 				throw new MappingException(String.format(
 						"Attempt to add id property %s but already have property %s registered "
 								+ "as id. Check your mapping configuration!",
-						property.getField(), getIdProperty().getField()));
+						property.getField(), idProperty.getField()));
 			}
 		}
 
