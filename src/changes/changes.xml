@@ -55,6 +55,9 @@
       <action dev="derjust" type="fix" date="">
         Fixed NullPointerException for findAllByOrderByProperty queries
       </action>
+      <action dev="CoderPaulK" issue="158" type="fix" date="2018-04-15">
+        Fixed method signature
+      </action>
     </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">
