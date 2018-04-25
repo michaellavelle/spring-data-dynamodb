@@ -105,8 +105,7 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 
 		Map<Class<?>, List<KeyPair>> keyPairsMap = Collections.<Class<?>, List<KeyPair>>singletonMap(domainType,
 				keyPairs);
-		return (List<T>) dynamoDBOperations.batchLoad(keyPairsMap)
-				.get(dynamoDBOperations.getOverriddenTableName(domainType, entityInformation.getDynamoDBTableName()));
+		return dynamoDBOperations.batchLoad(keyPairsMap);
 	}
 
 	@Override

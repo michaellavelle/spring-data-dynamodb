@@ -42,7 +42,7 @@ public interface DynamoDBOperations {
 
 	<T> T load(Class<T> domainClass, Object hashKey, Object rangeKey);
 	<T> T load(Class<T> domainClass, Object hashKey);
-	Map<String, List<Object>> batchLoad(Map<Class<?>, List<KeyPair>> itemsToGet);
+	<T> List<T> batchLoad(Map<Class<?>, List<KeyPair>> itemsToGet);
 
 	<T> T save(T entity);
 	List<FailedBatch> batchSave(Iterable<?> entities);

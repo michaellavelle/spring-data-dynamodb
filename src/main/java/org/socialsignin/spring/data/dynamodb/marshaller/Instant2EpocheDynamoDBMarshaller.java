@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 
+@SuppressWarnings("deprecation")
 public class Instant2EpocheDynamoDBMarshaller
 		implements
 			DynamoDBTypeConverter<String, Instant>,

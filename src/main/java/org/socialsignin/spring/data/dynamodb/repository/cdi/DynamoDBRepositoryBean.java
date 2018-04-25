@@ -27,6 +27,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -81,10 +82,11 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 	 * (non-Javadoc)
 	 * 
 	 * @see javax.enterprise.context.spi.Contextual#create(javax.enterprise
-	 * .context.spi.CreationalContext)
+	 * .context.spi.CreationalContext, Class<T>, Optional<Object>)
 	 */
 	@Override
-	public T create(CreationalContext<T> creationalContext, Class<T> repositoryType) {
+	protected T create(CreationalContext<T> creationalContext, Class<T> repositoryType,
+			Optional<Object> customImplementation) {
 
 		// Get an instance from the associated AmazonDynamoDB bean.
 		AmazonDynamoDB amazonDynamoDB = getDependencyInstance(amazonDynamoDBBean, AmazonDynamoDB.class);

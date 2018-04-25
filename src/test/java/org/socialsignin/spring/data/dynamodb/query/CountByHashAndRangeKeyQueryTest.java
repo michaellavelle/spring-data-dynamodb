@@ -37,13 +37,13 @@ public class CountByHashAndRangeKeyQueryTest {
 	private User sampleEntity;
 	private Object hashKey;
 	private Object rangeKey;
-	private CountByHashAndRangeKeyQuery underTest;
+	private CountByHashAndRangeKeyQuery<User> underTest;
 
 	@Before
 	public void setUp() {
 		hashKey = ThreadLocalRandom.current().nextLong();
 		rangeKey = ThreadLocalRandom.current().nextLong();
-		underTest = new CountByHashAndRangeKeyQuery(dynamoDBOperations, DOMAIN_CLASS, hashKey, rangeKey);
+		underTest = new CountByHashAndRangeKeyQuery<User>(dynamoDBOperations, DOMAIN_CLASS, hashKey, rangeKey);
 	}
 
 	@Test

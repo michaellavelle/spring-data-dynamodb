@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
+@SuppressWarnings("deprecation")
 public abstract class DateDynamoDBMarshaller implements DynamoDBTypeConverter<String, Date>, DynamoDBMarshaller<Date> {
 
 	public abstract DateFormat getDateFormat();

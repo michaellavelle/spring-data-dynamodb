@@ -21,6 +21,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import java.io.Serializable;
 
 public class CustomerHistoryId implements Serializable {
+	private static final long serialVersionUID = 2310511711421469613L;
 
 	private String customerId;
 	private String createDt;

@@ -48,7 +48,7 @@ public class DynamoDBRepositoryFactoryBeanTest {
 
 	private DynamoDBMappingContext dynamoDBMappingContext = new DynamoDBMappingContext();
 
-	private DynamoDBRepositoryFactoryBean underTest;
+	private DynamoDBRepositoryFactoryBean<UserRepository, User, String> underTest;
 
 	public interface UserRepository extends Repository<User, String> {
 
@@ -56,7 +56,7 @@ public class DynamoDBRepositoryFactoryBeanTest {
 
 	@Before
 	public void setUp() {
-		underTest = spy(new DynamoDBRepositoryFactoryBean(UserRepository.class));
+		underTest = spy(new DynamoDBRepositoryFactoryBean<>(UserRepository.class));
 		underTest.setApplicationContext(applicationContext);
 		underTest.setDynamoDBMapperConfig(dynamoDBMapperConfig);
 		underTest.setDynamoDBMappingContext(dynamoDBMappingContext);

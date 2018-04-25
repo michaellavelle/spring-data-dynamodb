@@ -15,7 +15,6 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;

@@ -522,6 +522,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 		return list;
 	}
 
+	@SuppressWarnings("deprecation")
 	private List<String> getDateListAsStringList(List<Date> dateList) {
 		DynamoDBMarshaller<Date> marshaller = new Date2IsoDynamoDBMarshaller();
 		List<String> list = new ArrayList<String>();
@@ -535,6 +536,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 		return list;
 	}
 
+	@SuppressWarnings("deprecation")
 	private List<String> getInstantListAsStringList(List<Instant> dateList) {
 		DynamoDBMarshaller<Instant> marshaller = new Instant2IsoDynamoDBMarshaller();
 		List<String> list = new ArrayList<>();

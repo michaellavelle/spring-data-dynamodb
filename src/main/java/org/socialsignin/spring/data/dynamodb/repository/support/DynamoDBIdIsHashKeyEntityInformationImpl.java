@@ -85,8 +85,9 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends FieldAndGet
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
+	public <V extends DynamoDBMarshaller<?>> V getMarshallerForProperty(String propertyName) {
 		return metadata.getMarshallerForProperty(propertyName);
 	}
 

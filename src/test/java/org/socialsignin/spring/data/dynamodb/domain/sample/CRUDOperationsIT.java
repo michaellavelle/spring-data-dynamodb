@@ -18,6 +18,7 @@ package org.socialsignin.spring.data.dynamodb.domain.sample;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Expected;
 import org.junit.Rule;
+
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -31,7 +32,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 import java.time.Instant;
 import java.util.ArrayList;

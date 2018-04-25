@@ -30,7 +30,6 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
-@SuppressWarnings("unused")
 public class DynamoDBIdIsHashAndRangeKeyEntityInformationImplUnitTest {
 
 	private DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<Playlist, PlaylistId> dynamoDBPlaylistEntityInformation;
@@ -60,9 +59,9 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImplUnitTest {
 	@Mock
 	private PlaylistId mockPlaylistId;
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("deprecation")
 	@Mock
-	private DynamoDBMarshaller mockPropertyMarshaller;
+	private DynamoDBMarshaller<Object> mockPropertyMarshaller;
 
 	@SuppressWarnings("unchecked")
 	@Before
@@ -93,8 +92,7 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImplUnitTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstruct_WhenEntityDoesNotHaveFieldAnnotatedWithId_ThrowsIllegalArgumentException() {
-		DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<User, String> dynamoDBUserEntityInformation = new DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<User, String>(
-				User.class, mockUserEntityMetadata);
+		new DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<User, String>(User.class, mockUserEntityMetadata);
 	}
 
 	@Test
@@ -103,6 +101,7 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImplUnitTest {
 		playlist.setUserName("someUserName");
 		playlist.setPlaylistName("somePlaylistName");
 		PlaylistId id = dynamoDBPlaylistEntityInformation.getId(playlist);
+		Assert.assertNotNull(id);
 		Assert.assertEquals("someUserName", id.getUserName());
 		Assert.assertEquals("somePlaylistName", id.getPlaylistName());
 	}
@@ -171,6 +170,7 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImplUnitTest {
 
 	@Test
 	public void testGetMarshallerForProperty_DelegatesToEntityMetadata_IrrespectiveOfEntityInformationSetup() {
+		@SuppressWarnings("deprecation")
 		DynamoDBMarshaller<?> marshaller1 = dynamoDBPlaylistEntityInformation
 				.getMarshallerForProperty("marshalledProperty");
 		Assert.assertEquals(mockPropertyMarshaller, marshaller1);

@@ -19,7 +19,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.TableNameOverride;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.TableNameResolver;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import org.junit.Assert;
@@ -29,7 +28,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
@@ -42,7 +40,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -87,7 +85,7 @@ public class DynamoDBTemplateTest {
 	@Test
 	public void testConstructorOptionalPreconfiguredDynamoDBMapper() {
 		// Introduced constructor via #91 should not fail its assert
-		DynamoDBTemplate usePreconfiguredDynamoDBMapper = new DynamoDBTemplate(dynamoDB, dynamoDBMapper);
+		new DynamoDBTemplate(dynamoDB, dynamoDBMapper);
 
 		assertTrue("The constructor should not fail with an assert error", true);
 	}
@@ -104,7 +102,7 @@ public class DynamoDBTemplateTest {
 	public void testBatchDelete_CallsCorrectDynamoDBMapperMethod() {
 		List<User> users = new ArrayList<>();
 		dynamoDBTemplate.batchDelete(users);
-		verify(dynamoDBMapper).batchDelete(any(List.class));
+		verify(dynamoDBMapper).batchDelete(anyList());
 	}
 
 	@Test
@@ -126,7 +124,7 @@ public class DynamoDBTemplateTest {
 	@Test
 	public void testCountQuery() {
 		DynamoDBQueryExpression<User> query = countUserQuery;
-		int actual = dynamoDBTemplate.count(User.class, query);
+		dynamoDBTemplate.count(User.class, query);
 
 		verify(dynamoDBMapper).count(User.class, query);
 	}
@@ -192,6 +190,8 @@ public class DynamoDBTemplateTest {
 	private void assertDynamoDBMapperConfigCompletness(DynamoDBTemplate tmpl) {
 		DynamoDBMapperConfig effectiveConfig = (DynamoDBMapperConfig) ReflectionTestUtils.getField(tmpl,
 				"dynamoDBMapperConfig");
+
+		assertNotNull(effectiveConfig);
 		assertNotNull(effectiveConfig.getConversionSchema());
 		assertNotNull(effectiveConfig.getTypeConverterFactory());
 	}

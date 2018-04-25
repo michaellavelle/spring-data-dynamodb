@@ -52,11 +52,10 @@ public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
 	@Mock
 	private Playlist mockPlaylistPrototype;
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("deprecation")
 	@Mock
-	private DynamoDBMarshaller mockPropertyMarshaller;
+	private DynamoDBMarshaller<Object> mockPropertyMarshaller;
 
-	@SuppressWarnings("unchecked")
 	@Before
 	public void setup() {
 
@@ -78,7 +77,6 @@ public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
 				mockPlaylistEntityMetadata);
 		dynamoDBUserEntityInformation = new DynamoDBIdIsHashKeyEntityInformationImpl<>(User.class,
 				mockUserEntityMetadata);
-
 	}
 
 	@Test
@@ -163,10 +161,12 @@ public class DynamoDBIdIsHashKeyEntityInformationImplUnitTest {
 
 	@Test
 	public void testGetMarshallerForProperty_DelegatesToEntityMetadata_IrrespectiveOfEntityInformationSetup() {
+		@SuppressWarnings("deprecation")
 		DynamoDBMarshaller<?> marshaller1 = dynamoDBPlaylistEntityInformation
 				.getMarshallerForProperty("marshalledProperty");
 		Assert.assertEquals(mockPropertyMarshaller, marshaller1);
 
+		@SuppressWarnings("deprecation")
 		DynamoDBMarshaller<?> marshaller2 = dynamoDBUserEntityInformation
 				.getMarshallerForProperty("marshalledProperty");
 		Assert.assertEquals(mockPropertyMarshaller, marshaller2);

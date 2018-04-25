@@ -37,6 +37,7 @@ public class User {
 
 	private Date joinDate;
 
+	@SuppressWarnings("deprecation")
 	@DynamoDBMarshalling(marshallerClass = DynamoDBYearMarshaller.class)
 	private Date joinYear;
 
@@ -70,6 +71,7 @@ public class User {
 		this.joinYear = joinYear;
 	}
 
+	@SuppressWarnings("deprecation")
 	@DynamoDBMarshalling(marshallerClass = Instant2IsoDynamoDBMarshaller.class)
 	public Instant getLeaveDate() {
 		return leaveDate;

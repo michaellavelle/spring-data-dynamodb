@@ -20,8 +20,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
 import org.springframework.data.annotation.Id;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
-import org.springframework.util.ReflectionUtils.MethodCallback;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -45,24 +43,20 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends 
 	public DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl(final Class<T> domainType) {
 		super(domainType);
 		this.hashAndRangeKeyMethodExtractor = new DynamoDBHashAndRangeKeyMethodExtractorImpl<T>(getJavaType());
-		ReflectionUtils.doWithMethods(domainType, new MethodCallback() {
-			public void doWith(Method method) {
-				if (method.getAnnotation(DynamoDBHashKey.class) != null) {
-					String setterMethodName = toSetterMethodNameFromAccessorMethod(method);
-					if (setterMethodName != null) {
-						hashKeySetterMethod = ReflectionUtils.findMethod(domainType, setterMethodName,
-								method.getReturnType());
-					}
+		ReflectionUtils.doWithMethods(domainType, method -> {
+			if (method.getAnnotation(DynamoDBHashKey.class) != null) {
+				String setterMethodName = toSetterMethodNameFromAccessorMethod(method);
+				if (setterMethodName != null) {
+					hashKeySetterMethod = ReflectionUtils.findMethod(domainType, setterMethodName,
+							method.getReturnType());
 				}
 			}
 		});
-		ReflectionUtils.doWithFields(domainType, new FieldCallback() {
-			public void doWith(Field field) {
-				if (field.getAnnotation(DynamoDBHashKey.class) != null) {
+		ReflectionUtils.doWithFields(domainType, field -> {
+			if (field.getAnnotation(DynamoDBHashKey.class) != null) {
 
-					hashKeyField = ReflectionUtils.findField(domainType, field.getName());
+				hashKeyField = ReflectionUtils.findField(domainType, field.getName());
 
-				}
 			}
 		});
 		Assert.isTrue(hashKeySetterMethod != null || hashKeyField != null,
@@ -74,7 +68,7 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends 
 
 	@Override
 	public <H> HashAndRangeKeyExtractor<ID, H> getHashAndRangeKeyExtractor(Class<ID> idClass) {
-		return new CompositeIdHashAndRangeKeyExtractor<ID, H>(idClass);
+		return new CompositeIdHashAndRangeKeyExtractor<>(idClass);
 	}
 
 	@Override
@@ -84,30 +78,25 @@ public class DynamoDBHashAndRangeKeyExtractingEntityMetadataImpl<T, ID> extends 
 
 	@Override
 	public Set<String> getIndexRangeKeyPropertyNames() {
-		final Set<String> propertyNames = new HashSet<String>();
-		ReflectionUtils.doWithMethods(getJavaType(), new MethodCallback() {
-			public void doWith(Method method) {
-				if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
-					if ((method.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName() != null && method
-							.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName().trim().length() > 0)
-							|| (method.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames() != null
-									&& method.getAnnotation(DynamoDBIndexRangeKey.class)
-											.localSecondaryIndexNames().length > 0)) {
-						propertyNames.add(getPropertyNameForAccessorMethod(method));
-					}
+		final Set<String> propertyNames = new HashSet<>();
+		ReflectionUtils.doWithMethods(getJavaType(), method -> {
+			if (method.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
+				if ((method.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName() != null && method
+						.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName().trim().length() > 0)
+						|| (method.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames() != null
+								&& method.getAnnotation(DynamoDBIndexRangeKey.class)
+										.localSecondaryIndexNames().length > 0)) {
+					propertyNames.add(getPropertyNameForAccessorMethod(method));
 				}
 			}
 		});
-		ReflectionUtils.doWithFields(getJavaType(), new FieldCallback() {
-			public void doWith(Field field) {
-				if (field.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
-					if ((field.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName() != null && field
-							.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName().trim().length() > 0)
-							|| (field.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames() != null
-									&& field.getAnnotation(DynamoDBIndexRangeKey.class)
-											.localSecondaryIndexNames().length > 0)) {
-						propertyNames.add(getPropertyNameForField(field));
-					}
+		ReflectionUtils.doWithFields(getJavaType(), field -> {
+			if (field.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
+				if ((field.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName() != null && field
+						.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexName().trim().length() > 0)
+						|| (field.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames() != null && field
+								.getAnnotation(DynamoDBIndexRangeKey.class).localSecondaryIndexNames().length > 0)) {
+					propertyNames.add(getPropertyNameForField(field));
 				}
 			}
 		});

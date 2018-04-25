@@ -56,7 +56,7 @@ public class AbstractMultipleEntityQueryTest {
 	@Mock
 	private User entity;
 
-	private AbstractMultipleEntityQuery underTest;
+	private AbstractMultipleEntityQuery<User> underTest;
 
 	@Test
 	public void testNullResult() {

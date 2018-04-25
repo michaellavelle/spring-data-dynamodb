@@ -16,9 +16,13 @@
 package org.socialsignin.spring.data.dynamodb.config;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,8 +90,11 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 	public AmazonDynamoDB amazonDynamoDB() {
 		Assert.notNull(PORT, "System property '" + DYNAMODB_PORT_PROPERTY + " not set!");
 
-		AmazonDynamoDB amazonDynamoDB = new AmazonDynamoDBClient(amazonAWSCredentials());
-		amazonDynamoDB.setEndpoint(String.format("http://localhost:%s", PORT));
+		AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
+				.withCredentials(new AWSStaticCredentialsProvider(amazonAWSCredentials()))
+				.withEndpointConfiguration(new EndpointConfiguration(String.format("http://localhost:%s", PORT),
+						Regions.DEFAULT_REGION.getName()))
+				.build();
 		return amazonDynamoDB;
 	}
 

@@ -283,7 +283,9 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 	}
 
 	@Override
-	public DynamoDBMarshaller<?> getMarshallerForProperty(final String propertyName) {
+	@SuppressWarnings("deprecation")
+	public <V extends DynamoDBMarshaller<?>> V getMarshallerForProperty(final String propertyName) {
+		// TODO #28
 		DynamoDBMarshalling annotation = null;
 
 		Method method = findMethod(propertyName);
@@ -300,7 +302,9 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 
 		if (annotation != null) {
 			try {
-				return annotation.marshallerClass().getDeclaredConstructor().newInstance();
+				@SuppressWarnings("unchecked")
+				Class<V> marshallerClazz = (Class<V>) annotation.marshallerClass();
+				return marshallerClazz.getDeclaredConstructor().newInstance();
 			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException
 					| InvocationTargetException e) {
 				throw new RuntimeException(e);
@@ -328,8 +332,9 @@ public class DynamoDBEntityMetadataSupport<T, ID> implements DynamoDBHashKeyExtr
 
 		if (annotation != null) {
 			try {
-				return annotation.converter().newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
+				return annotation.converter().getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				throw new RuntimeException(e);
 			}
 		}

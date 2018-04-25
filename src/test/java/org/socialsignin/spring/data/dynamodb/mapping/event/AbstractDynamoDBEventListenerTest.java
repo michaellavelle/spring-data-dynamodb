@@ -76,12 +76,11 @@ public class AbstractDynamoDBEventListenerTest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testRawType() {
-		underTest = Mockito.spy(new AbstractDynamoDBEventListener() {
+		underTest = Mockito.spy(new AbstractDynamoDBEventListener<User>() {
 		});
 
-		assertSame(Object.class, underTest.getDomainClass());
+		assertSame(User.class, underTest.getDomainClass());
 	}
 
 	@Test

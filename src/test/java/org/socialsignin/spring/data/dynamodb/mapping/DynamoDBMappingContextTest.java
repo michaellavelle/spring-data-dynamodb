@@ -29,6 +29,7 @@ import org.springframework.data.annotation.Id;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -48,6 +49,7 @@ public class DynamoDBMappingContextTest {
 		@DynamoDBRangeKey
 		private String rangeKey;
 
+		@SuppressWarnings("unused")
 		private String someProperty;
 	}
 
@@ -92,6 +94,8 @@ public class DynamoDBMappingContextTest {
 
 		DynamoDBPersistentEntityImpl<?> entity = underTest
 				.getPersistentEntity(DynamoDBMappingContextTestFieldEntity.class);
+
+		assertNotNull(entity);
 		assertThat(entity.getIdProperty(), is(notNullValue()));
 	}
 
@@ -100,6 +104,8 @@ public class DynamoDBMappingContextTest {
 	public void detectdMethodsAnnotation() {
 		DynamoDBPersistentEntityImpl<?> entity = underTest
 				.getPersistentEntity(DynamoDBMappingContextTestMethodEntity.class);
+
+		assertNotNull(entity);
 		assertThat(entity.getIdProperty(), is(notNullValue()));
 
 	}
@@ -108,6 +114,8 @@ public class DynamoDBMappingContextTest {
 	public void detectdMethodsId() {
 		DynamoDBPersistentEntityImpl<?> entity = underTest
 				.getPersistentEntity(DynamoDBMappingContextTestIdEntity.class);
+
+		assertNotNull(entity);
 		assertThat(entity.getIdProperty(), is(notNullValue()));
 
 	}

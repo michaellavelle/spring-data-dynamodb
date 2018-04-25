@@ -73,9 +73,13 @@ public class ValidatingDynamoDBEventListenerTest {
 				allOf(containsString("Test Validation Exception 1"), containsString("Test Validation Exception 2")));
 
 		Set<ConstraintViolation<User>> validationResult = new HashSet<>();
+
+		@SuppressWarnings("unchecked")
 		ConstraintViolation<User> vc1 = mock(ConstraintViolation.class);
 		when(vc1.toString()).thenReturn("Test Validation Exception 1");
 		validationResult.add(vc1);
+
+		@SuppressWarnings("unchecked")
 		ConstraintViolation<User> vc2 = mock(ConstraintViolation.class);
 		when(vc2.toString()).thenReturn("Test Validation Exception 2");
 		validationResult.add(vc2);

@@ -29,6 +29,7 @@ import org.springframework.data.util.ClassTypeInformation;
 
 import java.util.Comparator;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -42,6 +43,7 @@ public class DynamoDBPersistentEntityTest {
 		@Id
 		private DynamoDBHashAndRangeKey hashRangeKey;
 
+		@SuppressWarnings("unused")
 		private String name;
 	}
 
@@ -50,11 +52,11 @@ public class DynamoDBPersistentEntityTest {
 
 	private ClassTypeInformation<DynamoDBPersistentEntity> cti = ClassTypeInformation
 			.from(DynamoDBPersistentEntity.class);
-	private DynamoDBPersistentEntityImpl underTest;
+	private DynamoDBPersistentEntityImpl<DynamoDBPersistentEntity> underTest;
 
 	@Before
 	public void setUp() {
-		underTest = new DynamoDBPersistentEntityImpl(cti, comparator);
+		underTest = new DynamoDBPersistentEntityImpl<>(cti, comparator);
 	}
 
 	@Test
@@ -75,6 +77,7 @@ public class DynamoDBPersistentEntityTest {
 				SimpleTypeHolder.DEFAULT);
 		DynamoDBPersistentProperty actual = underTest.returnPropertyIfBetterIdPropertyCandidateOrNull(property);
 
+		assertNotNull(actual);
 		assertTrue(actual.isHashKeyProperty());
 	}
 
@@ -85,6 +88,7 @@ public class DynamoDBPersistentEntityTest {
 				SimpleTypeHolder.DEFAULT);
 		DynamoDBPersistentProperty actual = underTest.returnPropertyIfBetterIdPropertyCandidateOrNull(property);
 
+		assertNotNull(actual);
 		assertTrue(actual.isCompositeIdProperty());
 	}
 }

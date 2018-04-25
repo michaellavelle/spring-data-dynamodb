@@ -15,7 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.utils;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;g
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import org.springframework.dao.DataAccessException;
 
 import java.lang.reflect.Constructor;

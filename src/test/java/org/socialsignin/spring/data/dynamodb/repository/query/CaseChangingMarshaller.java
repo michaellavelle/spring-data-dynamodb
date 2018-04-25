@@ -17,6 +17,7 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 
+@SuppressWarnings("deprecation")
 public class CaseChangingMarshaller implements DynamoDBMarshaller<String> {
 
 	@Override

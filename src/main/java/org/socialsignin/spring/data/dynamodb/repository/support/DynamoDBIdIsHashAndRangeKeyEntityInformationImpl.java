@@ -89,8 +89,9 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends Ref
 		return metadata.getRangeKeyPropertyName();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
+	public <V extends DynamoDBMarshaller<?>> V getMarshallerForProperty(String propertyName) {
 		return metadata.getMarshallerForProperty(propertyName);
 	}
 

@@ -36,12 +36,12 @@ public class CountByHashKeyQueryTest {
 	@Mock
 	private User sampleEntity;
 	private Object hashKey;
-	private CountByHashKeyQuery underTest;
+	private CountByHashKeyQuery<User> underTest;
 
 	@Before
 	public void setUp() {
 		hashKey = ThreadLocalRandom.current().nextLong();
-		underTest = new CountByHashKeyQuery(dynamoDBOperations, DOMAIN_CLASS, hashKey);
+		underTest = new CountByHashKeyQuery<>(dynamoDBOperations, DOMAIN_CLASS, hashKey);
 	}
 
 	@Test
