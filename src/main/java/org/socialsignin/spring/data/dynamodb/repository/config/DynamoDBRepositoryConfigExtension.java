@@ -15,6 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.config;
 
+import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBRepositoryFactoryBean;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -40,6 +41,8 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 	private static final String AMAZON_DYNAMODB_REF = "amazon-dynamodb-ref";
 
+	private static final String MAPPING_CONTEXT_REF = "mapping-context-ref";
+
 	@Override
 	public String getRepositoryFactoryBeanClassName() {
 		return DynamoDBRepositoryFactoryBean.class.getName();
@@ -50,7 +53,7 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 		AnnotationAttributes attributes = config.getAttributes();
 
 		postProcess(builder, attributes.getString("amazonDynamoDBRef"), attributes.getString("dynamoDBMapperConfigRef"),
-				attributes.getString("dynamoDBOperationsRef"));
+				attributes.getString("dynamoDBOperationsRef"), attributes.getString("mappingContextRef"));
 
 	}
 
@@ -71,11 +74,12 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 		ParsingUtils.setPropertyReference(builder, element, AMAZON_DYNAMODB_REF, "amazonDynamoDB");
 		ParsingUtils.setPropertyReference(builder, element, DYNAMO_DB_MAPPER_CONFIG_REF, "dynamoDBMapperConfig");
 		ParsingUtils.setPropertyReference(builder, element, DYNAMO_DB_OPERATIONS_REF, "dynamoDBOperations");
+		ParsingUtils.setPropertyReference(builder, element, MAPPING_CONTEXT_REF, "dynamoDBMappingContext");
 
 	}
 
 	private void postProcess(BeanDefinitionBuilder builder, String amazonDynamoDBRef, String dynamoDBMapperConfigRef,
-			String dynamoDBOperationsRef) {
+			String dynamoDBOperationsRef, String dynamoDBMappingContextRef) {
 
 		if (StringUtils.hasText(dynamoDBOperationsRef)) {
 			builder.addPropertyReference("dynamoDBOperations", dynamoDBOperationsRef);
@@ -96,6 +100,11 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 			}
 		}
 
+		if (StringUtils.hasText(dynamoDBMappingContextRef)) {
+			builder.addPropertyReference("dynamoDBMappingContext", dynamoDBMappingContextRef);
+		} else {
+			builder.addPropertyValue("dynamoDBMappingContext", new DynamoDBMappingContext());
+		}
 	}
 
 	@Override

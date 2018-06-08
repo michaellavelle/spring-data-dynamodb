@@ -157,4 +157,16 @@ public @interface EnableDynamoDBRepositories {
 	 */
 	String dynamoDBOperationsRef() default "";
 
+	/**
+	 * Returns the
+	 * {@link org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext}
+	 * reference for the
+	 * {@link org.springframework.data.mapping.context.MappingContext} for
+	 * AmazonDynamoDB.
+	 *
+	 * @return The
+	 *         {@link org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext}
+	 *         bean name
+	 */
+	String mappingContextRef() default "";
 }

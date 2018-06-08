@@ -59,8 +59,6 @@ public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 
 	public void setAmazonDynamoDB(AmazonDynamoDB amazonDynamoDB) {
 		this.amazonDynamoDB = amazonDynamoDB;
-		setMappingContext(new DynamoDBMappingContext());
-
 	}
 
 	@Override
@@ -88,6 +86,9 @@ public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ex
 
 	public void setDynamoDBOperations(DynamoDBOperations dynamoDBOperations) {
 		this.dynamoDBOperations = dynamoDBOperations;
-		setMappingContext(new DynamoDBMappingContext());
+	}
+
+	public void setDynamoDBMappingContext(DynamoDBMappingContext dynamoDBMappingContext) {
+		setMappingContext(dynamoDBMappingContext);
 	}
 }

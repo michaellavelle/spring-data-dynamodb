@@ -17,6 +17,7 @@ package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
+import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.repository.Repository;
 
@@ -44,6 +46,8 @@ public class DynamoDBRepositoryFactoryBeanTest {
 	@Mock
 	private AmazonDynamoDB amazonDynamoDB;
 
+	private DynamoDBMappingContext dynamoDBMappingContext = new DynamoDBMappingContext();
+
 	private DynamoDBRepositoryFactoryBean underTest;
 
 	public interface UserRepository extends Repository<User, String> {
@@ -55,6 +59,7 @@ public class DynamoDBRepositoryFactoryBeanTest {
 		underTest = spy(new DynamoDBRepositoryFactoryBean(UserRepository.class));
 		underTest.setApplicationContext(applicationContext);
 		underTest.setDynamoDBMapperConfig(dynamoDBMapperConfig);
+		underTest.setDynamoDBMappingContext(dynamoDBMappingContext);
 	}
 
 	@Test

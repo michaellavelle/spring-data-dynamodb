@@ -36,6 +36,7 @@
 					<xsd:attribute name="amazon-dynamodb-ref" type="amazonDynamoDBRef" use="optional" />
 					<xsd:attribute name="dynamodb-mapper-config-ref" type="dynamoDBMapperConfigRef" use="optional"/>
 					<xsd:attribute name="dynamodb-operations-ref" type="dynamoDBOperationsRef" use="optional"/>
+					<xsd:attribute name="mapping-context-ref" type="mappingContextRef" use="optional" />
 				</xsd:extension>
 			</xsd:complexContent>
 		</xsd:complexType>
