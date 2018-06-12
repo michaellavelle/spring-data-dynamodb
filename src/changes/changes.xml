@@ -58,6 +58,9 @@
       <action dev="CoderPaulK" issue="158" type="fix" date="2018-04-15">
         Fixed method signature
       </action>
+      <action dev="boothen" issue="15" type="fix" date="2018-06-12">
+        Spring Data Rest uses a PersistentEntityResourceAssembler that requires the DynamoDBMappingContext to be exposed as a Spring Bean.
+      </action>
     </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">
