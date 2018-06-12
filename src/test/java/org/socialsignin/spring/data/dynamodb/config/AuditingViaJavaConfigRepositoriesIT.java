@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 		return new String[]{"org.socialsignin.spring.data.dynamodb.domain.sample"};
 	}
 
-	@Bean(name="auditorProvider")
+	@Bean(name = "auditorProvider")
 	@SuppressWarnings("unchecked")
 	public AuditorAware<AuditableUser> auditorProvider() {
 		LOGGER.info("auditorProvider");
@@ -92,9 +92,10 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 	}
 
 	/**
-	 * Must return the same credential as {@link org.socialsignin.spring.data.dynamodb.core.ConfigurationTI}
-	 * otherwise the repository will connect to different local DynamoDB instance
-	 * hence it will return no table found
+	 * Must return the same credential as
+	 * {@link org.socialsignin.spring.data.dynamodb.core.ConfigurationTI} otherwise
+	 * the repository will connect to different local DynamoDB instance hence it
+	 * will return no table found
 	 *
 	 * @return
 	 */
@@ -110,25 +111,24 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 		this.auditor = auditableUserRepository.save(new AuditableUser("auditor"));
 		assertThat(this.auditor, is(notNullValue()));
 
-        Optional<AuditableUser> auditorUser = auditableUserRepository.findById(this.auditor.getId());
-        assertTrue(auditorUser.isPresent());
+		Optional<AuditableUser> auditorUser = auditableUserRepository.findById(this.auditor.getId());
+		assertTrue(auditorUser.isPresent());
 
 	}
 
 	@Test
 	public void basicAuditing() {
 
-		doReturn(this.auditor.getId()).when(this.auditorAware).getCurrentAuditor();
+		doReturn(Optional.of(this.auditor.getId())).when(this.auditorAware).getCurrentAuditor();
 
 		AuditableUser savedUser = auditableUserRepository.save(new AuditableUser("user"));
 
 		assertThat(savedUser.getCreatedAt(), is(notNullValue()));
 		assertThat(savedUser.getCreatedBy(), is(this.auditor.getId()));
 
-        assertThat(savedUser.getLastModifiedAt(), is(notNullValue()));
-        assertThat(savedUser.getLastModifiedBy(), is(this.auditor.getId()));
+		assertThat(savedUser.getLastModifiedAt(), is(notNullValue()));
+		assertThat(savedUser.getLastModifiedBy(), is(this.auditor.getId()));
 
 	}
-
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +20,31 @@ import org.springframework.data.auditing.IsNewAwareAuditingHandler;
 import org.springframework.util.Assert;
 
 /**
- * Event listener to populate auditing related fields on an entity about to be saved.
+ * Event listener to populate auditing related fields on an entity about to be
+ * saved.
  *
  * @author Vito Limandibhrata
  */
 public class AuditingEventListener extends AbstractDynamoDBEventListener<Object> {
 
-    private final ObjectFactory<IsNewAwareAuditingHandler> auditingHandlerFactory;
+	private final ObjectFactory<IsNewAwareAuditingHandler> auditingHandlerFactory;
 
-    /**
-     * Creates a new {@link AuditingEventListener} using the given {@link org.springframework.data.mapping.context.MappingContext} and {@link org.springframework.data.auditing.AuditingHandler}
-     * provided by the given {@link ObjectFactory}.
-     *
-     * @param auditingHandlerFactory must not be {@literal null}.
-     */
-    public AuditingEventListener(ObjectFactory<IsNewAwareAuditingHandler> auditingHandlerFactory) {
-        Assert.notNull(auditingHandlerFactory, "IsNewAwareAuditingHandler must not be null!");
-        this.auditingHandlerFactory = auditingHandlerFactory;
-    }
+	/**
+	 * Creates a new {@link AuditingEventListener} using the given
+	 * {@link org.springframework.data.mapping.context.MappingContext} and
+	 * {@link org.springframework.data.auditing.AuditingHandler} provided by the
+	 * given {@link ObjectFactory}.
+	 *
+	 * @param auditingHandlerFactory
+	 *            must not be {@literal null}.
+	 */
+	public AuditingEventListener(ObjectFactory<IsNewAwareAuditingHandler> auditingHandlerFactory) {
+		Assert.notNull(auditingHandlerFactory, "IsNewAwareAuditingHandler must not be null!");
+		this.auditingHandlerFactory = auditingHandlerFactory;
+	}
 
-    @Override
-    public void onBeforeSave(Object source) {
-        auditingHandlerFactory.getObject().markAudited(source);
-    }
+	@Override
+	public void onBeforeSave(Object source) {
+		auditingHandlerFactory.getObject().markAudited(source);
+	}
 }

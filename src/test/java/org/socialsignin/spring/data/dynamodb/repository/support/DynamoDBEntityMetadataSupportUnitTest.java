@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,18 +25,16 @@ import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unused")
 public class DynamoDBEntityMetadataSupportUnitTest {
-	
+
 	@Test
-	public void testGetMarshallerForProperty_WhenAnnotationIsOnField_AndReturnsDynamoDBMarshaller()
-	{
+	public void testGetMarshallerForProperty_WhenAnnotationIsOnField_AndReturnsDynamoDBMarshaller() {
 		DynamoDBEntityMetadataSupport support = new DynamoDBEntityMetadataSupport<>(User.class);
 		DynamoDBMarshaller fieldAnnotation = support.getMarshallerForProperty("joinYear");
 		Assert.assertNotNull(fieldAnnotation);
 	}
 
 	@Test
-	public void testGetMarshallerForProperty_WhenAnnotationIsOnMethod_AndReturnsDynamoDBMarshaller()
-	{
+	public void testGetMarshallerForProperty_WhenAnnotationIsOnMethod_AndReturnsDynamoDBMarshaller() {
 		DynamoDBEntityMetadataSupport support = new DynamoDBEntityMetadataSupport<>(User.class);
 		DynamoDBMarshaller methodAnnotation = support.getMarshallerForProperty("leaveDate");
 		Assert.assertNotNull(methodAnnotation);

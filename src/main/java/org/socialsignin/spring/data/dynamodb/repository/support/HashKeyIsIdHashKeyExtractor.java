@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import org.springframework.util.Assert;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class HashKeyIsIdHashKeyExtractor<ID> implements HashKeyExtractor<ID, ID> {
 
@@ -31,7 +32,8 @@ public class HashKeyIsIdHashKeyExtractor<ID> implements HashKeyExtractor<ID, ID>
 	@Override
 	public ID getHashKey(ID id) {
 		Assert.isAssignable(idAndHashKeyType, id.getClass(),
-				"Expected ID type to be the same as the return type of the hash key method ( " + idAndHashKeyType + " ) : ");
+				"Expected ID type to be the same as the return type of the hash key method ( " + idAndHashKeyType
+						+ " ) : ");
 		return id;
 	}
 

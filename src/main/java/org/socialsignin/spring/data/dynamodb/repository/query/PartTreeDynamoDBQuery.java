@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,36 +24,29 @@ import org.springframework.data.repository.query.parser.PartTree;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class PartTreeDynamoDBQuery<T, ID> extends AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 
-	private DynamoDBQueryMethod<T, ID> queryMethod;
 	private final Parameters<?, ?> parameters;
-
-
 	private final PartTree tree;
 
 	public PartTreeDynamoDBQuery(DynamoDBOperations dynamoDBOperations, DynamoDBQueryMethod<T, ID> method) {
 		super(dynamoDBOperations, method);
-		this.queryMethod = method;
 		this.parameters = method.getParameters();
 		this.tree = new PartTree(method.getName(), method.getEntityType());
 	}
 
-	public PartTree getTree() {
-		return tree;
+	protected DynamoDBQueryCreator<T, ID> createQueryCreator(ParametersParameterAccessor accessor) {
+		return new DynamoDBQueryCreator<>(tree, accessor, getQueryMethod().getEntityInformation(),
+				getQueryMethod().getProjectionExpression(), dynamoDBOperations);
 	}
 
-	protected DynamoDBQueryCreator<T, ID> createQueryCreator(ParametersParameterAccessor accessor) {
-		return new DynamoDBQueryCreator<>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations);
+	protected DynamoDBCountQueryCreator<T, ID> createCountQueryCreator(ParametersParameterAccessor accessor,
+			boolean pageQuery) {
+		return new DynamoDBCountQueryCreator<>(tree, accessor, getQueryMethod().getEntityInformation(),
+				dynamoDBOperations, pageQuery);
 	}
-	
-	protected DynamoDBCountQueryCreator<T, ID> createCountQueryCreator(ParametersParameterAccessor accessor,boolean pageQuery) {
-		return new DynamoDBCountQueryCreator<>(tree, accessor, queryMethod.getEntityInformation(), dynamoDBOperations,
-				pageQuery);
-	}
-	
-	
 
 	@Override
 	public Query<T> doCreateQuery(Object[] values) {
@@ -63,25 +56,30 @@ public class PartTreeDynamoDBQuery<T, ID> extends AbstractDynamoDBQuery<T, ID> i
 		return queryCreator.createQuery();
 
 	}
-	
+
 	@Override
-	public Query<Long> doCreateCountQuery(Object[] values,boolean pageQuery) {
+	public Query<Long> doCreateCountQuery(Object[] values, boolean pageQuery) {
 
 		ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
-		DynamoDBCountQueryCreator<T, ID> queryCreator = createCountQueryCreator(accessor,pageQuery);
+		DynamoDBCountQueryCreator<T, ID> queryCreator = createCountQueryCreator(accessor, pageQuery);
 		return queryCreator.createQuery();
 
 	}
 
-    @Override
-    protected boolean isCountQuery() {
-        return tree.isCountProjection();
-    }
+	@Override
+	protected boolean isCountQuery() {
+		return tree.isCountProjection();
+	}
 
-    @Override
-    protected boolean isExistsQuery() {
-        return tree.isExistsProjection();
-    }
+	@Override
+	protected boolean isExistsQuery() {
+		return tree.isExistsProjection();
+	}
+
+	@Override
+	protected boolean isDeleteQuery() {
+		return tree.isDelete();
+	}
 
 	@Override
 	protected Integer getResultsRestrictionIfApplicable() {

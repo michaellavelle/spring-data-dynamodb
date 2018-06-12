@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import org.springframework.data.repository.core.EntityMetadata;
 
 import java.util.Map;
@@ -26,14 +27,17 @@ import java.util.Optional;
  * whether properties have overridden attribute names or have custom marshallers
  * assigned, whether a property is a hash key property or a composite id
  * property, and generates a hash key prototype entity given a hash key.
- * 
+ *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetadata<T> {
 
 	Optional<String> getOverriddenAttributeName(String propertyName);
 
 	DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName);
+
+	DynamoDBTypeConverter<?, ?> getTypeConverterForProperty(String propertyName);
 
 	boolean isHashKeyProperty(String propertyName);
 
@@ -42,7 +46,7 @@ public interface DynamoDBHashKeyExtractingEntityMetadata<T> extends EntityMetada
 	String getDynamoDBTableName();
 
 	Map<String, String[]> getGlobalSecondaryIndexNamesByPropertyName();
-	
+
 	boolean isGlobalIndexHashKeyProperty(String propertyName);
 
 	boolean isGlobalIndexRangeKeyProperty(String propertyName);

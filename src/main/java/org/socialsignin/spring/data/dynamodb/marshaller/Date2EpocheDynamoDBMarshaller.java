@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,7 @@ public class Date2EpocheDynamoDBMarshaller extends DateDynamoDBMarshaller {
 		private static final long serialVersionUID = 2969564523817434535L;
 
 		@Override
-		public StringBuffer format(Date date, StringBuffer toAppendTo,
-				FieldPosition fieldPosition) {
+		public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
 			long epoche = date.getTime();
 			toAppendTo.append(epoche);
 			return toAppendTo;
@@ -39,7 +38,7 @@ public class Date2EpocheDynamoDBMarshaller extends DateDynamoDBMarshaller {
 			pos.setIndex(source.length());
 			return new Date(epoche);
 		}
-		
+
 	};
 
 	@Override

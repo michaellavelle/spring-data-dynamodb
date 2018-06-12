@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,13 @@ public class QueryRequestCountQuery extends AbstractSingleEntityQuery<Long> {
 
 	private final DynamoDBOperations dynamoDBOperations;
 	private final QueryRequest queryRequest;
-	
+
 	public QueryRequestCountQuery(DynamoDBOperations dynamoDBOperations, QueryRequest queryRequest) {
 		super(null, Long.class);
 		this.queryRequest = queryRequest;
 		this.dynamoDBOperations = dynamoDBOperations;
 	}
-	
+
 	@Override
 	public Long getSingleResult() {
 

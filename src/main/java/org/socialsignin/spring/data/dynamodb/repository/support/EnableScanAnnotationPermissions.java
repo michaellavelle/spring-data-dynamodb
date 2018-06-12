@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 /**
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  * 
  */
 public class EnableScanAnnotationPermissions implements EnableScanPermissions {
@@ -79,7 +80,8 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 					continue;
 				}
 
-				if (method.getName().equals("findAll") && Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {
+				if (method.getName().equals("findAll")
+						&& Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {
 					findAllUnpaginatedScanCountEnabled = true;
 					continue;
 				}
@@ -93,7 +95,8 @@ public class EnableScanAnnotationPermissions implements EnableScanPermissions {
 					continue;
 				}
 
-				if (method.getName().equals("findAll") && Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {
+				if (method.getName().equals("findAll")
+						&& Pageable.class.isAssignableFrom(method.getParameterTypes()[0])) {
 					findAllPaginatedScanEnabled = true;
 					continue;
 				}

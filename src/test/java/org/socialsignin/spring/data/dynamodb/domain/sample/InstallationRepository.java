@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,8 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-
 public interface InstallationRepository extends CrudRepository<Installation, String> {
 
-    public List<Installation> findBySystemIdOrderByUpdatedAtDesc(String systemId);
+	public List<Installation> findBySystemIdOrderByUpdatedAtDesc(String systemId);
 
 }
-

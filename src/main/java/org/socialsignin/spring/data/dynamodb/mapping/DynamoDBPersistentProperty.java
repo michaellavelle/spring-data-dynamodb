@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@ import org.springframework.data.mapping.PersistentProperty;
  * Interface for a DynamoDB-specific {@link PersistentProperty}.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public interface DynamoDBPersistentProperty extends PersistentProperty<DynamoDBPersistentProperty> {
 
-	public boolean isHashKeyProperty();
+	boolean isHashKeyProperty();
 
-	public boolean isCompositeIdProperty();
+	boolean isCompositeIdProperty();
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,18 @@
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import org.socialsignin.spring.data.dynamodb.repository.EnableScan;
-import org.springframework.data.repository.Repository;
+import org.socialsignin.spring.data.dynamodb.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends Repository<User, String> {
+public interface UserRepository extends CrudRepository<User, String> {
+
+	@EnableScan
+	@Override
+	Iterable<User> findAll();
 
 	// CRUD method using Optional
 	Optional<User> findById(String id);
@@ -33,5 +38,20 @@ public interface UserRepository extends Repository<User, String> {
 	@EnableScan
 	Optional<User> findByName(String name);
 
-	<T extends User> User save(T entity);
+	<T extends User> T save(T entity);
+
+	@EnableScan
+	List<User> findByNameIn(List<String> names);
+
+	@EnableScan
+	void deleteByIdAndName(String id, String name);
+
+	@Query(fields = "leaveDate")
+	List<User> findByPostCode(String postCode);
+
+	@EnableScan
+	Optional<User> findByNameAndPostCode(String name, String postcode);
+	@EnableScan
+	User findByNameAndLeaveDate(String name, Instant leaveDate);
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,44 +23,45 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public class SortHandlerTest {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
-    private SortHandler underTest = new SortHandler() {};
+	private SortHandler underTest = new SortHandler() {
+	};
 
-    @Test
-    public void testThrowUnsupportedSortException() {
-        expectedException.expect(UnsupportedOperationException.class);
-        
-        underTest.throwUnsupportedSortOperationException();
-    }
+	@Test
+	public void testThrowUnsupportedSortException() {
+		expectedException.expect(UnsupportedOperationException.class);
 
-    @Test
-    public void testEnsureNoSortUnsorted() {
-        underTest.ensureNoSort(Sort.unsorted());
-    }
+		underTest.throwUnsupportedSortOperationException();
+	}
 
-    @Test
-    public void testEnsureNoSortSorted() {
-        expectedException.expect(UnsupportedOperationException.class);
+	@Test
+	public void testEnsureNoSortUnsorted() {
+		underTest.ensureNoSort(Sort.unsorted());
+	}
 
-        underTest.ensureNoSort(Sort.by("property"));
-    }
+	@Test
+	public void testEnsureNoSortSorted() {
+		expectedException.expect(UnsupportedOperationException.class);
 
-    @Test
-    public void testEnsureNoSortUnpaged() {
-        underTest.ensureNoSort(Pageable.unpaged());
-    }
+		underTest.ensureNoSort(Sort.by("property"));
+	}
 
-    @Test
-    public void TestEnsureNoSortPagedUnsorted() {
-        underTest.ensureNoSort(PageRequest.of(0, 1, Sort.unsorted()));
-    }
+	@Test
+	public void testEnsureNoSortUnpaged() {
+		underTest.ensureNoSort(Pageable.unpaged());
+	}
 
-    @Test
-    public void TestEnsureNoSortPagedSorted() {
-        expectedException.expect(UnsupportedOperationException.class);
+	@Test
+	public void TestEnsureNoSortPagedUnsorted() {
+		underTest.ensureNoSort(PageRequest.of(0, 1, Sort.unsorted()));
+	}
 
-        underTest.ensureNoSort(PageRequest.of(0, 1, Sort.by("property")));
-    }
+	@Test
+	public void TestEnsureNoSortPagedSorted() {
+		expectedException.expect(UnsupportedOperationException.class);
+
+		underTest.ensureNoSort(PageRequest.of(0, 1, Sort.by("property")));
+	}
 }

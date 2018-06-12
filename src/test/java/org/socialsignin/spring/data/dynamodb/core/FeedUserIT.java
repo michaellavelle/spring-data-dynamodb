@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,21 +29,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={FeedUserIT.TestAppConfig.class, DynamoDBResource.class})
+@ContextConfiguration(classes = {FeedUserIT.TestAppConfig.class, DynamoDBResource.class})
 public class FeedUserIT {
 
-    @Configuration
-    @EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
-    public static class TestAppConfig {
-    }
+	@Configuration
+	@EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
+	public static class TestAppConfig {
+	}
 
-    @Autowired
-    FeedUserRepository feedUserRepository;
+	@Autowired
+	FeedUserRepository feedUserRepository;
 
-    @Test
-    public void feed_test(){
-        PageRequest pageRequest = PageRequest.of(1, 10, new Sort(Direction.DESC, "usrNo"));
-        feedUserRepository.findByUsrNo(2, pageRequest); //runnable
-        feedUserRepository.findByUsrNoAndFeedOpenYn(2, true, pageRequest); //not runnable
-    }
+	@Test
+	public void feed_test() {
+		PageRequest pageRequest = PageRequest.of(1, 10, new Sort(Direction.DESC, "usrNo"));
+		feedUserRepository.findByUsrNo(2, pageRequest); // runnable
+		feedUserRepository.findByUsrNoAndFeedOpenYn(2, true, pageRequest); // not runnable
+	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,26 @@ package org.socialsignin.spring.data.dynamodb.query;
 
 import java.util.List;
 
-
-
 public interface Query<T> {
 
 	/**
-     * Execute a SELECT query and return the query results
-     * as a List.
-     * @return a list of the results
-     * @throws IllegalStateException if called for a Java
-     *    Persistence query language UPDATE or DELETE statement
-     */
-    public List<T> getResultList();
+	 * Execute a SELECT query and return the query results as a List.
+	 * 
+	 * @return a list of the results
+	 * @throws IllegalStateException
+	 *             if called for a Java Persistence query language UPDATE or DELETE
+	 *             statement
+	 */
+	List<T> getResultList();
 
-    /**
-     * Execute a SELECT query that returns a single result.
-     * @return the result
-     */
-    public T getSingleResult();
+	/**
+	 * Execute a SELECT query that returns a single result.
+	 * 
+	 * @return the result
+	 */
+	T getSingleResult();
 
-
-    public void setScanEnabled(boolean scanEnabled);
-    public void setScanCountEnabled(boolean scanCountEnabled);
+	void setScanEnabled(boolean scanEnabled);
+	void setScanCountEnabled(boolean scanCountEnabled);
 
 }

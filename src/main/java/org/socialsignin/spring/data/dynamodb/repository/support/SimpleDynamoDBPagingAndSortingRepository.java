@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import java.util.List;
  * 
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  * 
  * @param <T>
  *            the type of the entity to handle
@@ -53,12 +54,12 @@ import java.util.List;
  *            the type of the entity's identifier
  */
 public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynamoDBCrudRepository<T, ID>
-		implements DynamoDBPagingAndSortingRepository<T, ID> {
+		implements
+			DynamoDBPagingAndSortingRepository<T, ID> {
 
 	public SimpleDynamoDBPagingAndSortingRepository(DynamoDBEntityInformation<T, ID> entityInformation,
 			DynamoDBOperations dynamoDBOperations, EnableScanPermissions enableScanPermissions) {
 		super(entityInformation, dynamoDBOperations, enableScanPermissions);
-		
 
 	}
 
@@ -75,30 +76,29 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynam
 		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
 		// Scan to the end of the page after the requested page
 		long scanTo = pageable.getOffset() + (2 * pageable.getPageSize());
-		//TODO Spring5: Fix downcast
-		scanExpression.setLimit((int)scanTo);
+		scanExpression.setLimit((int) Math.min(scanTo, Integer.MAX_VALUE));
 		PaginatedScanList<T> paginatedScanList = dynamoDBOperations.scan(domainType, scanExpression);
 		Iterator<T> iterator = paginatedScanList.iterator();
-		long processedCount = 0;
 		if (pageable.getOffset() > 0) {
-			processedCount = scanThroughResults(iterator, pageable.getOffset());
+			long processedCount = scanThroughResults(iterator, pageable.getOffset());
 			if (processedCount < pageable.getOffset())
-				return new PageImpl<T>(new ArrayList<T>());
+				return new PageImpl<>(new ArrayList<T>());
 		}
 		// Scan ahead to retrieve the next page count
 		List<T> results = readPageOfResults(iterator, pageable.getPageSize());
-		
+
 		assertScanEnabled(enableScanPermissions.isFindAllPaginatedScanEnabled(), "findAll(Pageable pageable)");
-		assertScanCountEnabled(enableScanPermissions.isFindAllUnpaginatedScanCountEnabled(), "findAll(Pageable pageable)");
+		assertScanCountEnabled(enableScanPermissions.isFindAllUnpaginatedScanCountEnabled(),
+				"findAll(Pageable pageable)");
 
 		int totalCount = dynamoDBOperations.count(domainType, scanExpression);
-		
-		return new PageImpl<T>(results, pageable, totalCount);
+
+		return new PageImpl<>(results, pageable, totalCount);
 
 	}
 
-	private int scanThroughResults(Iterator<T> paginatedScanListIterator, long resultsToScan) {
-		int processed = 0;
+	private long scanThroughResults(Iterator<T> paginatedScanListIterator, long resultsToScan) {
+		long processed = 0;
 		while (paginatedScanListIterator.hasNext() && processed < resultsToScan) {
 			paginatedScanListIterator.next();
 			processed++;
@@ -108,17 +108,17 @@ public class SimpleDynamoDBPagingAndSortingRepository<T, ID> extends SimpleDynam
 
 	private List<T> readPageOfResults(Iterator<T> paginatedScanListIterator, int pageSize) {
 		int processed = 0;
-		List<T> resultsPage = new ArrayList<T>();
+		List<T> resultsPage = new ArrayList<>();
 		while (paginatedScanListIterator.hasNext() && processed < pageSize) {
 			resultsPage.add(paginatedScanListIterator.next());
 			processed++;
 		}
 		return resultsPage;
 	}
-	
+
 	public void assertScanCountEnabled(boolean countScanEnabled, String methodName) {
-		Assert.isTrue(countScanEnabled, "Scanning for the total counts for unpaginated " + methodName + " queries is not enabled.  "
-				+ "To enable, re-implement the " + methodName
+		Assert.isTrue(countScanEnabled, "Scanning for the total counts for unpaginated " + methodName
+				+ " queries is not enabled.  " + "To enable, re-implement the " + methodName
 				+ "() method in your repository interface and annotate with @EnableScanCount, or "
 				+ "enable total count scanning for all repository methods by annotating your repository interface with @EnableScanCount");
 	}

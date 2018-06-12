@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,20 +38,20 @@ public class Instant2EpocheDynamoDBMarshallerTest {
 
 		assertNull(actual);
 	}
-	
+
 	@Test
 	public void testMarshall() {
 		assertEquals("0", underTest.marshall(Instant.ofEpochMilli(0)));
 		assertEquals("0", underTest.convert(Instant.ofEpochMilli(0)));
 	}
-	
+
 	@Test
 	public void testUnmarshallNull() {
 		Instant actual = underTest.unmarshall(Instant.class, null);
 
 		assertNull(actual);
 	}
-	
+
 	@Test
 	public void testUnmarshall() {
 		assertEquals(Instant.ofEpochMilli(0), underTest.unmarshall(Instant.class, "0"));

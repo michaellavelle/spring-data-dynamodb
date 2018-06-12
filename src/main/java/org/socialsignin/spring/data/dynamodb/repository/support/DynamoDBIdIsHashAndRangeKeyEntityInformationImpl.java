@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 
@@ -31,18 +32,26 @@ import java.util.Set;
  * Delegates to metadata and hashKeyExtractor components for all operations.
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
-public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends
-		ReflectionEntityInformation<T, ID> implements DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> {
+public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends ReflectionEntityInformation<T, ID>
+		implements
+			DynamoDBIdIsHashAndRangeKeyEntityInformation<T, ID> {
 
 	private DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata;
 	private HashAndRangeKeyExtractor<ID, ?> hashAndRangeKeyExtractor;
+	private Optional<String> projection = Optional.empty();
 
 	public DynamoDBIdIsHashAndRangeKeyEntityInformationImpl(Class<T> domainClass,
 			DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata) {
 		super(domainClass, Id.class);
 		this.metadata = metadata;
 		this.hashAndRangeKeyExtractor = metadata.getHashAndRangeKeyExtractor(getIdType());
+	}
+
+	@Override
+	public Optional<String> getProjection() {
+		return projection;
 	}
 
 	@Override
@@ -83,6 +92,11 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends
 	@Override
 	public DynamoDBMarshaller<?> getMarshallerForProperty(String propertyName) {
 		return metadata.getMarshallerForProperty(propertyName);
+	}
+
+	@Override
+	public DynamoDBTypeConverter<?, ?> getTypeConverterForProperty(String propertyName) {
+		return metadata.getTypeConverterForProperty(propertyName);
 	}
 
 	@Override

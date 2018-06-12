@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-    package org.socialsignin.spring.data.dynamodb.config;
+package org.socialsignin.spring.data.dynamodb.config;
 
-    import org.junit.Test;
-    import org.junit.runner.RunWith;
-    import org.mockito.Mock;
-    import org.mockito.junit.MockitoJUnitRunner;
-    import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-    import org.springframework.core.type.AnnotationMetadata;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.core.type.AnnotationMetadata;
 
-    /**
-     * Unit tests for {@link DynamoDBAuditingRegistrar}.
-     *
-     * @author Vito Limandibhrata
-     */
-    @RunWith(MockitoJUnitRunner.class)
-    public class DynamoDBAuditingRegistrarUnitTests {
+/**
+ * Unit tests for {@link DynamoDBAuditingRegistrar}.
+ *
+ * @author Vito Limandibhrata
+ */
+@RunWith(MockitoJUnitRunner.class)
+public class DynamoDBAuditingRegistrarUnitTests {
 
-        DynamoDBAuditingRegistrar registrar = new DynamoDBAuditingRegistrar();
+	DynamoDBAuditingRegistrar registrar = new DynamoDBAuditingRegistrar();
 
-        @Mock
-        AnnotationMetadata metadata;
-        @Mock
-        BeanDefinitionRegistry registry;
+	@Mock
+	AnnotationMetadata metadata;
+	@Mock
+	BeanDefinitionRegistry registry;
 
-        @Test(expected = IllegalArgumentException.class)
-        public void rejectsNullAnnotationMetadata() {
-            registrar.registerBeanDefinitions(null, registry);
-        }
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsNullAnnotationMetadata() {
+		registrar.registerBeanDefinitions(null, registry);
+	}
 
-        @Test(expected = IllegalArgumentException.class)
-        public void rejectsNullBeanDefinitionRegistry() {
-            registrar.registerBeanDefinitions(metadata, null);
-        }
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsNullBeanDefinitionRegistry() {
+		registrar.registerBeanDefinitions(metadata, null);
+	}
+}

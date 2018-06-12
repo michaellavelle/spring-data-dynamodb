@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,11 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.springframework.data.domain.Sort;
 
+import java.util.Optional;
+
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public interface DynamoDBQueryCriteria<T, ID> {
 
@@ -37,6 +40,8 @@ public interface DynamoDBQueryCriteria<T, ID> {
 	DynamoDBQueryCriteria<T, ID> withPropertyBetween(String segment, Object value1, Object value2, Class<?> type);
 
 	DynamoDBQueryCriteria<T, ID> withSort(Sort sort);
+
+	DynamoDBQueryCriteria<T, ID> withProjection(Optional<String> projection);
 
 	Query<T> buildQuery(DynamoDBOperations dynamoDBOperations);
 

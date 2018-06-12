@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class CountByHashAndRangeKeyQuery<T> extends AbstractSingleEntityQuery<Long> implements Query<Long> {
 
@@ -26,7 +27,8 @@ public class CountByHashAndRangeKeyQuery<T> extends AbstractSingleEntityQuery<Lo
 	private Object rangeKey;
 	private Class<T> entityClass;
 
-	public CountByHashAndRangeKeyQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz, Object hashKey, Object rangeKey) {
+	public CountByHashAndRangeKeyQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz, Object hashKey,
+			Object rangeKey) {
 		super(dynamoDBOperations, Long.class);
 		this.hashKey = hashKey;
 		this.rangeKey = rangeKey;

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,59 +25,57 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 
-import java.util.concurrent.ExecutionException;
-
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ScanExpressionCountQueryTest {
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
-    @Mock
-    private DynamoDBOperations dynamoDBOperations;
-    @Mock
-    private DynamoDBScanExpression scanExpression;
+	@Mock
+	private DynamoDBOperations dynamoDBOperations;
+	@Mock
+	private DynamoDBScanExpression scanExpression;
 
-    private ScanExpressionCountQuery<User> underTest;
+	private ScanExpressionCountQuery<User> underTest;
 
-    @Test
-    public void testScanCountEnabledTrueTrue() {
-        underTest = new ScanExpressionCountQuery<>(dynamoDBOperations, User.class, scanExpression, true);
+	@Test
+	public void testScanCountEnabledTrueTrue() {
+		underTest = new ScanExpressionCountQuery<>(dynamoDBOperations, User.class, scanExpression, true);
 
-        underTest.assertScanCountEnabled(true);
+		underTest.assertScanCountEnabled(true);
 
-        assertTrue(true);
-    }
+		assertTrue(true);
+	}
 
-    @Test
-    public void testScanCountEnabledTrueFalse() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Scanning for the total counts for this query is not enabled. " +
-                " To enable annotate your repository method with @EnableScanCount, or enable scanning for all repository methods by annotating your repository interface with @EnableScanCount. " +
-                " This total count is required to serve this Page query - if total counts are not desired an alternative approach could be to replace the Page query with a Slice query ");
-        underTest = new ScanExpressionCountQuery<>(dynamoDBOperations, User.class, scanExpression, true);
+	@Test
+	public void testScanCountEnabledTrueFalse() {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Scanning for the total counts for this query is not enabled. "
+				+ " To enable annotate your repository method with @EnableScanCount, or enable scanning for all repository methods by annotating your repository interface with @EnableScanCount. "
+				+ " This total count is required to serve this Page query - if total counts are not desired an alternative approach could be to replace the Page query with a Slice query ");
+		underTest = new ScanExpressionCountQuery<>(dynamoDBOperations, User.class, scanExpression, true);
 
-        underTest.assertScanCountEnabled(false);
-    }
+		underTest.assertScanCountEnabled(false);
+	}
 
-    @Test
-    public void testScanCountEnabledFalseTrue() {
-        underTest = new ScanExpressionCountQuery<>(dynamoDBOperations, User.class, scanExpression, false);
+	@Test
+	public void testScanCountEnabledFalseTrue() {
+		underTest = new ScanExpressionCountQuery<>(dynamoDBOperations, User.class, scanExpression, false);
 
-        underTest.assertScanCountEnabled(true);
+		underTest.assertScanCountEnabled(true);
 
-        assertTrue(true);
-    }
+		assertTrue(true);
+	}
 
-    @Test
-    public void testScanCountEnabledFalseFalse() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Scanning for counts for this query is not enabled. " +
-                " To enable annotate your repository method with @EnableScanCount, or enable scanning for all repository methods by annotating your repository interface with @EnableScanCount");
-        underTest = new ScanExpressionCountQuery<>(dynamoDBOperations, User.class, scanExpression, false);
+	@Test
+	public void testScanCountEnabledFalseFalse() {
+		expectedException.expect(IllegalArgumentException.class);
+		expectedException.expectMessage("Scanning for counts for this query is not enabled. "
+				+ " To enable annotate your repository method with @EnableScanCount, or enable scanning for all repository methods by annotating your repository interface with @EnableScanCount");
+		underTest = new ScanExpressionCountQuery<>(dynamoDBOperations, User.class, scanExpression, false);
 
-        underTest.assertScanCountEnabled(false);
-    }
+		underTest.assertScanCountEnabled(false);
+	}
 }

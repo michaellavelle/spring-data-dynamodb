@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface CustomerHistoryRepository extends CrudRepository<CustomerHistory, CustomerHistoryId> {
 
-    CustomerHistory findByTag(String tag);
+	CustomerHistory findByTag(String tag);
 
 }

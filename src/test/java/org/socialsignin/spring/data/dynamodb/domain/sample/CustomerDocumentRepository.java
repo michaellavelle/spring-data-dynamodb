@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,16 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import java.util.List;
-
-import org.socialsignin.spring.data.dynamodb.domain.sample.CustomerDocument;
-import org.socialsignin.spring.data.dynamodb.domain.sample.CustomerDocumentId;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 
 public interface CustomerDocumentRepository extends CrudRepository<CustomerDocument, CustomerDocumentId> {
 
-  List<CustomerDocument> findByCustomerDocumentKey(String customerDocumentKey);
+	List<CustomerDocument> findByCustomerDocumentKey(String customerDocumentKey);
 
-  default List<CustomerDocument> findByCustomerDocumentKey(String customerId, String downloadType) {
-    return findByCustomerDocumentKey(CustomerDocumentId.buildCustomerDocumentKey(customerId, downloadType));
-  }
-
+	default List<CustomerDocument> findByCustomerDocumentKey(String customerId, String downloadType) {
+		return findByCustomerDocumentKey(CustomerDocumentId.buildCustomerDocumentKey(customerId, downloadType));
+	}
 
 }

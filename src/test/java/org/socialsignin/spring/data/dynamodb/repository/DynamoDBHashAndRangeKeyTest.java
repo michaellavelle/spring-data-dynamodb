@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,35 +26,35 @@ import static org.junit.Assert.assertNull;
 @RunWith(MockitoJUnitRunner.class)
 public class DynamoDBHashAndRangeKeyTest {
 
-    @Mock
-    private Object hash;
-    @Mock
-    private Object range;
+	@Mock
+	private Object hash;
+	@Mock
+	private Object range;
 
-    @Test
-    public void testConstructor() {
-        DynamoDBHashAndRangeKey underTest = new DynamoDBHashAndRangeKey(hash, range);
+	@Test
+	public void testConstructor() {
+		DynamoDBHashAndRangeKey underTest = new DynamoDBHashAndRangeKey(hash, range);
 
-        assertEquals(hash, underTest.getHashKey());
-        assertEquals(range, underTest.getRangeKey());
-    }
+		assertEquals(hash, underTest.getHashKey());
+		assertEquals(range, underTest.getRangeKey());
+	}
 
-    @Test
-    public void testDefaultConstructor() {
-        DynamoDBHashAndRangeKey underTest = new DynamoDBHashAndRangeKey();
+	@Test
+	public void testDefaultConstructor() {
+		DynamoDBHashAndRangeKey underTest = new DynamoDBHashAndRangeKey();
 
-        assertNull(underTest.getHashKey());
-        assertNull(underTest.getRangeKey());
-    }
+		assertNull(underTest.getHashKey());
+		assertNull(underTest.getRangeKey());
+	}
 
-    @Test
-    public void testGetterSetter() {
-        DynamoDBHashAndRangeKey underTest = new DynamoDBHashAndRangeKey();
+	@Test
+	public void testGetterSetter() {
+		DynamoDBHashAndRangeKey underTest = new DynamoDBHashAndRangeKey();
 
-        underTest.setHashKey(hash);
-        underTest.setRangeKey(range);
+		underTest.setHashKey(hash);
+		underTest.setRangeKey(range);
 
-        assertEquals(hash, underTest.getHashKey());
-        assertEquals(range, underTest.getRangeKey());
-    }
+		assertEquals(hash, underTest.getHashKey());
+		assertEquals(range, underTest.getRangeKey());
+	}
 }

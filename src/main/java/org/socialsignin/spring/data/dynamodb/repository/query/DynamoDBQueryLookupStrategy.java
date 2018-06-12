@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import org.springframework.data.repository.query.RepositoryQuery;
 
 import java.lang.reflect.Method;
 
-
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBQueryLookupStrategy {
 
@@ -39,10 +39,11 @@ public class DynamoDBQueryLookupStrategy {
 	}
 
 	/**
-	 * Base class for {@link QueryLookupStrategy} implementations that need
-	 * access to an {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper}.
+	 * Base class for {@link QueryLookupStrategy} implementations that need access
+	 * to an {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper}.
 	 *
 	 * @author Michael Lavelle
+	 * @author Sebastian Just
 	 */
 	private abstract static class AbstractQueryLookupStrategy implements QueryLookupStrategy {
 
@@ -62,19 +63,22 @@ public class DynamoDBQueryLookupStrategy {
 		 * org.springframework.data.repository.core.NamedQueries)
 		 */
 		@Override
-        public final RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory, NamedQueries namedQueries) {
+		public final RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
+				NamedQueries namedQueries) {
 
-			return createDynamoDBQuery(method, metadata, factory, metadata.getDomainType(), metadata.getIdType(), namedQueries);
+			return createDynamoDBQuery(method, metadata, factory, metadata.getDomainType(), metadata.getIdType(),
+					namedQueries);
 		}
 
-		protected abstract <T, ID> RepositoryQuery createDynamoDBQuery(Method method,
-				RepositoryMetadata metadata, ProjectionFactory factory, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries);
+		protected abstract <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+				ProjectionFactory factory, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries);
 	}
 
 	/**
 	 * {@link QueryLookupStrategy} to create a query from the method name.
 	 *
 	 * @author Michael Lavelle
+	 * @author Sebastian Just
 	 */
 	private static class CreateQueryLookupStrategy extends AbstractQueryLookupStrategy {
 
@@ -84,23 +88,25 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		@Override
-		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
-				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
+		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+				ProjectionFactory factory, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			try {
-				return new PartTreeDynamoDBQuery<T, ID>(dynamoDBOperations, new DynamoDBQueryMethod<T, ID>(method, metadata, factory));
+				return new PartTreeDynamoDBQuery<T, ID>(dynamoDBOperations,
+						new DynamoDBQueryMethod<T, ID>(method, metadata, factory));
 			} catch (IllegalArgumentException e) {
-				throw new IllegalArgumentException(String.format("Could not create query metamodel for method %s!",
-						method.toString()), e);
+				throw new IllegalArgumentException(
+						String.format("Could not create query metamodel for method %s!", method.toString()), e);
 			}
 		}
 
 	}
 
 	/**
-	 * {@link QueryLookupStrategy} that tries to detect a declared query
-	 * declared via {@link org.socialsignin.spring.data.dynamodb.query.Query} annotation
+	 * {@link QueryLookupStrategy} that tries to detect a declared query declared
+	 * via {@link org.socialsignin.spring.data.dynamodb.query.Query} annotation
 	 *
 	 * @author Michael Lavelle
+	 * @author Sebastian Just
 	 */
 	private static class DeclaredQueryLookupStrategy extends AbstractQueryLookupStrategy {
 
@@ -110,8 +116,8 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		@Override
-		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
-				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
+		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+				ProjectionFactory factory, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			throw new UnsupportedOperationException("Declared Queries not supported at this time");
 		}
 
@@ -119,10 +125,11 @@ public class DynamoDBQueryLookupStrategy {
 
 	/**
 	 * {@link QueryLookupStrategy} to try to detect a declared query first (
-	 * {@link org.springframework.data.jpa.repository.Query}. In case none is
-	 * found we fall back on query creation.
+	 * {@link org.springframework.data.jpa.repository.Query}. In case none is found
+	 * we fall back on query creation.
 	 *
 	 * @author Michael Lavelle
+	 * @author Sebastian Just
 	 */
 	private static class CreateIfNotFoundQueryLookupStrategy extends AbstractQueryLookupStrategy {
 
@@ -137,14 +144,13 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		@Override
-		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory,
-				Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
+		protected <T, ID> RepositoryQuery createDynamoDBQuery(Method method, RepositoryMetadata metadata,
+				ProjectionFactory factory, Class<T> entityClass, Class<ID> idClass, NamedQueries namedQueries) {
 			try {
 				return strategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
-			} catch (IllegalStateException e) {
-				return createStrategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
-			} catch (UnsupportedOperationException e) {
-				return createStrategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass, namedQueries);
+			} catch (IllegalStateException | UnsupportedOperationException e) {
+				return createStrategy.createDynamoDBQuery(method, metadata, factory, entityClass, idClass,
+						namedQueries);
 			}
 
 		}
@@ -152,10 +158,13 @@ public class DynamoDBQueryLookupStrategy {
 
 	/**
 	 * Creates a {@link QueryLookupStrategy} for the given
-	 * {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper} and {@link Key}.
+	 * {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper} and
+	 * {@link Key}.
 	 *
-	 * @param dynamoDBOperations The current operation
-	 * @param key The key of the entity
+	 * @param dynamoDBOperations
+	 *            The current operation
+	 * @param key
+	 *            The key of the entity
 	 * @return The created {@link QueryLookupStrategy}
 	 */
 	public static QueryLookupStrategy create(DynamoDBOperations dynamoDBOperations, Key key) {
@@ -165,14 +174,14 @@ public class DynamoDBQueryLookupStrategy {
 		}
 
 		switch (key) {
-		case CREATE:
-			return new CreateQueryLookupStrategy(dynamoDBOperations);
-		case USE_DECLARED_QUERY:
-			throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
-		case CREATE_IF_NOT_FOUND:
-			return new CreateIfNotFoundQueryLookupStrategy(dynamoDBOperations);
-		default:
-			throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
+			case CREATE :
+				return new CreateQueryLookupStrategy(dynamoDBOperations);
+			case USE_DECLARED_QUERY :
+				throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
+			case CREATE_IF_NOT_FOUND :
+				return new CreateIfNotFoundQueryLookupStrategy(dynamoDBOperations);
+			default :
+				throw new IllegalArgumentException(String.format("Unsupported query lookup strategy %s!", key));
 		}
 	}
 

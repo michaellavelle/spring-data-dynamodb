@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,117 +45,105 @@ import java.util.function.Consumer;
  * Base class to implement domain class specific {@link ApplicationListener}s.
  *
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
-public abstract class AbstractDynamoDBEventListener<E> implements
-		ApplicationListener<DynamoDBMappingEvent<?>> {
+public abstract class AbstractDynamoDBEventListener<E> implements ApplicationListener<DynamoDBMappingEvent<?>> {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(AbstractDynamoDBEventListener.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractDynamoDBEventListener.class);
 	private final Class<?> domainClass;
 
 	/**
 	 * Creates a new {@link AbstractDynamoDBEventListener}.
 	 */
 	public AbstractDynamoDBEventListener() {
-		Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(
-				this.getClass(), AbstractDynamoDBEventListener.class);
+		Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(this.getClass(),
+				AbstractDynamoDBEventListener.class);
 		this.domainClass = typeArgument == null ? Object.class : typeArgument;
+	}
+
+	protected Class<?> getDomainClass() {
+		return this.domainClass;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see
-	 * org.springframework.context.ApplicationListener#onApplicationEvent(org
+	 * @see org.springframework.context.ApplicationListener#onApplicationEvent(org
 	 * .springframework.context.ApplicationEvent)
 	 */
 	@Override
-    public void onApplicationEvent(DynamoDBMappingEvent<?> event) {
+	public void onApplicationEvent(DynamoDBMappingEvent<?> event) {
 
 		@SuppressWarnings("unchecked")
 		E source = (E) event.getSource();
 
-		if (source == null) {
-			return;
-		}
+		// source can not be null as java.util.EventObject can not be constructed with
+		// null
+		assert source != null;
 
 		if (event instanceof AfterScanEvent) {
-			if (source instanceof PaginatedScanList) {
-				publishEachElement((PaginatedScanList<?>)source, this::onAfterScan);
-			}
+
+			publishEachElement((PaginatedScanList<?>) source, this::onAfterScan);
+			return;
 		} else if (event instanceof AfterQueryEvent) {
-			if (source instanceof PaginatedQueryList) {
-				publishEachElement((PaginatedQueryList<?>)source, this::onAfterQuery);
-			}
+
+			publishEachElement((PaginatedQueryList<?>) source, this::onAfterQuery);
+			return;
 		}
 		// Check for matching domain type and invoke callbacks
 		else if (domainClass.isAssignableFrom(source.getClass())) {
 			if (event instanceof BeforeSaveEvent) {
 				onBeforeSave(source);
+				return;
 			} else if (event instanceof AfterSaveEvent) {
 				onAfterSave(source);
+				return;
 			} else if (event instanceof BeforeDeleteEvent) {
 				onBeforeDelete(source);
+				return;
 			} else if (event instanceof AfterDeleteEvent) {
 				onAfterDelete(source);
+				return;
 			} else if (event instanceof AfterLoadEvent) {
 				onAfterLoad(source);
-			} else {
-				assert false;
+				return;
 			}
-		} else {
-			assert false;
 		}
+		// we should never end up here
+		assert false;
 	}
 
 	@SuppressWarnings("unchecked")
 	private void publishEachElement(List<?> list, Consumer<E> publishMethod) {
-		list.stream()
-				.filter(o -> domainClass.isAssignableFrom(o.getClass()))
-				.map(o -> (E)o)
-				.forEach(publishMethod);
+		list.stream().filter(o -> domainClass.isAssignableFrom(o.getClass())).map(o -> (E) o).forEach(publishMethod);
 	}
 
 	public void onBeforeSave(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onBeforeSave({}, {})", source);
-		}
+		LOG.debug("onBeforeSave({}, {})", source);
 	}
 
 	public void onAfterSave(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterSave({}, {})", source);
-		}
+		LOG.debug("onAfterSave({}, {})", source);
 	}
 
 	public void onAfterLoad(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterLoad({})", source);
-		}
+		LOG.debug("onAfterLoad({})", source);
 	}
 
 	public void onAfterDelete(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterDelete({})", source);
-		}
+		LOG.debug("onAfterDelete({})", source);
 	}
 
 	public void onBeforeDelete(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onBeforeDelete({})", source);
-		}
+		LOG.debug("onBeforeDelete({})", source);
 	}
 
 	public void onAfterScan(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterScan({})", source);
-		}
+		LOG.debug("onAfterScan({})", source);
 	}
 
 	public void onAfterQuery(E source) {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("onAfterQuery({})", source);
-		}
+		LOG.debug("onAfterQuery({})", source);
 	}
 
 }

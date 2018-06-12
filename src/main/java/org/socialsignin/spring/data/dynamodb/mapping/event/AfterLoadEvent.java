@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 package org.socialsignin.spring.data.dynamodb.mapping.event;
 
-
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class AfterLoadEvent<T> extends DynamoDBMappingEvent<T> {
 

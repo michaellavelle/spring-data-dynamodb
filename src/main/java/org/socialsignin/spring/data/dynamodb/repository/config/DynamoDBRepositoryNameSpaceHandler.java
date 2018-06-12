@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * Simple namespace handler for {@literal repositories} namespace.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBRepositoryNameSpaceHandler extends NamespaceHandlerSupport {
 
@@ -38,7 +39,7 @@ public class DynamoDBRepositoryNameSpaceHandler extends NamespaceHandlerSupport 
 		RepositoryBeanDefinitionParser repositoryBeanDefinitionParser = new RepositoryBeanDefinitionParser(extension);
 
 		registerBeanDefinitionParser("repositories", repositoryBeanDefinitionParser);
-        registerBeanDefinitionParser("auditing", new DynamoDBAuditingBeanDefinitionParser());
+		registerBeanDefinitionParser("auditing", new DynamoDBAuditingBeanDefinitionParser());
 
 	}
 }

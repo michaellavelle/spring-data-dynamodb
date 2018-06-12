@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-
 /**
  * Shows the usage of Hash+Range key combinations with global secondary indexes.
  */
@@ -41,40 +40,39 @@ import static org.junit.Assert.fail;
 @ContextConfiguration(classes = {DynamoDBResource.class, GlobalSecondaryIndexWithRangeKeyIT.TestAppConfig.class})
 public class GlobalSecondaryIndexWithRangeKeyIT {
 
-    @Configuration
-    @EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
-    public static class TestAppConfig {
-    }
+	@Configuration
+	@EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
+	public static class TestAppConfig {
+	}
 
-    @Autowired
-    private InstallationRepository installationRepository;
+	@Autowired
+	private InstallationRepository installationRepository;
 
-    @Test
-    public void testFindBySystemIdOrderByUpdatedAtDesc() {
-        installationRepository.save(new Installation("systemId", createDate(10, 5, 1995)));
-        installationRepository.save(new Installation("systemId", createDate(20, 10, 2001)));
-        installationRepository.save(new Installation("systemId", createDate(28, 10, 2016)));
+	@Test
+	public void testFindBySystemIdOrderByUpdatedAtDesc() {
+		installationRepository.save(new Installation("systemId", createDate(10, 5, 1995)));
+		installationRepository.save(new Installation("systemId", createDate(20, 10, 2001)));
+		installationRepository.save(new Installation("systemId", createDate(28, 10, 2016)));
 
-        final List<Installation> actual = installationRepository.findBySystemIdOrderByUpdatedAtDesc("systemId");
-        assertNotNull(actual);
-        assertFalse(actual.isEmpty());
+		final List<Installation> actual = installationRepository.findBySystemIdOrderByUpdatedAtDesc("systemId");
+		assertNotNull(actual);
+		assertFalse(actual.isEmpty());
 
-        Date previousDate = null;
-        for (final Installation installation : actual) {
-            assertEquals(installation.getSystemId(), "systemId");
-            if (previousDate != null && installation.getUpdatedAt().compareTo(previousDate) != -1) {
-                fail("Results were not returned in descending order of updated date!");
-            } else {
-                previousDate = installation.getUpdatedAt();
-            }
-        }
-    }
+		Date previousDate = null;
+		for (final Installation installation : actual) {
+			assertEquals(installation.getSystemId(), "systemId");
+			if (previousDate != null && installation.getUpdatedAt().compareTo(previousDate) != -1) {
+				fail("Results were not returned in descending order of updated date!");
+			} else {
+				previousDate = installation.getUpdatedAt();
+			}
+		}
+	}
 
-    private Date createDate(final int dayOfMonth, final int month, final int year) {
-        final Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, dayOfMonth, 0, 0, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTime();
-    }
+	private Date createDate(final int dayOfMonth, final int month, final int year) {
+		final Calendar calendar = Calendar.getInstance();
+		calendar.set(year, month, dayOfMonth, 0, 0, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return calendar.getTime();
+	}
 }
-

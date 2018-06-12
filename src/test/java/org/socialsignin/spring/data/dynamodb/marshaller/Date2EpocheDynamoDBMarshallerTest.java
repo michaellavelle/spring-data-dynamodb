@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,20 +38,20 @@ public class Date2EpocheDynamoDBMarshallerTest {
 
 		assertNull(actual);
 	}
-	
+
 	@Test
 	public void testMarshall() {
 		assertEquals("0", underTest.marshall(new Date(0)));
 		assertEquals("0", underTest.convert(new Date(0)));
 	}
-	
+
 	@Test
 	public void testUnmarshallNull() {
 		Date actual = underTest.unmarshall(Date.class, null);
 
 		assertNull(actual);
 	}
-	
+
 	@Test
 	public void testUnmarshall() {
 		assertEquals(new Date(0), underTest.unmarshall(Date.class, "0"));

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,56 +30,68 @@ import static org.socialsignin.spring.data.dynamodb.config.BeanNames.MAPPING_CON
 import static org.springframework.data.config.ParsingUtils.getObjectFactoryBeanDefinition;
 
 /**
- * {@link org.springframework.beans.factory.xml.BeanDefinitionParser} to register a {@link AuditingEventListener} to transparently set auditing information on
- * an entity.
+ * {@link org.springframework.beans.factory.xml.BeanDefinitionParser} to
+ * register a {@link AuditingEventListener} to transparently set auditing
+ * information on an entity.
  *
  * @author Vito Limandibhrata
  */
 public class DynamoDBAuditingBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser#getBeanClass(org.w3c.dom.Element)
-     */
-    @Override
-    protected Class<?> getBeanClass(Element element) {
-        return AuditingEventListener.class;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser#
+	 * getBeanClass(org.w3c.dom.Element)
+	 */
+	@Override
+	protected Class<?> getBeanClass(Element element) {
+		return AuditingEventListener.class;
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#shouldGenerateId()
-     */
-    @Override
-    protected boolean shouldGenerateId() {
-        return true;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#
+	 * shouldGenerateId()
+	 */
+	@Override
+	protected boolean shouldGenerateId() {
+		return true;
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser#doParse(org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext, org.springframework.beans.factory.support.BeanDefinitionBuilder)
-     */
-    @Override
-    protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser#
+	 * doParse(org.w3c.dom.Element,
+	 * org.springframework.beans.factory.xml.ParserContext,
+	 * org.springframework.beans.factory.support.BeanDefinitionBuilder)
+	 */
+	@Override
+	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
 
-        String mappingContextRef = element.getAttribute("mapping-context-ref");
+		String mappingContextRef = element.getAttribute("mapping-context-ref");
 
-        if (!StringUtils.hasText(mappingContextRef)) {
+		if (!StringUtils.hasText(mappingContextRef)) {
 
-            BeanDefinitionRegistry registry = parserContext.getRegistry();
+			BeanDefinitionRegistry registry = parserContext.getRegistry();
 
-            if (!registry.containsBeanDefinition(MAPPING_CONTEXT_BEAN_NAME)) {
-                registry.registerBeanDefinition(MAPPING_CONTEXT_BEAN_NAME, new RootBeanDefinition(DynamoDBMappingContext.class));
-            }
+			if (!registry.containsBeanDefinition(MAPPING_CONTEXT_BEAN_NAME)) {
+				registry.registerBeanDefinition(MAPPING_CONTEXT_BEAN_NAME,
+						new RootBeanDefinition(DynamoDBMappingContext.class));
+			}
 
-            mappingContextRef = MAPPING_CONTEXT_BEAN_NAME;
-        }
+			mappingContextRef = MAPPING_CONTEXT_BEAN_NAME;
+		}
 
-        IsNewAwareAuditingHandlerBeanDefinitionParser parser = new IsNewAwareAuditingHandlerBeanDefinitionParser(
-                mappingContextRef);
-        parser.parse(element, parserContext);
+		IsNewAwareAuditingHandlerBeanDefinitionParser parser = new IsNewAwareAuditingHandlerBeanDefinitionParser(
+				mappingContextRef);
+		parser.parse(element, parserContext);
 
-        builder.addConstructorArgValue(getObjectFactoryBeanDefinition(parser.getResolvedBeanName(),
-                parserContext.extractSource(element)));
-    }
+		builder.addConstructorArgValue(
+				getObjectFactoryBeanDefinition(parser.getResolvedBeanName(), parserContext.extractSource(element)));
+	}
 }

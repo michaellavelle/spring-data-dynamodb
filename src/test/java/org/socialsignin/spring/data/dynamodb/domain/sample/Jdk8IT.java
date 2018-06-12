@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,10 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests JDK8 features of spring-data
- * @see <a href="https://github.com/spring-projects/spring-data-examples/tree/master/jpa/java8">
- * github.com/spring-projects/spring-data-examples/master/jpa/java8</a>
+ * 
+ * @see <a href=
+ *      "https://github.com/spring-projects/spring-data-examples/tree/master/jpa/java8">
+ *      github.com/spring-projects/spring-data-examples/master/jpa/java8</a>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DynamoDBResource.class, Jdk8IT.TestAppConfig.class})
@@ -71,28 +73,28 @@ public class Jdk8IT {
 		assertEquals(savedEntity, result.get());
 		assertEquals(joinDate, result.get().getJoinDate());
 	}
-	
+
 	@Test
 	public void testOptionalFilter() {
-        final Date joinDate = new Date(2000);
-        final String id = "testOptionalFilter";
-        final String name = UUID.randomUUID().toString();
-        Optional<User> result = userRepository.findByName(name);
+		final Date joinDate = new Date(2000);
+		final String id = "testOptionalFilter";
+		final String name = UUID.randomUUID().toString();
+		Optional<User> result = userRepository.findByName(name);
 
-        assertNotNull(result);
-        assertEquals(result, Optional.empty());
+		assertNotNull(result);
+		assertEquals(result, Optional.empty());
 
-        User newUser = new User();
-        newUser.setId(id);
-        newUser.setName(name);
-        newUser.setJoinDate(joinDate);
+		User newUser = new User();
+		newUser.setId(id);
+		newUser.setName(name);
+		newUser.setJoinDate(joinDate);
 
-        User savedEntity = userRepository.save(newUser);
+		User savedEntity = userRepository.save(newUser);
 
-        result = userRepository.findByName(name);
-        assertNotNull(result);
-        assertEquals(savedEntity, result.get());
-        assertEquals(joinDate, result.get().getJoinDate());
+		result = userRepository.findByName(name);
+		assertNotNull(result);
+		assertEquals(savedEntity, result.get());
+		assertEquals(joinDate, result.get().getJoinDate());
 	}
 
 	@Test
@@ -103,10 +105,10 @@ public class Jdk8IT {
 		newUser.setId(UUID.randomUUID().toString());
 		newUser.setLeaveDate(leaveDate);
 		userRepository.save(newUser);
-		
+
 		List<User> results = userRepository.findByLeaveDate(leaveDate);
 		assertEquals(1, results.size());
-		
+
 		User result = results.get(0);
 		assertNotNull(result.getId());
 		assertEquals(leaveDate, result.getLeaveDate());

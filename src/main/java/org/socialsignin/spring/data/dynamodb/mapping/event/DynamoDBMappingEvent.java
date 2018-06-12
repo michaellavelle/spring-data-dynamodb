@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class DynamoDBMappingEvent<T> extends ApplicationEvent {
 
@@ -28,7 +29,7 @@ public class DynamoDBMappingEvent<T> extends ApplicationEvent {
 		super(source);
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	@Override
 	public T getSource() {
 		return (T) super.getSource();

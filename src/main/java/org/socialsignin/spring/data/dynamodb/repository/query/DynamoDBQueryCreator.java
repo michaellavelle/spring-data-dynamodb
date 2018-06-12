@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,29 +22,22 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.PartTree;
 
-public class DynamoDBQueryCreator<T,ID> extends AbstractDynamoDBQueryCreator<T, ID,T> {
+import java.util.Optional;
 
-	public DynamoDBQueryCreator(PartTree tree,
-			DynamoDBEntityInformation<T, ID> entityMetadata,
+public class DynamoDBQueryCreator<T, ID> extends AbstractDynamoDBQueryCreator<T, ID, T> {
+
+	public DynamoDBQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
+			DynamoDBEntityInformation<T, ID> entityMetadata, Optional<String> projection,
 			DynamoDBOperations dynamoDBOperations) {
-		super(tree, entityMetadata, dynamoDBOperations);
+		super(tree, parameterAccessor, entityMetadata, projection, dynamoDBOperations);
 	}
 
-	public DynamoDBQueryCreator(PartTree tree,
-			ParameterAccessor parameterAccessor,
-			DynamoDBEntityInformation<T, ID> entityMetadata,
-			DynamoDBOperations dynamoDBOperations) {
-		super(tree, parameterAccessor, entityMetadata, dynamoDBOperations);
-	}
-	
 	@Override
 	protected Query<T> complete(DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
-		if (sort != null) {
-			criteria.withSort(sort);
-		}
+		criteria.withSort(sort);
+		criteria.withProjection(projection);
 
 		return criteria.buildQuery(dynamoDBOperations);
-
 	}
 
 }

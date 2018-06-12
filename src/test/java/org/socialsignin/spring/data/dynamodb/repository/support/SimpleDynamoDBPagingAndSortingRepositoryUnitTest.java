@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link DynamoDBSimpleIdRepository}.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleDynamoDBPagingAndSortingRepositoryUnitTest {
@@ -52,7 +53,7 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTest {
 	private Playlist testPlaylist;
 
 	private PlaylistId testPlaylistId;
-	
+
 	@Mock
 	EnableScanPermissions mockEnableScanPermissions;
 
@@ -75,17 +76,16 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTest {
 
 		when(entityWithOnlyHashKeyInformation.getJavaType()).thenReturn(User.class);
 		when(entityWithOnlyHashKeyInformation.getHashKey(1l)).thenReturn(1l);
-		
-		
+
 		when(entityWithHashAndRangeKeyInformation.getJavaType()).thenReturn(Playlist.class);
 		when(entityWithHashAndRangeKeyInformation.getHashKey(testPlaylistId)).thenReturn("michael");
 		when(entityWithHashAndRangeKeyInformation.getRangeKey(testPlaylistId)).thenReturn("playlist1");
 		when(entityWithHashAndRangeKeyInformation.isRangeKeyAware()).thenReturn(true);
 
 		repoForEntityWithOnlyHashKey = new SimpleDynamoDBPagingAndSortingRepository<>(entityWithOnlyHashKeyInformation,
-				dynamoDBOperations,mockEnableScanPermissions);
+				dynamoDBOperations, mockEnableScanPermissions);
 		repoForEntityWithHashAndRangeKey = new SimpleDynamoDBPagingAndSortingRepository<>(
-				entityWithHashAndRangeKeyInformation, dynamoDBOperations,mockEnableScanPermissions);
+				entityWithHashAndRangeKeyInformation, dynamoDBOperations, mockEnableScanPermissions);
 
 		when(dynamoDBOperations.load(User.class, 1l)).thenReturn(testUser);
 		when(dynamoDBOperations.load(Playlist.class, "michael", "playlist1")).thenReturn(testPlaylist);
@@ -104,10 +104,9 @@ public class SimpleDynamoDBPagingAndSortingRepositoryUnitTest {
 	@Test
 	public void findOneEntityWithOnlyHashKey() {
 		Optional<User> user = repoForEntityWithOnlyHashKey.findById(1l);
-		Mockito.verify(dynamoDBOperations).load(User.class,1l);
+		Mockito.verify(dynamoDBOperations).load(User.class, 1l);
 		assertEquals(testUser, user.get());
 	}
-	
 
 	@Test
 	public void findOneEntityWithHashAndRangeKey() {

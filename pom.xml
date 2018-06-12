@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+    Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>5.0.2-SNAPSHOT</version>
+    <version>5.0.3-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
-    <inceptionYear>2013</inceptionYear>
+    <inceptionYear>2018</inceptionYear>
 
     <description>The primary goal of the Spring® Data project is to make it easier to build Spring-powered applications
         that use data access technologies.
@@ -37,12 +37,11 @@
     </licenses>
 
     <properties>
-        <spring.version>5.0.1.RELEASE</spring.version>
-        <spring-data.version>Kay-SR1</spring-data.version>
-        <artifact.selectedVersion.minorVersion>0</artifact.selectedVersion.minorVersion>
+        <spring.version>5.0.4.RELEASE</spring.version>
+        <spring-data.version>2.0.1.RELEASE</spring-data.version>
 
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <aws-java-sdk.version>1.11.232</aws-java-sdk.version>
+        <aws-java-sdk.version>1.11.301</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
         <mockito.version>2.13.0</mockito.version>
 
@@ -50,6 +49,7 @@
         <slf4j-test.version>1.2.0</slf4j-test.version>
         <sqlite4java.version>1.0.392</sqlite4java.version>
 
+        <findbugs.version>3.0.5</findbugs.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -67,10 +67,8 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-releasetrain</artifactId>
+                <artifactId>spring-data-commons</artifactId>
                 <version>${spring-data.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
 
             <dependency>
@@ -118,6 +116,18 @@
                 <artifactId>commons-logging</artifactId>
                 <version>1.2</version>
             </dependency>
+            <!-- uk.org.lidalia:slf4j-test comes with 3.1 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.3.2</version>
+            </dependency>
+            <!-- uk.org.lidalia:slf4j-test comes with 1.7.5 -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -137,6 +147,7 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -187,6 +198,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>net.revelc.code.formatter</groupId>
+                    <artifactId>formatter-maven-plugin</artifactId>
+                    <version>2.7.2</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
@@ -276,6 +292,7 @@
                         <exclude>src/test/resources/**</exclude>
                         <exclude>src/main/resources/**</exclude>
                         <exclude>**/*.psd</exclude>
+                        <exclude>src/eclipse-java-google-style.xml</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -344,6 +361,20 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <configuration>
+                    <configFile>${project.basedir}/eclipse-formatter-config.xml</configFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <executions>
@@ -359,6 +390,33 @@
                     <logViolationsToConsole>true</logViolationsToConsole>
                     <configLocation>checkstyle.xml</configLocation>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${findbugs.version}</version>
+                <configuration>
+                    <!-- 2.5.2
+                        Enables analysis which takes more memory but finds more bugs.
+                        If you run out of memory, changes the value of the effort element
+                        to 'Low'.
+                    -->
+                    <effort>Max</effort>
+                    <!-- Reports all bugs (other values are medium and max) -->
+                    <threshold>Max</threshold>
+                    <!-- Produces XML report
+                    <xmlOutput>true</xmlOutput>
+                    <findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
+                    -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -489,6 +547,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
+                        <sqlite4java.library.path>${project.build.directory}/lib</sqlite4java.library.path>
                         <dynamodb.port>${dynamodblocal.port}</dynamodb.port>
                     </systemPropertyVariables>
                 </configuration>
@@ -509,7 +568,7 @@
         <url>https://github.com/derjust/spring-data-dynamodb</url>
         <connection>scm:git:ssh://github.com/derjust/spring-data-dynamodb.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/derjust/spring-data-dynamodb.git</developerConnection>
-    <tag>HEAD</tag>
+        <tag>HEAD</tag>
   </scm>
 
     <repositories>
@@ -666,9 +725,7 @@
 					            <phase>site-deploy</phase>
 					            <configuration>
 					                <!-- Plugin configuration ges here -->
-					
 					                <server>github</server>
-					
 					                <!-- The commit message -->
 					                <message>Building site</message>
 					                <!-- The location where the site is uploaded -->
@@ -711,20 +768,35 @@
             <url>https://github.com/vitolimandibhrata</url>
         </contributor>
         <contributor>
-          <name>Alex Arana</name>
-          <url>https://github.com/alexarana</url>
+            <name>Alex Arana</name>
+            <url>https://github.com/alexarana</url>
         </contributor>
         <contributor>
             <name>Davin</name>
             <url>https://github.com/Davinpidoto</url>
         </contributor>
+        <contributor>
+            <name>Ben Cook</name>
+            <url>https://github.com/blx</url>
+        </contributor>
+        <contributor>
+            <name>CoderPaulK</name>
+            <url>https://github.com/CoderPaulK</url>
+        </contributor>
+        <contributor>
+            <name>boothen</name>
+            <url>https://github.com/boothen</url>
+        </contributor>
     </contributors>
 
 
-    <distributionManagement>
+    <distributionManagement><!--
+        <relocation>
+            <groupId>derjust</groupId>
+        </relocation>-->
         <site>
             <id>website</id>
-            <url>https://github.com/derjust/spring-data-dynamodb/</url>
+            <url>https://derjust.github.io/spring-data-dynamodb/</url>
         </site>
         <snapshotRepository>
             <id>ossrh</id>
@@ -735,10 +807,16 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+
     <issueManagement>
     	<system>GitHub</system>
     	<url>https://github.com/derjust/spring-data-dynamodb/issues</url>
     </issueManagement>
+
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/derjust/spring-data-dynamodb</url>
+    </ciManagement>
 
 
     <reporting>
@@ -759,6 +837,62 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>2.9</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0</version>
+                <reportSets>
+                    <reportSet>
+                        <id>default</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${findbugs.version}</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <!-- Reports all bugs (other values are medium and max) -->
+                    <threshold>Low</threshold>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.9.0</version>
+                <configuration>
+                    <linkXRef>true</linkXRef>
+                    <analysisCache>false</analysisCache>
+                    <skipEmptyReport>false</skipEmptyReport>
+                    <benchmark>true</benchmark>
+                    <rulesets>
+                        <ruleset>src/pmd.xml</ruleset>
+                    </rulesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.20.1</version>
+                <configuration>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>

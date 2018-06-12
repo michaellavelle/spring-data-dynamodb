@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class CompositeIdHashAndRangeKeyExtractor<ID, H> implements HashAndRangeKeyExtractor<ID, H> {
 
@@ -34,12 +35,9 @@ public class CompositeIdHashAndRangeKeyExtractor<ID, H> implements HashAndRangeK
 	@Override
 	public H getHashKey(ID id) {
 		Method method = hashAndRangeKeyMethodExtractor.getHashKeyMethod();
-		if (method != null)
-		{
+		if (method != null) {
 			return (H) ReflectionUtils.invokeMethod(method, id);
-		}
-		else
-		{
+		} else {
 			return (H) ReflectionUtils.getField(hashAndRangeKeyMethodExtractor.getHashKeyField(), id);
 		}
 	}
@@ -47,13 +45,11 @@ public class CompositeIdHashAndRangeKeyExtractor<ID, H> implements HashAndRangeK
 	@Override
 	public Object getRangeKey(ID id) {
 		Method method = hashAndRangeKeyMethodExtractor.getRangeKeyMethod();
-		if (method != null)
-		{
+		if (method != null) {
 			return ReflectionUtils.invokeMethod(method, id);
-		}
-		else
-		{
+		} else {
 			return ReflectionUtils.getField(hashAndRangeKeyMethodExtractor.getRangeKeyField(), id);
-		}	}
+		}
+	}
 
 }

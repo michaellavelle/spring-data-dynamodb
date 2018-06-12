@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,15 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-public class Instant2IsoDynamoDBMarshaller implements DynamoDBTypeConverter<String, Instant>, DynamoDBMarshaller<Instant> {
+public class Instant2IsoDynamoDBMarshaller
+		implements
+			DynamoDBTypeConverter<String, Instant>,
+			DynamoDBMarshaller<Instant> {
 
 	private static final String PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	private DateTimeFormatter getDateFormat() {
-		return DateTimeFormatter.ofPattern(PATTERN)
-			.withZone(ZoneOffset.UTC);
+		return DateTimeFormatter.ofPattern(PATTERN).withZone(ZoneOffset.UTC);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,32 +36,29 @@ import java.lang.annotation.Target;
 @Import(DynamoDBAuditingRegistrar.class)
 public @interface EnableDynamoDBAuditing {
 
-    /**
-     * Configures the {@link org.springframework.data.domain.AuditorAware} bean to be used to lookup the current principal.
-     *
-     * @return
-     */
-    String auditorAwareRef() default "";
+	/**
+	 * @return Configures the {@link org.springframework.data.domain.AuditorAware}
+	 *         bean to be used to lookup the current principal.
+	 */
+	String auditorAwareRef() default "";
 
-    /**
-     * Configures whether the creation and modification dates are set. Defaults to {@literal true}.
-     *
-     * @return
-     */
-    boolean setDates() default true;
+	/**
+	 * @return Configures whether the creation and modification dates are set.
+	 *         Defaults to {@literal true}.
+	 */
+	boolean setDates() default true;
 
-    /**
-     * Configures whether the entity shall be marked as modified on creation. Defaults to {@literal true}.
-     *
-     * @return
-     */
-    boolean modifyOnCreate() default true;
+	/**
+	 * @return Configures whether the entity shall be marked as modified on
+	 *         creation. Defaults to {@literal true}.
+	 */
+	boolean modifyOnCreate() default true;
 
-    /**
-     * Configures a {@link org.springframework.data.auditing.DateTimeProvider} bean name that allows customizing the {@link org.joda.time.DateTime} to be
-     * used for setting creation and modification dates.
-     *
-     * @return
-     */
-    String dateTimeProviderRef() default "";
+	/**
+	 * @return Configures a
+	 *         {@link org.springframework.data.auditing.DateTimeProvider} bean name
+	 *         that allows customizing the {@link org.joda.time.DateTime} to be used
+	 *         for setting creation and modification dates.
+	 */
+	String dateTimeProviderRef() default "";
 }

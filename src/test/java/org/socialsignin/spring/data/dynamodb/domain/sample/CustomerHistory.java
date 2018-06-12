@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,42 +23,42 @@ import org.springframework.data.annotation.Id;
 
 @DynamoDBTable(tableName = "customerhistory")
 public class CustomerHistory {
-    @Id
-    private CustomerHistoryId id;
+	@Id
+	private CustomerHistoryId id;
 
-    private String tag;
+	private String tag;
 
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "idx_global_tag")
-    public String getTag() {
-        return tag;
-    }
+	@DynamoDBIndexHashKey(globalSecondaryIndexName = "idx_global_tag")
+	public String getTag() {
+		return tag;
+	}
 
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
 
-    @DynamoDBHashKey(attributeName = "customerId")
-    public String getId(){
-        return id != null ? id.getCustomerId() : null;
-    }
+	@DynamoDBHashKey(attributeName = "customerId")
+	public String getId() {
+		return id != null ? id.getCustomerId() : null;
+	}
 
-    public void setId(String customerId) {
-        if(this.id == null) {
-            this.id = new CustomerHistoryId();
-        }
-        this.id.setCustomerId(customerId);
-    }
+	public void setId(String customerId) {
+		if (this.id == null) {
+			this.id = new CustomerHistoryId();
+		}
+		this.id.setCustomerId(customerId);
+	}
 
-    @DynamoDBRangeKey(attributeName = "createDt")
-    public String getCreateDt() {
-        return id != null ? id.getCreateDt() : null;
-    }
+	@DynamoDBRangeKey(attributeName = "createDt")
+	public String getCreateDt() {
+		return id != null ? id.getCreateDt() : null;
+	}
 
-    public void setCreateDt(String createDt) {
-        if(this.id == null) {
-            this.id = new CustomerHistoryId();
-        }
+	public void setCreateDt(String createDt) {
+		if (this.id == null) {
+			this.id = new CustomerHistoryId();
+		}
 
-        this.id.setCreateDt(createDt);
-    }
+		this.id.setCreateDt(createDt);
+	}
 }

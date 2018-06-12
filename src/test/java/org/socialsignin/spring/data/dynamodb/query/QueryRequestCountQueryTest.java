@@ -1,5 +1,5 @@
 /**
- * Copyright © 2013 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,34 +23,32 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QueryRequestCountQueryTest {
+	@Mock
+	private DynamoDBOperations dynamoDBOperations;
+	@Mock
+	private QueryRequest queryRequest;
 
-    private static final Random r = new Random();
-    @Mock
-    private DynamoDBOperations dynamoDBOperations;
-    @Mock
-    private QueryRequest queryRequest;
+	private QueryRequestCountQuery underTest;
 
-    private QueryRequestCountQuery underTest;
+	@Before
+	public void setUp() {
+		underTest = new QueryRequestCountQuery(dynamoDBOperations, queryRequest);
+	}
 
-    @Before
-    public void setUp() {
-        underTest = new QueryRequestCountQuery(dynamoDBOperations, queryRequest);
-    }
+	@Test
+	public void testGetSingleResult() {
+		int expected = ThreadLocalRandom.current().nextInt();
+		when(dynamoDBOperations.count(Long.class, queryRequest)).thenReturn(expected);
 
-    @Test
-    public void testGetSingleResult() {
-        int expected = r.nextInt();
-        when(dynamoDBOperations.count(Long.class, queryRequest)).thenReturn(expected);
+		Long actual = underTest.getSingleResult();
 
-        Long actual = underTest.getSingleResult();
-
-        assertEquals(Long.valueOf(expected), actual);
-    }
+		assertEquals(Long.valueOf(expected), actual);
+	}
 }
