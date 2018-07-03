@@ -1,4 +1,18 @@
-# Release process #
+# Prepare release
+
+## Format source code
+
+```
+mvn formatter:format
+```
+
+## Update license headers
+
+```
+mvn license:format
+```
+
+# Release process 
 
 1. Check `pom.xml` for the proper `<version />` tag
 1. Check `pom.xml` `<Specification-Version />` entries

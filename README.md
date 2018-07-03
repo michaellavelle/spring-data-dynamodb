@@ -20,6 +20,7 @@ Technical infos can be found on the [project page](https://derjust.github.io/spr
 * [Projections](https://github.com/derjust/spring-data-dynamodb/wiki/Projections)
 * Possibility to integrate [custom repository code](https://github.com/derjust/spring-data-dynamodb/wiki/Custom-repository-implementations)
 * Easy Spring annotation based integration
+* [REST support](https://github.com/derjust/spring-data-dynamodb-examples/blob/master/README-rest.md) via [spring-data-rest](https://projects.spring.io/spring-data-rest/)
 
 ## Demo application ##
 
@@ -184,6 +185,13 @@ And finally write a test client
 }
 ```
 
+
+## More
+More sample code can be found in the [spring-data-dynamodb-examples](https://github.com/derjust/spring-data-dynamodb-examples) project.
+
+Advanced topics can be found in the [wiki](https://github.com/derjust/spring-data-dynamodb/wiki).
+
+
 ## Version & Spring Framework compatibility ##
 
 The major and minor number of this library refers to the compatible Spring framework version. The build number is used as specified by SEMVER.
@@ -212,6 +220,3 @@ The code base has some history already in it - let's clarify it a bit:
 
 The Java package name/XSD namespace never changed from `org.socialsignin.spring.data.dynamodb`.
 But the XSD is now also available at [`https://derjust.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd`](https://derjust.github.io/spring-data-dynamodb/spring-dynamodb-1.0.xsd).
-
-## Advanced topics ##
-Advanced topics can be found in the [wiki](https://github.com/derjust/spring-data-dynamodb/wiki).

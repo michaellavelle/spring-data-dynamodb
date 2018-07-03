@@ -281,8 +281,8 @@
                 <configuration>
                     <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
                     <properties>
-                        <owner>spring-data-dynamodb</owner>
-                        <email>https://github.com/derjust/spring-data-dynamodb</email>
+                        <owner>${project.artifactId}</owner>
+                        <email>${project.url}</email>
                     </properties>
                     <excludes>
                         <exclude>**/README.md</exclude>
@@ -790,10 +790,7 @@
     </contributors>
 
 
-    <distributionManagement><!--
-        <relocation>
-            <groupId>derjust</groupId>
-        </relocation>-->
+    <distributionManagement>
         <site>
             <id>website</id>
             <url>https://derjust.github.io/spring-data-dynamodb/</url>
