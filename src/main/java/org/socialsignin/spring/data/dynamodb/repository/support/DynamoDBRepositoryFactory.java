@@ -27,7 +27,6 @@ import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
-import org.springframework.data.util.Version;
 
 import java.io.Serializable;
 import java.util.StringTokenizer;
@@ -45,7 +44,7 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 		final String DEVELOPMENT = "DEVELOPMENT";
 
 		String awsSdkVersion = VersionInfoUtils.getVersion();
-		String springDataVersion = Version.class.getPackage().getImplementationVersion();
+		//String springDataVersion = Version.class.getPackage().getImplementationVersion();
 
 		String thisSpecVersion = DynamoDBRepositoryFactory.class.getPackage().getSpecificationVersion();
 		String thisImplVersion = DynamoDBRepositoryFactory.class.getPackage().getImplementationVersion();
@@ -55,17 +54,17 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 		}
 
 		LOGGER.info("Spring Data DynamoDB Version: {} ({})", thisImplVersion, thisSpecVersion);
-		LOGGER.info("Spring Data Version:          {}", springDataVersion);
+		//LOGGER.info("Spring Data Version:          {}", springDataVersion);
 		LOGGER.info("AWS SDK Version:              {}", awsSdkVersion);
 		LOGGER.info("Java Version:                 {} - {} {}", System.getProperty("java.version"),
 				System.getProperty("java.vm.name"), System.getProperty("java.vm.version"));
 		LOGGER.info("Platform Details:             {} {}", System.getProperty("os.name"),
 				System.getProperty("os.version"));
 
-		if (!DEVELOPMENT.equals(thisImplVersion) && !isCompatible(springDataVersion, thisSpecVersion)) {
+		/*if (!DEVELOPMENT.equals(thisImplVersion) && !isCompatible(springDataVersion, thisSpecVersion)) {
 			LOGGER.warn("This Spring Data DynamoDB implementation might not be compatible with the available Spring Data classes on the classpath!"
 					+ System.getProperty("line.separator") + "NoDefClassFoundExceptions or similar might occur!");
-		}
+		}*/
 	}
 
 	protected static boolean isCompatible(String spec, String impl) {

@@ -85,6 +85,11 @@
         Added Spring 5 / Spring-Data Kay support
       </action>
     </release>
+    <release version="4.5.6" date="2018-07-02" description="Bugfix release">
+      <action dev="derjust" type="fix" issue="171">
+        spring-data project artifact does not provide version information thus can't calculate compatibility
+      </action>
+    </release>
     <release version="4.5.5" date="2018-03-07" description="Backport of v5.0 (master)">
       <action dev="derjust" type="fix" issue="139">
         Backport of v5.0 branch (master)
