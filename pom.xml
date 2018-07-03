@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>4.5.6-SNAPSHOT</version>
+    <version>4.5.6</version>
     <name>Spring Data DynamoDB</name>
     <inceptionYear>2018</inceptionYear>
 
@@ -383,6 +383,13 @@
                     <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>commons-io</groupId>
+                        <artifactId>commons-io</artifactId>
+                        <version>2.6</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -522,7 +529,7 @@
         <url>https://github.com/spring-data-dynamodb/spring-data-dynamodb</url>
         <connection>scm:git:ssh://github.com/spring-data-dynamodb/spring-data-dynamodb.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/spring-data-dynamodb/spring-data-dynamodb.git</developerConnection>
-        <tag>v5.0.2</tag>
+        <tag>v4.5.6</tag>
   </scm>
 
     <repositories>
