@@ -749,12 +749,12 @@
 
     <issueManagement>
     	<system>GitHub</system>
-    	<url>https://github.com/spring-data-dynamodb/spring-data-dynamodb/issues</url>
+    	<url>https://github.com/derjust/spring-data-dynamodb/issues</url>
     </issueManagement>
 
     <ciManagement>
         <system>Travis CI</system>
-        <url>https://travis-ci.org/spring-data-dynamodb/spring-data-dynamodb</url>
+        <url>https://travis-ci.org/derjust/spring-data-dynamodb</url>
     </ciManagement>
 
 
