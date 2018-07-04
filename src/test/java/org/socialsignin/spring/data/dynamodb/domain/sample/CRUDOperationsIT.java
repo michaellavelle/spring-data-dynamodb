@@ -157,4 +157,13 @@ public class CRUDOperationsIT {
 		assertFalse("User should have been deleted!", actualUser.isPresent());
 	}
 
+	@Test
+	public void testDeleteNonExistent() {
+		// Delete specific
+		userRepository.deleteById("non-existent");
+
+		// Delete conditional
+		userRepository.deleteByIdAndName("non-existent", "non-existent");
+	}
+
 }

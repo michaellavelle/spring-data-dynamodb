@@ -245,7 +245,9 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 		@Override
 		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
 			T entity = dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
-			dynamoDBOperations.delete(entity);
+			if (entity != null) {
+				dynamoDBOperations.delete(entity);
+			}
 			return entity;
 		}
 	}
