@@ -15,8 +15,11 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.query;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+import org.socialsignin.spring.data.dynamodb.exception.BatchDeleteException;
 import org.socialsignin.spring.data.dynamodb.query.Query;
+import org.socialsignin.spring.data.dynamodb.utils.ExceptionHandler;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +38,7 @@ import java.util.List;
  * @author Michael Lavelle
  * @author Sebastian Just
  */
-public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
+public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery, ExceptionHandler {
 
 	protected final DynamoDBOperations dynamoDBOperations;
 	private final DynamoDBQueryMethod<T, ID> method;
@@ -243,10 +246,14 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery {
 	class DeleteExecution implements QueryExecution<T, ID> {
 
 		@Override
-		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) {
-			T entity = dynamoDBQuery.doCreateQueryWithPermissions(values).getSingleResult();
-			dynamoDBOperations.delete(entity);
-			return entity;
+		public Object execute(AbstractDynamoDBQuery<T, ID> dynamoDBQuery, Object[] values) throws BatchDeleteException {
+			List<T> entities = dynamoDBQuery.doCreateQueryWithPermissions(values).getResultList();
+			List<DynamoDBMapper.FailedBatch> failedBatches = dynamoDBOperations.batchDelete(entities);
+			if (failedBatches.isEmpty()) {
+				return entities;
+			} else {
+				throw repackageToException(failedBatches, BatchDeleteException.class);
+			}
 		}
 	}
 

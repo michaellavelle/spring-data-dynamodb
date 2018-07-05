@@ -61,6 +61,9 @@
       <action dev="boothen" issue="15" type="fix" date="2018-06-12">
         Spring Data Rest uses a PersistentEntityResourceAssembler that requires the DynamoDBMappingContext to be exposed as a Spring Bean.
       </action>
+      <action dev="SimY4" issue="177" type="fix" date="2018-07-04">
+        Fixed NPE when deleting nonexistent entity
+      </action>
     </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">

@@ -16,7 +16,10 @@
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Expected;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
@@ -24,6 +27,7 @@ import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener;
 import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener.DynamoDBCreateTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -49,6 +53,9 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
 @TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
 @DynamoDBCreateTable(entityClasses = {User.class})
 public class CRUDOperationsIT {
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@Configuration
 	@EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
@@ -157,4 +164,24 @@ public class CRUDOperationsIT {
 		assertFalse("User should have been deleted!", actualUser.isPresent());
 	}
 
+	@Test
+	public void testDeleteNonExistent() {
+
+		expectedException.expect(EmptyResultDataAccessException.class);
+		// Delete specific
+		userRepository.deleteById("non-existent");
+	}
+
+	@Test
+	public void testDeleteNonExistentIdWithCondition() {
+		// Delete conditional
+		userRepository.deleteByIdAndName("non-existent", "non-existent");
+	}
+
+	@Test
+	public void testDeleteNonExistingGsiWithConditoin() {
+		// Delete via GSI
+		userRepository.deleteByPostCodeAndNumberOfPlaylists("non-existing", 23);
+
+	}
 }

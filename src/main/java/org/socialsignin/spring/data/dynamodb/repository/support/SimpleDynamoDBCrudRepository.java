@@ -21,17 +21,15 @@ import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.exception.BatchWriteException;
 import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
+import org.socialsignin.spring.data.dynamodb.utils.ExceptionHandler;
 import org.socialsignin.spring.data.dynamodb.utils.SortHandler;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -45,7 +43,11 @@ import java.util.stream.StreamSupport;
  * @param <ID>
  *            the type of the entity's identifier
  */
-public class SimpleDynamoDBCrudRepository<T, ID> implements DynamoDBCrudRepository<T, ID>, SortHandler {
+public class SimpleDynamoDBCrudRepository<T, ID>
+		implements
+			DynamoDBCrudRepository<T, ID>,
+			SortHandler,
+			ExceptionHandler {
 
 	protected DynamoDBEntityInformation<T, ID> entityInformation;
 
@@ -132,16 +134,7 @@ public class SimpleDynamoDBCrudRepository<T, ID> implements DynamoDBCrudReposito
 			return entities;
 		} else {
 			// Error handling:
-			Queue<Exception> allExceptions = failedBatches.stream().map(it -> it.getException())
-					.collect(Collectors.toCollection(LinkedList::new));
-
-			// The first exception is hopefully the cause
-			Exception cause = allExceptions.poll();
-			DataAccessException e = new BatchWriteException("Saving of entities failed!", cause);
-			// and all other exceptions are 'just' follow-up exceptions
-			allExceptions.stream().forEach(e::addSuppressed);
-
-			throw e;
+			throw repackageToException(failedBatches, BatchWriteException.class);
 		}
 	}
 
