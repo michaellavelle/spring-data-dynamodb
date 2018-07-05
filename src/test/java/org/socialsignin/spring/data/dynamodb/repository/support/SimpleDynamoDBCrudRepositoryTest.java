@@ -265,8 +265,8 @@ public class SimpleDynamoDBCrudRepositoryTest {
 		when(dynamoDBOperations.batchSave(anyIterable())).thenReturn(failures);
 
 		expectedException.expect(BatchWriteException.class);
-		expectedException
-				.expectMessage("Saving of entities failed!; nested exception is java.lang.Exception: First exception");
+		expectedException.expectMessage(
+				"Processing of entities failed!; nested exception is java.lang.Exception: First exception");
 
 		repoForEntityWithOnlyHashKey.saveAll(entities);
 	}
