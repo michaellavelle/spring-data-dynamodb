@@ -15,8 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.utils;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import org.socialsignin.spring.data.dynamodb.exception.BatchWriteException;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;g
 import org.springframework.dao.DataAccessException;
 
 import java.lang.reflect.Constructor;
