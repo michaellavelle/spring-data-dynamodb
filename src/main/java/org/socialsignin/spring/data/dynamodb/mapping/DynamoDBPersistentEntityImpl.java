@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,48 +15,55 @@
  */
 package org.socialsignin.spring.data.dynamodb.mapping;
 
-import java.util.Comparator;
-
+import org.springframework.data.mapping.MappingException;
 import org.springframework.data.mapping.model.BasicPersistentEntity;
-import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.util.TypeInformation;
+
+import java.util.Comparator;
 
 /**
  * DynamoDB specific {@link DynamoDBPersistentEntity} implementation
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
-public class DynamoDBPersistentEntityImpl<T> extends BasicPersistentEntity<T, DynamoDBPersistentProperty> implements
-		DynamoDBPersistentEntity<T> {
-	public DynamoDBPersistentEntityImpl(TypeInformation<T> information, Comparator<DynamoDBPersistentProperty> comparator) {
+public class DynamoDBPersistentEntityImpl<T> extends BasicPersistentEntity<T, DynamoDBPersistentProperty>
+		implements
+			DynamoDBPersistentEntity<T> {
+	public DynamoDBPersistentEntityImpl(TypeInformation<T> information,
+			Comparator<DynamoDBPersistentProperty> comparator) {
 		super(information, comparator);
 	}
 
 	/**
-	 * Returns the given property if it is a better candidate for the id
-	 * property than the current id property.
+	 * Returns the given property if it is a better candidate for the id property
+	 * than the current id property.
 	 * 
 	 * @param property
 	 *            the new id property candidate, will never be {@literal null}.
-	 * @return the given id property or {@literal null} if the given property is
-	 *         not an id property.
+	 * @return the given id property or {@literal null} if the given property is not
+	 *         an id property.
 	 */
-	protected DynamoDBPersistentProperty returnPropertyIfBetterIdPropertyCandidateOrNull(DynamoDBPersistentProperty property) {
+	protected DynamoDBPersistentProperty returnPropertyIfBetterIdPropertyCandidateOrNull(
+			DynamoDBPersistentProperty property) {
 
 		if (!property.isIdProperty()) {
 			return null;
 		}
 
-		if (getIdProperty() != null) {
+		DynamoDBPersistentProperty idProperty = getIdProperty();
+		if (idProperty != null) {
 
-			if (getIdProperty().isCompositeIdProperty() && property.isHashKeyProperty()) {
+			if (idProperty.isCompositeIdProperty() && property.isHashKeyProperty()) {
 				// Do nothing - favour id annotated properties over hashkey
 				return null;
-			} else if (getIdProperty().isHashKeyProperty() && property.isCompositeIdProperty()) {
+			} else if (idProperty.isHashKeyProperty() && property.isCompositeIdProperty()) {
 				return property;
 			} else {
-				throw new MappingException(String.format("Attempt to add id property %s but already have property %s registered "
-						+ "as id. Check your mapping configuration!", property.getField(), getIdProperty().getField()));
+				throw new MappingException(String.format(
+						"Attempt to add id property %s but already have property %s registered "
+								+ "as id. Check your mapping configuration!",
+						property.getField(), idProperty.getField()));
 			}
 		}
 

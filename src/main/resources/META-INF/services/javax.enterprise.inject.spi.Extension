@@ -1,1 +1,1 @@
-org.springframework.data.dynamodb.repository.cdi.JpaRepositoryExtension
+org.socialsignin.spring.data.dynamodb.repository.cdi.DynamoDBRepositoryExtension
