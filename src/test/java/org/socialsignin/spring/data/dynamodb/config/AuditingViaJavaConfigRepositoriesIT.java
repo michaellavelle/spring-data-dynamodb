@@ -23,6 +23,9 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,12 +33,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.socialsignin.spring.data.dynamodb.domain.sample.AuditableUser;
 import org.socialsignin.spring.data.dynamodb.domain.sample.AuditableUserRepository;
+import org.socialsignin.spring.data.dynamodb.domain.sample.CRUDOperationsIT;
+import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
+import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
+import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
@@ -47,6 +56,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 /**
  * Integration tests for auditing via Java config.
@@ -54,16 +64,33 @@ import static org.mockito.Mockito.mock;
  * @author Vito Limandibhrata
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = AuditingViaJavaConfigRepositoriesIT.class)
-@Configuration
-@EnableDynamoDBAuditing(auditorAwareRef = "auditorProvider")
-@EnableDynamoDBRepositories(basePackageClasses = AuditableUserRepository.class)
-public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfiguration {
+@ContextConfiguration(classes = {DynamoDBLocalResource.class, AuditingViaJavaConfigRepositoriesIT.TestAppConfig.class})
+@TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
+
+public class AuditingViaJavaConfigRepositoriesIT {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuditingViaJavaConfigRepositoriesIT.class);
 
-	private static final String DYNAMODB_PORT_PROPERTY = "dynamodb.port";
-	private static final String PORT = System.getProperty(DYNAMODB_PORT_PROPERTY);
+	@Configuration
+	@EnableDynamoDBAuditing(auditorAwareRef = "auditorProvider")
+	@EnableDynamoDBRepositories(mappingContextRef = "dynamoDBMappingContext", basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
+	public static class TestAppConfig {
+
+		@Bean(name = "auditorProvider")
+		public AuditorAware<AuditableUser> auditorProvider() {
+			LOGGER.info("auditorProvider");
+			return mock(AuditorAware.class);
+		}
+
+		@Bean
+		public DynamoDBMappingContext dynamoDBMappingContext() {
+			DynamoDBMappingContext mappingContext = new DynamoDBMappingContext();
+			// Register entity
+			// TODO but this shouldn't be nessassary?!
+			mappingContext.getPersistentEntity(AuditableUser.class);
+			return mappingContext;
+		}
+	}
 
 	@Autowired
 	AuditableUserRepository auditableUserRepository;
@@ -73,48 +100,16 @@ public class AuditingViaJavaConfigRepositoriesIT extends AbstractDynamoDBConfigu
 
 	AuditableUser auditor;
 
-	@Override
-	protected String[] getMappingBasePackages() {
-		return new String[]{"org.socialsignin.spring.data.dynamodb.domain.sample"};
-	}
-
-	@Bean(name = "auditorProvider")
-	@SuppressWarnings("unchecked")
-	public AuditorAware<AuditableUser> auditorProvider() {
-		LOGGER.info("auditorProvider");
-		return mock(AuditorAware.class);
-	}
-
-	@Bean
-	@Override
-	public AmazonDynamoDB amazonDynamoDB() {
-		Assert.notNull(PORT, "System property '" + DYNAMODB_PORT_PROPERTY + " not set!");
-
-		AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
-				.withCredentials(new AWSStaticCredentialsProvider(amazonAWSCredentials()))
-				.withEndpointConfiguration(new EndpointConfiguration(String.format("http://localhost:%s", PORT),
-						Regions.DEFAULT_REGION.getName()))
-				.build();
-		return amazonDynamoDB;
-	}
-
-	/**
-	 * Must return the same credential as
-	 * {@link org.socialsignin.spring.data.dynamodb.core.ConfigurationTI} otherwise
-	 * the repository will connect to different local DynamoDB instance hence it
-	 * will return no table found
-	 *
-	 * @return
-	 */
-	@Bean
-	@Override
-	public AWSCredentials amazonAWSCredentials() {
-		return new BasicAWSCredentials("AWS-Key", "");
-	}
+	@Autowired
+	private AmazonDynamoDB ddb;
 
 	@Before
-	public void setup() {
-		auditableUserRepository.deleteAll();
+	public void setUp() throws InterruptedException {
+		CreateTableRequest ctr = new DynamoDBMapper(ddb).generateCreateTableRequest(AuditableUser.class);
+		ctr.withProvisionedThroughput(new ProvisionedThroughput(10L, 10L));
+		ddb.createTable(ctr);
+		// Thread.sleep(5 * 1000);
+
 		this.auditor = auditableUserRepository.save(new AuditableUser("auditor"));
 		assertThat(this.auditor, is(notNullValue()));
 
