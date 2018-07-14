@@ -17,6 +17,8 @@ package org.socialsignin.spring.data.dynamodb.domain.sample;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Expected;
+
+import org.junit.Before;
 import org.junit.Rule;
 
 import org.junit.Test;
@@ -29,6 +31,9 @@ import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener.DynamoD
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -39,6 +44,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
@@ -64,6 +70,14 @@ public class CRUDOperationsIT {
 
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private UserPaginationRepository userPaginationRepository;
+
+	@Before
+	public void setUp() {
+		userRepository.deleteAll();
+		userPaginationRepository.deleteAll();
+	}
 
 	@Test
 	public void testProjection() {
@@ -170,6 +184,42 @@ public class CRUDOperationsIT {
 		expectedException.expect(EmptyResultDataAccessException.class);
 		// Delete specific
 		userRepository.deleteById("non-existent");
+	}
+
+	@Test
+	public void testFilterAndPagination() {
+
+		Supplier<User> userSupplier = () -> {
+			User u = new User();
+			u.setName("test");
+			return u;
+		};
+
+		for (int i = 0; i < 22; i++) {
+			User u = userSupplier.get();
+			userPaginationRepository.save(u);
+		}
+		User u = userSupplier.get();
+		u.setName("not-test");
+		userPaginationRepository.save(u);
+
+		List<User> allUsers = userPaginationRepository.findAll();
+		assertEquals(23, allUsers.size());
+
+		List<User> allTestUsers = userPaginationRepository.findAllByName("test");
+		assertEquals(22, allTestUsers.size());
+
+		Pageable firstPage = PageRequest.of(0, 10);
+		Page<User> firstResults = userPaginationRepository.findAllByName("test", firstPage);
+		assertEquals(10, firstResults.getNumberOfElements());
+
+		Pageable secondPage = PageRequest.of(1, 10);
+		Page<User> secondResults = userPaginationRepository.findAllByName("test", secondPage);
+		assertEquals(10, secondResults.getNumberOfElements());
+
+		Pageable thirdPage = PageRequest.of(2, 10);
+		Page<User> thirdResults = userPaginationRepository.findAllByName("test", thirdPage);
+		assertEquals(2, thirdResults.getNumberOfElements());
 	}
 
 	@Test

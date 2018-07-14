@@ -55,4 +55,7 @@ public interface UserRepository extends CrudRepository<User, String> {
 	User findByNameAndLeaveDate(String name, Instant leaveDate);
 
 	void deleteByPostCodeAndNumberOfPlaylists(String postCode, Integer numberOfPlaylists);
+
+	@EnableScan
+	void deleteAll();
 }
