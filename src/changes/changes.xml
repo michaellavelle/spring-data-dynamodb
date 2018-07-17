@@ -64,6 +64,9 @@
       <action dev="SimY4" issue="177" type="fix" date="2018-07-04">
         Fixed NPE when deleting nonexistent entity
       </action>
+      <action dev="SimY4" issue="183" type="fix" date="2018-07-16">
+        Match hibernate validator dependency version with Spring Boot 2 dependency. 
+      </action>
     </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
       <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">
