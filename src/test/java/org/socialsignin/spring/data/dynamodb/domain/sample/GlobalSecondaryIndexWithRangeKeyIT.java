@@ -15,6 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
@@ -37,6 +38,7 @@ import static org.junit.Assert.fail;
  * Shows the usage of Hash+Range key combinations with global secondary indexes.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@Ignore
 @ContextConfiguration(classes = {DynamoDBResource.class, GlobalSecondaryIndexWithRangeKeyIT.TestAppConfig.class})
 public class GlobalSecondaryIndexWithRangeKeyIT {
 

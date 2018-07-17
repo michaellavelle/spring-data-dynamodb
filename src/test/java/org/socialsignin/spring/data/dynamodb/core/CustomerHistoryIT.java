@@ -28,8 +28,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CustomerHistoryIT.TestAppConfig.class, DynamoDBResource.class})
+@Ignore
 public class CustomerHistoryIT {
 
 	@Configuration

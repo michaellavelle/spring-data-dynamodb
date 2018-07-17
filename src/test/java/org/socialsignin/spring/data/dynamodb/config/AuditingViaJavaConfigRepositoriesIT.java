@@ -15,26 +15,24 @@
  */
 package org.socialsignin.spring.data.dynamodb.config;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.socialsignin.spring.data.dynamodb.domain.sample.AuditableUser;
 import org.socialsignin.spring.data.dynamodb.domain.sample.AuditableUserRepository;
-import org.socialsignin.spring.data.dynamodb.domain.sample.CRUDOperationsIT;
-import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
@@ -46,7 +44,6 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.Assert;
 
 import java.util.Optional;
 
@@ -55,7 +52,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 /**
@@ -66,8 +62,11 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DynamoDBLocalResource.class, AuditingViaJavaConfigRepositoriesIT.TestAppConfig.class})
 @TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
-
 public class AuditingViaJavaConfigRepositoriesIT {
+	@Rule
+	public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+	@Mock
+	private static AuditorAware<AuditableUser> auditorProviderClass;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuditingViaJavaConfigRepositoriesIT.class);
 
@@ -76,10 +75,11 @@ public class AuditingViaJavaConfigRepositoriesIT {
 	@EnableDynamoDBRepositories(mappingContextRef = "dynamoDBMappingContext", basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")
 	public static class TestAppConfig {
 
+		@SuppressWarnings("unchecked")
 		@Bean(name = "auditorProvider")
 		public AuditorAware<AuditableUser> auditorProvider() {
 			LOGGER.info("auditorProvider");
-			return mock(AuditorAware.class);
+			return Mockito.mock(AuditorAware.class);
 		}
 
 		@Bean

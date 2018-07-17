@@ -17,6 +17,7 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
+import org.socialsignin.spring.data.dynamodb.domain.UnpagedPageImpl;
 import org.socialsignin.spring.data.dynamodb.exception.BatchDeleteException;
 import org.socialsignin.spring.data.dynamodb.query.Query;
 import org.socialsignin.spring.data.dynamodb.utils.ExceptionHandler;
@@ -31,6 +32,7 @@ import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.RepositoryQuery;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -163,23 +165,34 @@ public abstract class AbstractDynamoDBQuery<T, ID> implements RepositoryQuery, E
 		private Page<T> createPage(List<T> allResults, Pageable pageable, AbstractDynamoDBQuery<T, ID> dynamoDBQuery,
 				Object[] values) {
 
+			// Get the result = this list might be a lazy list
 			Iterator<T> iterator = allResults.iterator();
-			if (pageable.getOffset() > 0) {
-				long processedCount = scanThroughResults(iterator, pageable.getOffset());
-				if (processedCount < pageable.getOffset())
-					return new PageImpl<>(new ArrayList<T>());
-			}
-			List<T> results = readPageOfResultsRestrictMaxResultsIfNecessary(iterator, pageable.getPageSize());
 
+			// Check if the pageable request is 'beyond' the result set
+			if (!pageable.isUnpaged() && pageable.getOffset() > 0) {
+				long processedCount = scanThroughResults(iterator, pageable.getOffset());
+				if (processedCount < pageable.getOffset()) {
+					return new PageImpl<>(Collections.emptyList());
+				}
+			}
+
+			// Then Count the result set size
 			Query<Long> countQuery = dynamoDBQuery.doCreateCountQueryWithPermissions(values, true);
 			long count = countQuery.getSingleResult();
 
-			if (getResultsRestrictionIfApplicable() != null) {
-				count = Math.min(count, getResultsRestrictionIfApplicable());
+			// Finally wrap the result in a page -
+			if (!pageable.isUnpaged()) {
+				// either seek to the proper part of the result set
+				if (getResultsRestrictionIfApplicable() != null) {
+					count = Math.min(count, getResultsRestrictionIfApplicable());
+				}
+
+				List<T> results = readPageOfResultsRestrictMaxResultsIfNecessary(iterator, pageable.getPageSize());
+				return new PageImpl<>(results, pageable, count);
+			} else {
+				// or treat the whole (lazy) list as the result page if it's unpaged
+				return new UnpagedPageImpl<>(allResults, count);
 			}
-
-			return new PageImpl<>(results, pageable, count);
-
 		}
 	}
 
