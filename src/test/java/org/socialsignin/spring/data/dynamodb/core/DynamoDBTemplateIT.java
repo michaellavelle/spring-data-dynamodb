@@ -17,6 +17,7 @@ package org.socialsignin.spring.data.dynamodb.core;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
@@ -32,6 +33,7 @@ import java.util.UUID;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DynamoDBResource.class})
+@Ignore
 public class DynamoDBTemplateIT {
 
 	@Autowired

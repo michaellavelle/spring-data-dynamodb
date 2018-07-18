@@ -15,6 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
@@ -42,6 +43,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DynamoDBResource.class, Jdk8IT.TestAppConfig.class})
+@Ignore
 public class Jdk8IT {
 
 	@Configuration

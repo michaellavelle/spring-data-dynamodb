@@ -15,6 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.core;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.domain.sample.FeedUserRepository;
@@ -30,6 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {FeedUserIT.TestAppConfig.class, DynamoDBResource.class})
+@Ignore
 public class FeedUserIT {
 
 	@Configuration
