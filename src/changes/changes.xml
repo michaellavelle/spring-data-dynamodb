@@ -23,7 +23,7 @@
     <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
-    <release version="5.0.3" date="" description="Maintenance release">
+    <release version="5.0.3" date="2018-08-10" description="Maintenance & security release">
       <action dev="derjust" type="fix" date="2018-03-05">
         Fix Javadoc and cast warnings
       </action>
@@ -67,8 +67,11 @@
       <action dev="SimY4" issue="183" type="fix" date="2018-07-16">
         Match hibernate validator dependency version with Spring Boot 2 dependency. 
       </action>
-      <action dev="derjust" issue="181" type="fix" date="">
+      <action dev="derjust" issue="181" type="fix" date="2018-07-16">
         `Pageable.unpaged()` find queries fail
+      </action>
+      <action dev="derjust" issue="190" type="fix" date="2018-08-10">
+        Update to spring-data 2.0.9 due to fix CVE-2018-1273
       </action>
     </release>
     <release version="5.0.2" date="2018-03-05" description="Maintenance release">
