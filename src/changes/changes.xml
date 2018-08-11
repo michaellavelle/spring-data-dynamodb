@@ -1,6 +1,6 @@
 <!--
 
-    Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+    Copyright © 2018 spring-data-dynamodb (https://github.com/spring-data-dynamodb/spring-data-dynamodb)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -132,6 +132,11 @@
     <release version="5.0.0" date="2017-11-27" description="Spring 5 release" >
       <action dev="derjust" type="add">
         Added Spring 5 / Spring-Data Kay support
+      </action>
+    </release>
+    <release version="4.5.7" date="2018-08-10" description="security release">
+      <action dev="derjust" issue="190" type="fix" date="2018-08-10">
+        Update to spring-data Ingalls-SR14 due to fix CVE-2018-1273
       </action>
     </release>
     <release version="4.5.5" date="2018-03-07" description="Backport of v5.0 (master)">
