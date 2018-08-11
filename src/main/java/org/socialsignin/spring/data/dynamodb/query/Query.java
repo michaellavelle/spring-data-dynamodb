@@ -38,5 +38,7 @@ public interface Query<T> {
 
 	void setScanEnabled(boolean scanEnabled);
 	void setScanCountEnabled(boolean scanCountEnabled);
+	boolean isScanCountEnabled();
+	boolean isScanEnabled();
 
 }

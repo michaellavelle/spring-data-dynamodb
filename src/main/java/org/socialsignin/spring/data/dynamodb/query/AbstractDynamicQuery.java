@@ -17,17 +17,13 @@ package org.socialsignin.spring.data.dynamodb.query;
 
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
-import java.util.Arrays;
-import java.util.List;
+public abstract class AbstractDynamicQuery<T> extends AbstractQuery<T> {
 
-public abstract class AbstractSingleEntityQuery<T> extends AbstractDynamicQuery<T> implements Query<T> {
+	protected final DynamoDBOperations dynamoDBOperations;
+	protected final Class<T> clazz;
 
-	public AbstractSingleEntityQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
-		super(dynamoDBOperations, clazz);
-	}
-
-	@Override
-	public List<T> getResultList() {
-		return Arrays.asList(getSingleResult());
+	public AbstractDynamicQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
+		this.dynamoDBOperations = dynamoDBOperations;
+		this.clazz = clazz;
 	}
 }

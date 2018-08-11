@@ -17,10 +17,12 @@ package org.socialsignin.spring.data.dynamodb.repository.query;
 
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.query.Query;
+import org.socialsignin.spring.data.dynamodb.query.StaticQuery;
 import org.socialsignin.spring.data.dynamodb.repository.support.DynamoDBEntityInformation;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.PartTree;
+import org.springframework.lang.Nullable;
 
 import java.util.Optional;
 
@@ -42,10 +44,12 @@ public class DynamoDBCountQueryCreator<T, ID> extends AbstractDynamoDBQueryCreat
 	}
 
 	@Override
-	protected Query<Long> complete(DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
-
-		return criteria.buildCountQuery(dynamoDBOperations, pageQuery);
-
+	protected Query<Long> complete(@Nullable DynamoDBQueryCriteria<T, ID> criteria, Sort sort) {
+		if (criteria == null) {
+			return new StaticQuery<>(1L);
+		} else {
+			return criteria.buildCountQuery(dynamoDBOperations, pageQuery);
+		}
 	}
 
 }

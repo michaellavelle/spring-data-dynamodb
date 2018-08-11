@@ -29,9 +29,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AbstractQueryTest {
+public class AbstractDynamicQueryTest {
 
-	private static class QueryTest<T> extends AbstractQuery<T> {
+	private static class QueryTest<T> extends AbstractDynamicQuery<T> {
 		public QueryTest(DynamoDBOperations dynamoDBOperations, Class<T> clazz) {
 			super(dynamoDBOperations, clazz);
 		}
