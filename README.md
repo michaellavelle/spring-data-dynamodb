@@ -1,6 +1,6 @@
 [![codecov.io](https://codecov.io/github/derjust/spring-data-dynamodb/coverage.svg?branch=master)](https://codecov.io/github/derjust/spring-data-dynamodb?branch=master) [![Build Status](https://travis-ci.org/derjust/spring-data-dynamodb.svg?branch=master)](https://travis-ci.org/derjust/spring-data-dynamodb) 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb)
-[![Developer Workspace](https://codenvy.io/factory/resources/codenvy-contribute.svg)](https://codenvy.io/f?name=spring-data-dynamodb&user=userrzonfqnofgrmfxjx)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.derjust/spring-data-dynamodb/badge.svg)](https://search.maven.org/search?q=g:com.github.spring-data-dynamodb)
+[![Developer Workspace](https://codenvy.io/factory/resources/codenvy-contribute.svg)](https://codenvy.io/f?user=userrzonfqnofgrmfxjx&amp;name=spring-data-dynamodb)
 [![Donation badge](https://img.shields.io/badge/Donate-%F0%9F%92%B8-DAA520.svg)](DONATION.md)
 
 

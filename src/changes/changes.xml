@@ -23,7 +23,7 @@
     <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
-    <release version="5.0.3" date="2018-08-10" description="Maintenance & security release">
+    <release version="5.0.3" date="2018-08-10" description="Maintenance &amp; security release">
       <action dev="derjust" type="fix" date="2018-03-05">
         Fix Javadoc and cast warnings
       </action>
