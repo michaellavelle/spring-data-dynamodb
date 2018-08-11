@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>4.5.7-SNAPSHOT</version>
+    <version>4.5.7</version>
     <name>Spring Data DynamoDB</name>
     <inceptionYear>2018</inceptionYear>
 
@@ -38,7 +38,7 @@
 
     <properties>
         <spring.version>4.3.6.RELEASE</spring.version>
-        <spring-data.version>Ingalls-RELEASE</spring-data.version>
+        <spring-data.version>Ingalls-SR14</spring-data.version>
 
         <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
         <aws-java-sdk.version>1.11.289</aws-java-sdk.version>
@@ -529,7 +529,7 @@
         <url>https://github.com/spring-data-dynamodb/spring-data-dynamodb</url>
         <connection>scm:git:ssh://github.com/spring-data-dynamodb/spring-data-dynamodb.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/spring-data-dynamodb/spring-data-dynamodb.git</developerConnection>
-        <tag>v5.0.2</tag>
+        <tag>v4.5.7</tag>
   </scm>
 
     <repositories>
