@@ -18,7 +18,6 @@ package org.socialsignin.spring.data.dynamodb.core;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.TableNameOverride;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import org.junit.Assert;
@@ -32,14 +31,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.domain.sample.Playlist;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -52,6 +50,8 @@ public class DynamoDBTemplateTest {
 	@Mock
 	private DynamoDBMapper dynamoDBMapper;
 	@Mock
+	private DynamoDBMapperConfig dynamoDBMapperConfig;
+	@Mock
 	private AmazonDynamoDB dynamoDB;
 	@Mock
 	private ApplicationContext applicationContext;
@@ -62,30 +62,43 @@ public class DynamoDBTemplateTest {
 
 	@Before
 	public void setUp() {
-		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapper);
+		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapper, dynamoDBMapperConfig);
 		this.dynamoDBTemplate.setApplicationContext(applicationContext);
-	}
-
-	@Test
-	public void testConstructorMandatory() {
-		expectedException.expect(IllegalArgumentException.class);
-		expectedException.expectMessage("must not be null!");
-		new DynamoDBTemplate(null);
-	}
-
-	@Test
-	public void testConstructorOptionalAllNull() {
-		dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, null, null);
 
 		// check that the defaults are properly initialized - #108
 		String userTableName = dynamoDBTemplate.getOverriddenTableName(User.class, "UserTable");
-		assertEquals("user", userTableName);
+		assertEquals("UserTable", userTableName);
 	}
 
 	@Test
+	public void testConstructorAllNull() {
+		try {
+			dynamoDBTemplate = new DynamoDBTemplate(null, null, null);
+			fail("AmazonDynamoDB must not be null!");
+		} catch (IllegalArgumentException iae) {
+			// ignored
+		}
+
+		try {
+			dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, null, null);
+			fail("DynamoDBMapper must not be null!");
+		} catch (IllegalArgumentException iae) {
+			// ignored
+		}
+		try {
+			dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapper, null);
+			fail("DynamoDBMapperConfig must not be null!");
+		} catch (IllegalArgumentException iae) {
+			// ignored
+		}
+		assertTrue(true);
+	}
+
+	// TODO remove and replace with postprocessor test
+	@Test
 	public void testConstructorOptionalPreconfiguredDynamoDBMapper() {
 		// Introduced constructor via #91 should not fail its assert
-		new DynamoDBTemplate(dynamoDB, dynamoDBMapper);
+		this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB, dynamoDBMapper, dynamoDBMapperConfig);
 
 		assertTrue("The constructor should not fail with an assert error", true);
 	}
@@ -136,64 +149,6 @@ public class DynamoDBTemplateTest {
 
 		assertEquals(0, actual);
 		verify(dynamoDBMapper).count(User.class, scan);
-	}
-
-	@Test
-	public void testGetOverriddenTableName_WithTableNameResolver_defaultConfig() {
-		final String overridenTableName = "someOtherTableName";
-
-		DynamoDBMapperConfig.Builder builder = DynamoDBMapperConfig.builder();
-		// Inject the table name overrider bean
-		builder.setTableNameOverride(new TableNameOverride(overridenTableName));
-
-		DynamoDBMapperConfig config = new DynamoDBMapperConfig(DynamoDBMapperConfig.DEFAULT, builder.build());
-		DynamoDBTemplate tmpl = new DynamoDBTemplate(dynamoDB, config, dynamoDBMapper);
-
-		String overriddenTableName = tmpl.getOverriddenTableName(User.class, "someTableName");
-		assertEquals(overridenTableName, overriddenTableName);
-
-		DynamoDBMapperConfig effectiveConfig = (DynamoDBMapperConfig) ReflectionTestUtils.getField(tmpl,
-				"dynamoDBMapperConfig");
-		assertDynamoDBMapperConfigCompletness(tmpl);
-	}
-
-	@Test
-	public void testGetOverriddenTableName_WithTableNameResolver_defaultBuilder() {
-		final String overridenTableName = "someOtherTableName";
-
-		DynamoDBMapperConfig.Builder builder = new DynamoDBMapperConfig.Builder();
-		// Inject the table name overrider bean
-		builder.setTableNameOverride(new TableNameOverride(overridenTableName));
-
-		DynamoDBTemplate tmpl = new DynamoDBTemplate(dynamoDB, builder.build(), dynamoDBMapper);
-
-		String overriddenTableName = tmpl.getOverriddenTableName(User.class, "someTableName");
-		assertEquals(overridenTableName, overriddenTableName);
-		assertDynamoDBMapperConfigCompletness(tmpl);
-	}
-
-	@Test
-	public void testGetOverriddenTableName_WithTableNameResolver_emptyBuilder() {
-		final String overridenTableName = "someOtherTableName";
-
-		DynamoDBMapperConfig.Builder builder = DynamoDBMapperConfig.builder();
-		// Inject the table name overrider bean
-		builder.setTableNameOverride(new TableNameOverride(overridenTableName));
-
-		DynamoDBTemplate tmpl = new DynamoDBTemplate(dynamoDB, builder.build(), dynamoDBMapper);
-
-		String overriddenTableName = tmpl.getOverriddenTableName(User.class, "someTableName");
-		assertEquals(overridenTableName, overriddenTableName);
-		assertDynamoDBMapperConfigCompletness(tmpl);
-	}
-
-	private void assertDynamoDBMapperConfigCompletness(DynamoDBTemplate tmpl) {
-		DynamoDBMapperConfig effectiveConfig = (DynamoDBMapperConfig) ReflectionTestUtils.getField(tmpl,
-				"dynamoDBMapperConfig");
-
-		assertNotNull(effectiveConfig);
-		assertNotNull(effectiveConfig.getConversionSchema());
-		assertNotNull(effectiveConfig.getTypeConverterFactory());
 	}
 
 	@Test

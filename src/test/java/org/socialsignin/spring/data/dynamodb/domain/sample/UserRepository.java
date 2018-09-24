@@ -22,6 +22,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Future;
 
 public interface UserRepository extends CrudRepository<User, String> {
 
@@ -37,6 +38,11 @@ public interface UserRepository extends CrudRepository<User, String> {
 
 	@EnableScan
 	Optional<User> findByName(String name);
+
+	@EnableScan
+	Future<User> findOneByPostCode(String postCode);
+	@EnableScan
+	User findFirstByPostCode(String postCode);
 
 	<T extends User> T save(T entity);
 

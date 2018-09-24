@@ -15,14 +15,14 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
-import org.socialsignin.spring.data.dynamodb.utils.DynamoDBResource;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.Instant;
@@ -30,7 +30,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -42,8 +45,8 @@ import static org.junit.Assert.assertNotNull;
  *      github.com/spring-projects/spring-data-examples/master/jpa/java8</a>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DynamoDBResource.class, Jdk8IT.TestAppConfig.class})
-@Ignore
+@ContextConfiguration(classes = {DynamoDBLocalResource.class, Jdk8IT.TestAppConfig.class})
+@TestPropertySource(properties = {"spring.data.dynamodb.entity2ddl.auto=create"})
 public class Jdk8IT {
 
 	@Configuration
@@ -74,6 +77,24 @@ public class Jdk8IT {
 		assertNotNull(result);
 		assertEquals(savedEntity, result.get());
 		assertEquals(joinDate, result.get().getJoinDate());
+	}
+
+	@Test
+	public void testFuture() throws InterruptedException, ExecutionException, TimeoutException {
+		User user = new User();
+		user.setName("testFuture");
+		user.setPostCode("postCode");
+		user = userRepository.save(user);
+
+		User actual;
+		// Future<User> result
+		actual = userRepository.findByName("testFuture").get();
+		// assertNotNull(result);
+		// User actual = result.get(1, TimeUnit.MINUTES);
+
+		assertNotNull(actual);
+		assertNotNull(actual.getId());
+		assertEquals("postCode", actual.getPostCode());
 	}
 
 	@Test

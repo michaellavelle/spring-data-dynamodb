@@ -15,11 +15,7 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Expected;
-
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 
 import org.junit.Test;
@@ -27,8 +23,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
-import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener;
-import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener.DynamoDBCreateTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -36,13 +30,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -55,12 +48,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DynamoDBLocalResource.class, CRUDOperationsIT.TestAppConfig.class})
-@TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
-@DynamoDBCreateTable(entityClasses = {User.class, Playlist.class})
+@TestPropertySource(properties = {"spring.data.dynamodb.entity2ddl.auto=create"})
 public class CRUDOperationsIT {
 
 	@Rule

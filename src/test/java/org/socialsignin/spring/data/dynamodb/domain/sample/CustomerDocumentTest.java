@@ -19,20 +19,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
-import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener;
-import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener.DynamoDBCreateTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
-
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 @ContextConfiguration(classes = {DynamoDBLocalResource.class, CustomerDocumentTest.TestAppConfig.class})
-@TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
-@DynamoDBCreateTable(entityClasses = {CustomerDocument.class})
+@TestPropertySource(properties = {"spring.data.dynamodb.entity2ddl.auto=create"})
 public class CustomerDocumentTest {
 
 	@Configuration

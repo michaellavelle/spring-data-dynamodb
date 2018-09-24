@@ -20,20 +20,22 @@ import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.domain.sample.CustomerHistory;
 import org.socialsignin.spring.data.dynamodb.domain.sample.CustomerHistoryRepository;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
-import org.socialsignin.spring.data.dynamodb.utils.DynamoDBResource;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CustomerHistoryIT.TestAppConfig.class, DynamoDBResource.class})
-@Ignore
-public class CustomerHistoryIT {
+@DirtiesContext(methodMode = MethodMode.BEFORE_METHOD)
+@ContextConfiguration(classes = {CustomerHistoryTest.TestAppConfig.class, DynamoDBLocalResource.class})
+@TestPropertySource(properties = {"spring.data.dynamodb.entity2ddl.auto=create"})
+public class CustomerHistoryTest {
 
 	@Configuration
 	@EnableDynamoDBRepositories(basePackages = "org.socialsignin.spring.data.dynamodb.domain.sample")

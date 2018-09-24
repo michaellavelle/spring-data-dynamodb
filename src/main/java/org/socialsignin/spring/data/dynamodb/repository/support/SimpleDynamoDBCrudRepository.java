@@ -24,6 +24,7 @@ import org.socialsignin.spring.data.dynamodb.repository.DynamoDBCrudRepository;
 import org.socialsignin.spring.data.dynamodb.utils.ExceptionHandler;
 import org.socialsignin.spring.data.dynamodb.utils.SortHandler;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
@@ -93,7 +94,7 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 		AtomicInteger idx = new AtomicInteger();
 		List<KeyPair> keyPairs = StreamSupport.stream(ids.spliterator(), false).map(id -> {
 
-			Assert.notNull(id, "The given id  at position " + idx.getAndIncrement() + " must not be null!");
+			Assert.notNull(id, "The given id at position " + idx.getAndIncrement() + " must not be null!");
 
 			if (entityInformation.isRangeKeyAware()) {
 				return new KeyPair().withHashKey(entityInformation.getHashKey(id))
@@ -202,4 +203,8 @@ public class SimpleDynamoDBCrudRepository<T, ID>
 		dynamoDBOperations.batchDelete(findAll());
 	}
 
+	@NonNull
+	public DynamoDBEntityInformation<T, ID> getEntityInformation() {
+		return this.entityInformation;
+	}
 }

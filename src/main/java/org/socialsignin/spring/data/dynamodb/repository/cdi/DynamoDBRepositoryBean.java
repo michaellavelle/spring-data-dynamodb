@@ -16,6 +16,7 @@
 package org.socialsignin.spring.data.dynamodb.repository.cdi;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBTemplate;
@@ -100,8 +101,13 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 				? null
 				: getDependencyInstance(dynamoDBOperationsBean, DynamoDBOperations.class);
 
+		if (dynamoDBMapperConfig == null) {
+			dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
+		}
+		DynamoDBMapper dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
+
 		if (dynamoDBOperations == null) {
-			dynamoDBOperations = new DynamoDBTemplate(amazonDynamoDB, dynamoDBMapperConfig);
+			dynamoDBOperations = new DynamoDBTemplate(amazonDynamoDB, dynamoDBMapper, dynamoDBMapperConfig);
 		}
 
 		DynamoDBRepositoryFactory factory = new DynamoDBRepositoryFactory(dynamoDBOperations);

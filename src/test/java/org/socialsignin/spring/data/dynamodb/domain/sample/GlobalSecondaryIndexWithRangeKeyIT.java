@@ -15,14 +15,14 @@
  */
 package org.socialsignin.spring.data.dynamodb.domain.sample;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
-import org.socialsignin.spring.data.dynamodb.utils.DynamoDBResource;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Calendar;
@@ -38,8 +38,8 @@ import static org.junit.Assert.fail;
  * Shows the usage of Hash+Range key combinations with global secondary indexes.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@Ignore
-@ContextConfiguration(classes = {DynamoDBResource.class, GlobalSecondaryIndexWithRangeKeyIT.TestAppConfig.class})
+@ContextConfiguration(classes = {DynamoDBLocalResource.class, GlobalSecondaryIndexWithRangeKeyIT.TestAppConfig.class})
+@TestPropertySource(properties = {"spring.data.dynamodb.entity2ddl.auto=create"})
 public class GlobalSecondaryIndexWithRangeKeyIT {
 
 	@Configuration
