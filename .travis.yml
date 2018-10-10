@@ -1,8 +1,25 @@
+# No fancyness - we can use the new build infrastructure
+sudo: false
+
 language:
-  java
+  - java
+
+jdk:
+  - oraclejdk8
+  - oraclejdk9
 
 before_script:
   - pip install --user codecov
 
+script:
+  - mvn integration-test
+
 after_success:
   - codecov
+
+deploy:
+  # deploy master to OSSHR Snapshot
+  - provider: script
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy"
+    on:
+      branch: master

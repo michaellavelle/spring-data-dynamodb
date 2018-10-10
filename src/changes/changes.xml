@@ -1,0 +1,171 @@
+<!--
+
+    Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+  <properties>
+    <title>spring-data-dynamodb Changes</title>
+    <author email="zeeman@zeeman.de">derjust</author>
+  </properties>
+  <body>
+    <release version="5.0.3" date="2018-08-10" description="Maintenance &amp; security release">
+      <action dev="derjust" type="fix" date="2018-03-05">
+        Fix Javadoc and cast warnings
+      </action>
+      <action dev="derjust" issue="142" type="add" date="2018-03-21">
+        Added support for @Query-based projections
+      </action>
+      <action dev="derjust" issue="148" type="add" date="2018-03-22">
+        Publish master builds to OSSRH as SNAPSHOT
+      </action>
+      <action dev="derjust" issue="146" type="fix" date="2018-03-24">
+        Fix incomplete AWS DynamoDBMapper initialization
+      </action>
+      <action dev="derjust" issue="57" type="fix" date="2018-03-25">
+        Fix compatibility with AWS SDK 1.11.36 (NullPointerException)
+      </action>
+      <action dev="derjust" issue="81" type="fix" date="2018-03-25">
+        Fixed NullPointerException for DynamoDBIndexHashKey (GSI)
+      </action>
+      <action dev="derjust" issue="47" type="fix" date="2018-03-25">
+        Confirmed that findByKeyAndOtherKey returns null/Optional.empty()
+      </action>
+      <action dev="derjust" type="add" date="2018-03-26">
+        Use just Spring-Data Commons dependency inspired by
+        https://github.com/sheradmin/spring-data-dynamodb/commit/57efbce2978481cbaf374f01d88424766a314662
+      </action>
+      <action dev="blx" type="add" date="2018-03-26">
+        Add support for DynamoDBTypeConverted annotations on hash key
+      </action>
+      <action dev="derjust" type="fix" date="">
+        Fixed NullPointerException for findAllByOrderByProperty queries
+      </action>
+      <action dev="CoderPaulK" issue="158" type="fix" date="2018-04-15">
+        Fixed method signature
+      </action>
+      <action dev="boothen" issue="15" type="fix" date="2018-06-12">
+        Spring Data Rest uses a PersistentEntityResourceAssembler that requires the DynamoDBMappingContext to be exposed as a Spring Bean.
+      </action>
+      <action dev="SimY4" issue="177" type="fix" date="2018-07-04">
+        Fixed NPE when deleting nonexistent entity
+      </action>
+      <action dev="SimY4" issue="183" type="fix" date="2018-07-16">
+        Match hibernate validator dependency version with Spring Boot 2 dependency. 
+      </action>
+      <action dev="derjust" issue="181" type="fix" date="2018-07-16">
+        `Pageable.unpaged()` find queries fail
+      </action>
+      <action dev="derjust" issue="190" type="fix" date="2018-08-10">
+        Update to spring-data 2.0.9 due to fix CVE-2018-1273
+      </action>
+    </release>
+    <release version="5.0.2" date="2018-03-05" description="Maintenance release">
+      <action dev="vitolimandibhrata" issue="40" type="add" date="2017-01-07">
+        Added support for Auditing
+      </action>
+      <action dev="derjust" issue="103" type="add" date="2018-01-07">
+        Update Marshaller to use DynamoDBTypeConverter (while keeping old inheritance intact)
+      </action>
+      <action dev="derjust" issue="108" type="fix" date="2018-01-14">
+        Opened constructor and fixed NPE in case of missing DynamoDBConfig
+      </action>
+      <action dev="derjust" type="add" date="2018-01-23">
+        Allow for JUnit tests to use a in-memory DynamoDB instance
+      </action>
+      <action dev="Davinpidoto" issue="122" type="add" date="2018-01-27">
+        Added documentation about Spring-Boot compatibility
+      </action>
+      <action dev="derjust" issue="122" type="add" date="2018-01-27">
+        Added logging of AWS/Spring-Data/this version and potential compatibility issues
+      </action>
+      <action dev="derjust" issue="118" type="fix" date="2018-02-01">
+        Handle hash key properties with different column name (attribute name) properly
+      </action>
+      <action dev="derjust" issue="46" type="fix" date="2018-02-27">
+        deleteBy...And... is not deleting records in Dynamo
+      </action>
+      <action dev="derjust" type="add" issue="136">
+        Transfer to spring-data-dynamodb organization
+      </action>
+    </release>
+    <release version="5.0.1" date="2018-01-06" description="Maintenance release">
+      <action dev="derjust" issue="68" type="fix" date="2017-12-01">
+        Respecting DynamoDBOperations.batchSave()'s List&lt;FailedBatch&gt; return value and turn it into a BatchWriteException
+      </action>
+      <action dev="derjust" type="add" date="2017-12-01">
+        Added maven-changes-plugin to build process
+      </action>
+      <action dev="derjust" type="add" date="2017-12-17">
+        Update Mockito and resolve dependency clashes
+      </action>
+      <action dev="Gaurav Rawat" type="fix" issue="91">
+        Fixed false assertion introduced implementing #91
+      </action>
+      <action dev="Alex Arana" type="add" issue="62">
+        Support @DynamoDBTypeConverted instead of/in addition to @DynamoDBMarshalling for query methods
+      </action>
+      <action dev="derjust" type="fix" issue="109">
+        Fix incorrect passing of an Optional into the delete method
+      </action>
+      <action dev="Alex Arana" type="add" issue="62">
+        Support @DynamoDBTypeConverted instead of/in addition to @DynamoDBMarshalling for query methods
+      </action>
+      <action dev="derjust" type="add" issue="136">
+        Transfer to spring-data-dynamodb organization
+      </action>
+    </release>
+    <release version="5.0.0" date="2017-11-27" description="Spring 5 release" >
+      <action dev="derjust" type="add">
+        Added Spring 5 / Spring-Data Kay support
+      </action>
+    </release>
+    <release version="4.5.7" date="2018-08-10" description="security release">
+      <action dev="derjust" issue="190" type="fix" date="2018-08-10">
+        Update to spring-data Ingalls-SR14 due to fix CVE-2018-1273
+      </action>
+    </release>
+    <release version="4.5.5" date="2018-03-07" description="Backport of v5.0 (master)">
+      <action dev="derjust" type="fix" issue="139">
+        Backport of v5.0 branch (master)
+      </action>
+      <action dev="derjust" type="add" issue="136">
+        Transfer to spring-data-dynamodb organization
+      </action>
+    </release>
+    <release version="4.5.4" date="2017-01-23" description="Backport of PR #79">
+      <action dev="Alex Arana" type="add" issue="62">
+        Support @DynamoDBTypeConverted instead of/in addition to @DynamoDBMarshalling for query methods
+      </action>
+    </release>
+    <release version="4.5.3" date="2017-01-14" description="Backport of PR #108">
+      <action dev="derjust" issue="108" type="fix" date="2018-01-14">
+        Opened constructor and fixed NPE in case of missing DynamoDBConfig
+      </action>
+    </release>
+    <release version="4.5.2" date="2017-12-24" description="Backport of PR #106">
+      <action dev="Gaurav Rawat" type="fix" issue="91">
+        Fixed false assertion introduced implementing #91
+      </action>
+    </release>
+    <release version="4.5.1" date="2017-12-19">
+      <action dev="Michael Wyraz" type="fix" issue="91">
+        Add constructor to DynamoDBTemplate that takes a preconfigured DynamoDBMapper
+      </action>
+    </release>
+  </body>
+</document>

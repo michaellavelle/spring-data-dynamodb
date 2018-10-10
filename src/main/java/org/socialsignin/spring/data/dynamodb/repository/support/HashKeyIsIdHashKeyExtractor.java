@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,14 +15,13 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import java.io.Serializable;
-
 import org.springframework.util.Assert;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
-public class HashKeyIsIdHashKeyExtractor<ID extends Serializable> implements HashKeyExtractor<ID, ID> {
+public class HashKeyIsIdHashKeyExtractor<ID> implements HashKeyExtractor<ID, ID> {
 
 	private Class<ID> idAndHashKeyType;
 
@@ -33,7 +32,8 @@ public class HashKeyIsIdHashKeyExtractor<ID extends Serializable> implements Has
 	@Override
 	public ID getHashKey(ID id) {
 		Assert.isAssignable(idAndHashKeyType, id.getClass(),
-				"Expected ID type to be the same as the return type of the hash key method ( " + idAndHashKeyType + " ) : ");
+				"Expected ID type to be the same as the return type of the hash key method ( " + idAndHashKeyType
+						+ " ) : ");
 		return id;
 	}
 

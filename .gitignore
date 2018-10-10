@@ -1,8 +1,12 @@
 *.class
 .project
+.metadata
 target
 *.iml
 .idea
+
+pom.xml.releaseBackup
+release.properties
 
 # Package Files #
 *.jar
@@ -10,3 +14,4 @@ target
 *.ear
 .settings
 .classpath
+.checkstyle

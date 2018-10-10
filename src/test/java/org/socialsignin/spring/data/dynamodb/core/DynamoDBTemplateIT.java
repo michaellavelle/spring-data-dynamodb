@@ -1,69 +1,83 @@
+/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.socialsignin.spring.data.dynamodb.core;
 
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-
-import org.socialsignin.spring.data.dynamodb.domain.sample.User;
-
-import java.util.UUID;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.socialsignin.spring.data.dynamodb.domain.sample.User;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.UUID;
 
 /**
  * Integration test that interacts with DynamoDB Local instance.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {DynamoDBResource.class})
 @Ignore
 public class DynamoDBTemplateIT {
 
-    private static final String PORT = System.getProperty("dynamodb.port");
+	@Autowired
+	private AmazonDynamoDB amazonDynamoDB;
+	private DynamoDBTemplate dynamoDBTemplate;
 
-    private DynamoDBTemplate dynamoDBTemplate;
+	@Before
+	public void setUp() {
+		this.dynamoDBTemplate = new DynamoDBTemplate(amazonDynamoDB);
+	}
 
-    @Before
-    public void setUp() {
-        AmazonDynamoDB dynamoDB = new AmazonDynamoDBClient(new BasicAWSCredentials("AWS-Key", ""));
-        dynamoDB.setEndpoint(String.format("http://localhost:%s", DynamoDBTemplateIT.PORT));
+	@Test
+	public void testUser_CRUD() {
 
-        this.dynamoDBTemplate = new DynamoDBTemplate(dynamoDB);
-    }
+		// Given a entity to save.
+		User user = new User();
+		user.setName("John Doe");
+		user.setNumberOfPlaylists(10);
+		user.setId(UUID.randomUUID().toString());
 
-    @Test
-    public void testUser_CRUD() {
+		// Save it to DB.
+		dynamoDBTemplate.save(user);
 
-        // Given a entity to save.
-        User user = new User();
-        user.setName("John Doe");
-        user.setNumberOfPlaylists(10);
-        user.setId(UUID.randomUUID().toString());
+		// Retrieve it from DB.
+		User retrievedUser = dynamoDBTemplate.load(User.class, user.getId());
 
-        // Save it to DB.
-        dynamoDBTemplate.save(user);
+		// Verify the details on the entity.
+		assert retrievedUser.getName().equals(user.getName());
+		assert retrievedUser.getId().equals(user.getId());
+		assert retrievedUser.getNumberOfPlaylists() == user.getNumberOfPlaylists();
 
-        // Retrieve it from DB.
-        User retrievedUser = dynamoDBTemplate.load(User.class, user.getId());
+		// Update the entity and save.
+		retrievedUser.setNumberOfPlaylists(20);
+		dynamoDBTemplate.save(retrievedUser);
 
-        // Verify the details on the entity.
-        assert retrievedUser.getName().equals(user.getName());
-        assert retrievedUser.getId().equals(user.getId());
-        assert retrievedUser.getNumberOfPlaylists() == user.getNumberOfPlaylists();
+		retrievedUser = dynamoDBTemplate.load(User.class, user.getId());
 
-        // Update the entity and save.
-        retrievedUser.setNumberOfPlaylists(20);
-        dynamoDBTemplate.save(retrievedUser);
+		assert retrievedUser.getNumberOfPlaylists() == 20;
 
-        retrievedUser = dynamoDBTemplate.load(User.class, user.getId());
+		// Delete.
+		dynamoDBTemplate.delete(retrievedUser);
 
-        assert retrievedUser.getNumberOfPlaylists() == 20;
-
-        // Delete.
-        dynamoDBTemplate.delete(retrievedUser);
-
-        // Get again.
-        assert dynamoDBTemplate.load(User.class, user.getId()) == null;
-
-    }
+		// Get again.
+		assert dynamoDBTemplate.load(User.class, user.getId()) == null;
+	}
 
 }
