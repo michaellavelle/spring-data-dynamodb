@@ -42,6 +42,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -53,13 +54,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DynamoDBLocalResource.class, CRUDOperationsIT.TestAppConfig.class})
 @TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
-@DynamoDBCreateTable(entityClasses = {User.class})
-@Ignore
+@DynamoDBCreateTable(entityClasses = {User.class, Playlist.class})
 public class CRUDOperationsIT {
 
 	@Rule
@@ -74,11 +75,14 @@ public class CRUDOperationsIT {
 	private UserRepository userRepository;
 	@Autowired
 	private UserPaginationRepository userPaginationRepository;
+	@Autowired
+	private PlaylistRepository playlistRepository;
 
 	@Before
 	public void setUp() {
 		userRepository.deleteAll();
 		userPaginationRepository.deleteAll();
+		playlistRepository.deleteAll();
 	}
 
 	@Test
@@ -186,6 +190,23 @@ public class CRUDOperationsIT {
 		expectedException.expect(EmptyResultDataAccessException.class);
 		// Delete specific
 		userRepository.deleteById("non-existent");
+	}
+
+	@Test
+	public void testDeleteHashRangeKey() {
+		// setup
+		long rnd = ThreadLocalRandom.current().nextLong();
+		Playlist p = new Playlist();
+		p.setPlaylistName("playlistName-" + rnd);
+		p.setUserName("userName-" + rnd);
+
+		playlistRepository.save(p);
+
+		PlaylistId id = new PlaylistId("userName-" + rnd, "playlistName-" + rnd);
+		assertTrue("Entity with id not found: " + id, playlistRepository.findById(id).isPresent());
+
+		playlistRepository.deleteById(id);
+		assertFalse("Entity with id not deleted: " + id, playlistRepository.findById(id).isPresent());
 	}
 
 	@Test
