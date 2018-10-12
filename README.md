@@ -88,6 +88,7 @@ Create a CRUD repository interface [UserRepository](https://github.com/derjust/s
 @EnableScan
 public interface UserRepository extends CrudRepository<User, String> {
   List<User> findByLastName(String lastName);
+  List<User> findByFirstName(String firstName);
 }
 ```
 
@@ -96,6 +97,7 @@ or for paging and sorting...
 ```java
 public interface PagingUserRepository extends PagingAndSortingRepository<User, String> {
 	Page<User> findByLastName(String lastName, Pageable pageable);
+	Page<User> findByFirstName(String firstName, Pageable pageable);
 
 	@EnableScan
 	@EnableScanCount
@@ -142,34 +144,8 @@ public static class DynamoDBConfig {
 }
 ```
 
-And finally write a test client [UserRepositoryIT](https://github.com/derjust/spring-data-dynamodb-examples/blob/master/src/test/java/com/github/derjust/spring_data_dynamodb_examples/simple/UserRepositoryIT.java):
+And finally write a test client [UserRepositoryIT](https://github.com/derjust/spring-data-dynamodb-examples/blob/master/src/test/java/com/github/derjust/spring_data_dynamodb_examples/simple/UserRepositoryIT.java) or start calling it from your existing Spring code.
 
-```java
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = { PropertyPlaceholderAutoConfiguration.class, DynamoDBConfig.class })
-public class UserRepositoryIT {
-	private static final Logger log = LoggerFactory.getLogger(UserRepositoryIT.class);
-	
-	@Autowired
-	private UserRepository repository;
-
-	@Test
-	public void sampleTestCase() {
-		User gosling = new User("James", "Gosling");
-		repository.save(gosling);
-
-		User hoeller = new User("Juergen", "Hoeller");
-		repository.save(hoeller);
-
-		List<User> result = repository.findByLastName("Gosling");
-		Assert.assertThat(result.size(), is(1));
-		Assert.assertThat(result, hasItem(gosling));
-		log.info("Found in table: {}", result.get(0));
-	}
-
-	// setup code
-}
-```
 
 The full source code is available at [spring-data-dynamodb-examples' simple example](https://github.com/derjust/spring-data-dynamodb-examples/blob/master/README-simple.md)
 
