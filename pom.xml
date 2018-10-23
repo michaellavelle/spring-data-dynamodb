@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>5.0.4-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
     <inceptionYear>2018</inceptionYear>
 
@@ -37,8 +37,8 @@
     </licenses>
 
     <properties>
-        <spring.version>5.0.4.RELEASE</spring.version>
-        <spring-data.version>2.0.9.RELEASE</spring-data.version>
+        <spring.version>5.1.1.RELEASE</spring.version>
+        <spring-data.version>2.1.1.RELEASE</spring-data.version>
 
         <hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
         <aws-java-sdk.version>1.11.301</aws-java-sdk.version>
