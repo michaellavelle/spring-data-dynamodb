@@ -44,7 +44,6 @@
         <aws-java-sdk.version>1.11.301</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
         <mockito.version>2.13.0</mockito.version>
-
         <cdi.version>1.2</cdi.version>
         <slf4j-test.version>1.2.0</slf4j-test.version>
         <sqlite4java.version>1.0.392</sqlite4java.version>
@@ -89,7 +88,6 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
@@ -202,6 +200,9 @@
                     <groupId>net.revelc.code.formatter</groupId>
                     <artifactId>formatter-maven-plugin</artifactId>
                     <version>2.7.2</version>
+                    <configuration>
+                        <lineEnding>LF</lineEnding>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -653,7 +654,7 @@
                 </os>
             </activation>
             <properties>
-                <sqlite4java.artifactId>libsqlite4java-win32-x64</sqlite4java.artifactId>
+                <sqlite4java.artifactId>sqlite4java-win32-x64</sqlite4java.artifactId>
                 <sqlite4java.type>dll</sqlite4java.type>
             </properties>
         </profile>

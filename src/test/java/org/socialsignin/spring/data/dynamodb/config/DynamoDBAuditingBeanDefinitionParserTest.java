@@ -19,6 +19,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -51,6 +52,7 @@ import static org.mockito.Mockito.verify;
 import static org.socialsignin.spring.data.dynamodb.config.BeanNames.MAPPING_CONTEXT_BEAN_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
+@Ignore
 public class DynamoDBAuditingBeanDefinitionParserTest {
 
 	private DynamoDBAuditingBeanDefinitionParser underTest;
@@ -64,6 +66,7 @@ public class DynamoDBAuditingBeanDefinitionParserTest {
 	private ParserContext parserContext;
 	@Mock
 	private BeanDefinitionRegistry registry;
+
 	@Mock
 	private BeanDefinitionBuilder builder;
 
