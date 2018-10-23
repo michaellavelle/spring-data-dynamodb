@@ -107,7 +107,8 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	}
 
 	@Override
-    protected Optional<QueryLookupStrategy> getQueryLookupStrategy(Key key, QueryMethodEvaluationContextProvider evaluationContextProvider) {
+    protected Optional<QueryLookupStrategy> getQueryLookupStrategy(Key key,
+                                                                   QueryMethodEvaluationContextProvider evaluationContextProvider) {
 		return Optional.of(DynamoDBQueryLookupStrategy.create(dynamoDBOperations, key));
 	}
 
