@@ -146,18 +146,18 @@ public class PartTreeDynamoDBQueryUnitTest {
 		// be mocked by Mockito anymore
 		// https://github.com/mockito/mockito/wiki/FAQ#what-are-the-limitations-of-mockito
 		// Therefore setting the field explicitly that is used by all the isXXX methods
-		try {
-			Field unwrappedReturnTypeField = mockDynamoDBQueryMethod.getClass() // Mockito-generated class
-					.getSuperclass() // org.socialsignin.spring.data.dynamodb.repository.query.DynamoDBQueryMethod
-					.getSuperclass() // org.springframework.data.repository.query.QueryMethod
-					.getDeclaredField("unwrappedReturnType");
-			unwrappedReturnTypeField.setAccessible(true); // It's final therefore unlocking the field
-			unwrappedReturnTypeField.set(mockDynamoDBQueryMethod, clazz);
-		} catch (Exception e) {
-			// There is little we can and want do if it fails - Aborting the whole test is
-			// fine
-			throw new RuntimeException(e);
-		}
+		// Removed due to Mockito upgrade - jdorman
+		/*
+		 * try { Field unwrappedReturnTypeField = mockDynamoDBQueryMethod.getClass() //
+		 * Mockito-generated class .getSuperclass() //
+		 * org.socialsignin.spring.data.dynamodb.repository.query.DynamoDBQueryMethod
+		 * .getSuperclass() // org.springframework.data.repository.query.QueryMethod
+		 * .getDeclaredField("unwrappedReturnType");
+		 * unwrappedReturnTypeField.setAccessible(true); // It's final therefore
+		 * unlocking the field unwrappedReturnTypeField.set(mockDynamoDBQueryMethod,
+		 * clazz); } catch (Exception e) { // There is little we can and want do if it
+		 * fails - Aborting the whole test is // fine throw new RuntimeException(e); }
+		 */
 
 		Mockito.when(mockDynamoDBQueryMethod.getEntityType()).thenReturn(clazz);
 		Mockito.when(mockDynamoDBQueryMethod.getName()).thenReturn(repositoryMethodName);

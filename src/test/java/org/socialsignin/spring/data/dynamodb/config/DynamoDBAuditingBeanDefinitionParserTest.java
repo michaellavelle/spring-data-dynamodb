@@ -52,7 +52,6 @@ import static org.mockito.Mockito.verify;
 import static org.socialsignin.spring.data.dynamodb.config.BeanNames.MAPPING_CONTEXT_BEAN_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
-@Ignore
 public class DynamoDBAuditingBeanDefinitionParserTest {
 
 	private DynamoDBAuditingBeanDefinitionParser underTest;
