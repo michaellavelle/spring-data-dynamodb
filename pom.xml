@@ -261,7 +261,7 @@
                         </manifest>
                         <manifestEntries>
                             <Specification-Title>Spring Data</Specification-Title>
-                            <Specification-Version>2.0</Specification-Version>
+                            <Specification-Version>2.1</Specification-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -794,6 +794,10 @@
         <contributor>
             <name>Rene Enriquez</name>
             <url>enriquezrene</url>
+        </contributor>
+        <contributor>
+            <name>John Dorman</name>
+            <url>https://github.com/boostchicken</url>
         </contributor>
     </contributors>
 
