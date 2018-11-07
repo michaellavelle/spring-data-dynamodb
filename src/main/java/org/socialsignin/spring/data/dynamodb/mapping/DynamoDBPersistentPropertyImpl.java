@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,9 +36,11 @@ import java.util.Set;
  * {@link DynamoDBPersistentProperty} implementation
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
-class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<DynamoDBPersistentProperty> implements
-		DynamoDBPersistentProperty {
+class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<DynamoDBPersistentProperty>
+		implements
+			DynamoDBPersistentProperty {
 
 	private static final Collection<Class<? extends Annotation>> ASSOCIATION_ANNOTATIONS;
 	private static final Collection<Class<? extends Annotation>> ID_ANNOTATIONS;
@@ -50,7 +52,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 		annotations.add(Reference.class); // Reference not yet supported
 		ASSOCIATION_ANNOTATIONS = Collections.unmodifiableSet(annotations);
 
-		annotations = new HashSet<Class<? extends Annotation>>();
+		annotations = new HashSet<>();
 		annotations.add(Id.class);
 		annotations.add(DynamoDBHashKey.class);
 		ID_ANNOTATIONS = annotations;
@@ -67,7 +69,8 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	 *            must not be {@literal null}.
 	 */
 
-	public DynamoDBPersistentPropertyImpl(Property property, DynamoDBPersistentEntityImpl<?> owner, SimpleTypeHolder simpleTypeHolder) {
+	public DynamoDBPersistentPropertyImpl(Property property, DynamoDBPersistentEntityImpl<?> owner,
+			SimpleTypeHolder simpleTypeHolder) {
 		super(property, owner, simpleTypeHolder);
 	}
 
@@ -75,7 +78,6 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	public boolean isWritable() {
 		return !isAnnotationPresent(DynamoDBIgnore.class);
 	}
-
 
 	public boolean isHashKeyProperty() {
 		return isAnnotationPresent(DynamoDBHashKey.class);
@@ -88,8 +90,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
+	 * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
 	 * #isIdProperty()
 	 */
 	@Override
@@ -108,8 +109,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.springframework.data.mapping.model.AbstractPersistentProperty#isEntity
-	 * ()
+	 * org.springframework.data.mapping.model.AbstractPersistentProperty#isEntity ()
 	 */
 	// @Override
 
@@ -128,8 +128,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
+	 * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
 	 * #isAssociation()
 	 */
 	@Override
@@ -150,8 +149,7 @@ class DynamoDBPersistentPropertyImpl extends AnnotationBasedPersistentProperty<D
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
+	 * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty
 	 * #isTransient()
 	 */
 	@Override

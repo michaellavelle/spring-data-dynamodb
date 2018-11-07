@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,21 +27,22 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import java.lang.annotation.Annotation;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * A bean which represents a DynamoDB repository.
  * 
  * @author Michael Lavelle
+ * @author Sebastian Just
  * @param <T>
  *            The type of the repository.
  */
 class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
-
 	private final Bean<AmazonDynamoDB> amazonDynamoDBBean;
 
 	private final Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean;
-		
+
 	private final Bean<DynamoDBOperations> dynamoDBOperationsBean;
 
 	/**
@@ -49,7 +50,9 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 	 * 
 	 * @param beanManager
 	 *            must not be {@literal null}.
-	 * @param dynamoDBMapperBean
+	 * @param amazonDynamoDBBean
+	 *            must not be {@literal null}.
+	 * @param dynamoDBOperationsBean
 	 *            must not be {@literal null}.
 	 * @param qualifiers
 	 *            must not be {@literal null}.
@@ -57,17 +60,17 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 	 *            must not be {@literal null}.
 	 */
 	DynamoDBRepositoryBean(BeanManager beanManager, Bean<AmazonDynamoDB> amazonDynamoDBBean,
-			Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean,Bean<DynamoDBOperations> dynamoDBOperationsBean, Set<Annotation> qualifiers, Class<T> repositoryType) {
+			Bean<DynamoDBMapperConfig> dynamoDBMapperConfigBean, Bean<DynamoDBOperations> dynamoDBOperationsBean,
+			Set<Annotation> qualifiers, Class<T> repositoryType) {
 
 		super(qualifiers, repositoryType, beanManager);
-		if (dynamoDBOperationsBean == null)
-		{
+		if (dynamoDBOperationsBean == null) {
 			Assert.notNull(amazonDynamoDBBean, "amazonDynamoDBBean must not be null!");
-		}
-		else
-		{
-			Assert.isNull(amazonDynamoDBBean,"Cannot specify both amazonDynamoDB bean and dynamoDBOperationsBean in repository configuration");
-			Assert.isNull(dynamoDBMapperConfigBean,"Cannot specify both dynamoDBMapperConfigBean bean and dynamoDBOperationsBean in repository configuration");
+		} else {
+			Assert.isNull(amazonDynamoDBBean,
+					"Cannot specify both amazonDynamoDB bean and dynamoDBOperationsBean in repository configuration");
+			Assert.isNull(dynamoDBMapperConfigBean,
+					"Cannot specify both dynamoDBMapperConfigBean bean and dynamoDBOperationsBean in repository configuration");
 
 		}
 		this.amazonDynamoDBBean = amazonDynamoDBBean;
@@ -79,28 +82,30 @@ class DynamoDBRepositoryBean<T> extends CdiRepositoryBean<T> {
 	 * (non-Javadoc)
 	 * 
 	 * @see javax.enterprise.context.spi.Contextual#create(javax.enterprise
-	 * .context.spi.CreationalContext)
+	 * .context.spi.CreationalContext, Class<T>, Optional<Object>)
 	 */
 	@Override
-	public T create(CreationalContext<T> creationalContext, Class<T> repositoryType) {
+	protected T create(CreationalContext<T> creationalContext, Class<T> repositoryType,
+			Optional<Object> customImplementation) {
 
 		// Get an instance from the associated AmazonDynamoDB bean.
 		AmazonDynamoDB amazonDynamoDB = getDependencyInstance(amazonDynamoDBBean, AmazonDynamoDB.class);
 
 		// Get an instance from the associated optional AmazonDynamoDB bean.
-		DynamoDBMapperConfig dynamoDBMapperConfig = dynamoDBMapperConfigBean == null ? null : getDependencyInstance(
-				dynamoDBMapperConfigBean, DynamoDBMapperConfig.class);
-		
-		DynamoDBOperations dynamoDBOperations = dynamoDBOperationsBean == null ? null
-				:  getDependencyInstance(
-						dynamoDBOperationsBean, DynamoDBOperations.class);
+		DynamoDBMapperConfig dynamoDBMapperConfig = dynamoDBMapperConfigBean == null
+				? null
+				: getDependencyInstance(dynamoDBMapperConfigBean, DynamoDBMapperConfig.class);
 
-		if (dynamoDBOperations == null)
-		{
-			dynamoDBOperations = new DynamoDBTemplate(amazonDynamoDB,dynamoDBMapperConfig);
+		DynamoDBOperations dynamoDBOperations = dynamoDBOperationsBean == null
+				? null
+				: getDependencyInstance(dynamoDBOperationsBean, DynamoDBOperations.class);
+
+		if (dynamoDBOperations == null) {
+			dynamoDBOperations = new DynamoDBTemplate(amazonDynamoDB, dynamoDBMapperConfig);
 		}
-		
+
 		DynamoDBRepositoryFactory factory = new DynamoDBRepositoryFactory(dynamoDBOperations);
 		return factory.getRepository(repositoryType);
 	}
+
 }

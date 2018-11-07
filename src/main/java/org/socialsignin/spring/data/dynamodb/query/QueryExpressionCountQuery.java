@@ -1,11 +1,11 @@
-/*
- * Copyright 2013 the original author or authors.
+/**
+ * Copyright © 2018 spring-data-dynamodb (https://github.com/derjust/spring-data-dynamodb)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,13 +20,12 @@ import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 
 /**
  * @author Michael Lavelle
+ * @author Sebastian Just
  */
 public class QueryExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long> {
 
-	private DynamoDBQueryExpression<T> queryExpression;
-
-	private Class<T> domainClass;
-
+	private final DynamoDBQueryExpression<T> queryExpression;
+	private final Class<T> domainClass;
 
 	public QueryExpressionCountQuery(DynamoDBOperations dynamoDBOperations, Class<T> clazz,
 			DynamoDBQueryExpression<T> queryExpression) {
@@ -37,7 +36,7 @@ public class QueryExpressionCountQuery<T> extends AbstractSingleEntityQuery<Long
 
 	@Override
 	public Long getSingleResult() {
-		return new Long(dynamoDBOperations.count(domainClass, queryExpression));
+		return Long.valueOf(dynamoDBOperations.count(domainClass, queryExpression));
 	}
 
 }
