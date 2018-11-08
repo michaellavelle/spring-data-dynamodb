@@ -23,6 +23,11 @@
     <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
+    <release version="5.1.4" date="" description="Maintenance &amp; security release">
+      <action dev="ryonday" issue="218" type="fix" date="2018-11-09">
+        Update to Spring-Data 2.1.2.RELEASE and Spring Framework 5.1.2.RELEASE
+      </action>
+    </release>
      <release version="5.0.4" date="" description="Maintenance &amp; security release">
       <action dev="enriquezrene" issue="199" type="fix" date="2018-10-11">
         Fix README.md examples

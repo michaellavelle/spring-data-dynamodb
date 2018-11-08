@@ -147,8 +147,7 @@ public class PartTreeDynamoDBQueryUnitTest {
 		// https://github.com/mockito/mockito/wiki/FAQ#what-are-the-limitations-of-mockito
 		// Therefore setting the field explicitly that is used by all the isXXX methods
 		try {
-			Field unwrappedReturnTypeField = mockDynamoDBQueryMethod.getClass() // Mockito-generated class
-					.getSuperclass() // org.socialsignin.spring.data.dynamodb.repository.query.DynamoDBQueryMethod
+			Field unwrappedReturnTypeField = mockDynamoDBQueryMethod.getClass() // org.socialsignin.spring.data.dynamodb.repository.query.DynamoDBQueryMethod
 					.getSuperclass() // org.springframework.data.repository.query.QueryMethod
 					.getDeclaredField("unwrappedReturnType");
 			unwrappedReturnTypeField.setAccessible(true); // It's final therefore unlocking the field
