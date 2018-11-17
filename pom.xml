@@ -38,7 +38,7 @@
 
     <properties>
         <spring.version>5.1.1.RELEASE</spring.version>
-        <spring-data.version>2.1.1.RELEASE</spring-data.version>
+        <spring-data.version>2.1.2.RELEASE</spring-data.version>
 
         <hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
         <aws-java-sdk.version>1.11.301</aws-java-sdk.version>
