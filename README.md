@@ -37,7 +37,7 @@ Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.gi
 <dependency>
   <groupId>com.github.derjust</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>5.0.3</version>
+  <version>5.0.4</version>
 </dependency>
 ```
 
@@ -165,11 +165,11 @@ API changes will follow SEMVER and loosly the Spring Framework releases.
 | ------------------------------- | ------------------------------ | ------------------------------ | ------------------------- |
 | 1.0.x                           |                                | >= 3.1 && < 4.2                |                           |
 | 4.2.x                           | >= 1.3.0 && < 1.4.0            | >= 4.2 && < 4.3                | Gosling-SR1               |
-| 4.3.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Gosling-SR1               |
-| 4.4.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Hopper-SR2                |
-| 4.5.x                           | >= 1.4.0 < 2.0                 | >= 4.3 && < 5.0                | Ingalls                   |
-| 5.0.x                           | >= 2.0                         | >= 5.0                         | Kay-SR1                   |
-
+| 4.3.x                           | >= 1.4.0 && < 2.0              | >= 4.3 && < 5.0                | Gosling-SR1               |
+| 4.4.x                           | >= 1.4.0 && < 2.0              | >= 4.3 && < 5.0                | Hopper-SR2                |
+| 4.5.x                           | >= 1.4.0 && < 2.0              | >= 4.3 && < 5.0                | Ingalls                   |
+| 5.0.x                           | >= 2.0 && < 2.1                | >= 5.0 && < 5.1                | Kay-SR1                   |
+| 5.1.x                           | >= 2.1                         | >= 5.1                         | Lovelace-SR1              |
 `spring-data-dynamodb` depends directly on `spring-data` as also `spring-context`, `spring-data` and `spring-tx`.
 
 `compile` and `runtime` dependencies are kept to a minimum to allow easy integartion, for example into 

@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.derjust</groupId>
     <artifactId>spring-data-dynamodb</artifactId>
-    <version>5.0.5-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
     <name>Spring Data DynamoDB</name>
     <inceptionYear>2018</inceptionYear>
 
@@ -37,14 +37,13 @@
     </licenses>
 
     <properties>
-        <spring.version>5.0.4.RELEASE</spring.version>
-        <spring-data.version>2.0.9.RELEASE</spring-data.version>
+        <spring.version>5.1.2.RELEASE</spring.version>
+        <spring-data.version>2.1.2.RELEASE</spring-data.version>
 
         <hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
-        <aws-java-sdk.version>1.11.301</aws-java-sdk.version>
+        <aws-java-sdk.version>1.11.443</aws-java-sdk.version>
         <junit.version>4.12</junit.version>
-        <mockito.version>2.13.0</mockito.version>
-
+        <mockito.version>2.23.0</mockito.version>
         <cdi.version>1.2</cdi.version>
         <slf4j-test.version>1.2.0</slf4j-test.version>
         <sqlite4java.version>1.0.392</sqlite4java.version>
@@ -89,7 +88,6 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
@@ -202,6 +200,9 @@
                     <groupId>net.revelc.code.formatter</groupId>
                     <artifactId>formatter-maven-plugin</artifactId>
                     <version>2.7.2</version>
+                    <configuration>
+                        <lineEnding>LF</lineEnding>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -260,7 +261,7 @@
                         </manifest>
                         <manifestEntries>
                             <Specification-Title>Spring Data</Specification-Title>
-                            <Specification-Version>2.0</Specification-Version>
+                            <Specification-Version>2.1</Specification-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -653,7 +654,7 @@
                 </os>
             </activation>
             <properties>
-                <sqlite4java.artifactId>libsqlite4java-win32-x64</sqlite4java.artifactId>
+                <sqlite4java.artifactId>sqlite4java-win32-x64</sqlite4java.artifactId>
                 <sqlite4java.type>dll</sqlite4java.type>
             </properties>
         </profile>
@@ -793,6 +794,14 @@
         <contributor>
             <name>Rene Enriquez</name>
             <url>enriquezrene</url>
+        </contributor>
+        <contributor>
+            <name>John Dorman</name>
+            <url>https://github.com/boostchicken</url>
+		</contributor>
+		<contributor>
+            <name>Ryon Day</name>
+            <url>https://github.com/ryonday</url>
         </contributor>
     </contributors>
 
