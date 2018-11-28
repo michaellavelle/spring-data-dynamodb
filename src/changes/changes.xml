@@ -23,7 +23,19 @@
     <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
+<<<<<<< HEAD
      <release version="5.0.4" date="2018-11-27" description="Maintenance &amp; security release">
+=======
+    <release version="5.1.0" date="" description="Spring Boot 2.1 and Spring Data Lovelace-SR1 support">
+      <action dev="boostschicken" type="add" date="2018-10-28">
+        Updated all code to work with Spring Boot 2.1 and Lovelace-SR1
+      </action>
+      <action dev="boostschicken" type="add" date="2018-10-28">
+        Updated Mockito to improve test coverage
+      </action>
+    </release>
+     <release version="5.0.4" date="" description="Maintenance &amp; security release">
+>>>>>>> 77d9206cb28add3923d8f414ea4762ee4bc95ac2
       <action dev="enriquezrene" issue="199" type="fix" date="2018-10-11">
         Fix README.md examples
       </action>

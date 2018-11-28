@@ -64,6 +64,7 @@ public class DynamoDBAuditingBeanDefinitionParserTest {
 	private ParserContext parserContext;
 	@Mock
 	private BeanDefinitionRegistry registry;
+
 	@Mock
 	private BeanDefinitionBuilder builder;
 
