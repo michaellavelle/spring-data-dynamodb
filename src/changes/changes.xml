@@ -23,7 +23,7 @@
     <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
-     <release version="5.0.4" date="" description="Maintenance &amp; security release">
+     <release version="5.0.4" date="2018-11-27" description="Maintenance &amp; security release">
       <action dev="enriquezrene" issue="199" type="fix" date="2018-10-11">
         Fix README.md examples
       </action>
