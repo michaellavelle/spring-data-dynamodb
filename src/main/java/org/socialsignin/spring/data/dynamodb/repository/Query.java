@@ -21,6 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static org.socialsignin.spring.data.dynamodb.repository.QueryConstants.QUERY_LIMIT_UNLIMITED;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
@@ -36,4 +38,13 @@ public @interface Query {
 	 *      Expressions</a>
 	 */
 	String fields() default "";
+
+	/**
+	 * An integer to limit the number of elements returned.
+	 *
+	 * @see <a href=
+	 *      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ProjectionExpressions.html">Projection
+	 *      Expressions</a>
+	 */
+	int limit() default QUERY_LIMIT_UNLIMITED;
 }

@@ -72,6 +72,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	protected String globalSecondaryIndexName;
 	protected Sort sort = Sort.unsorted();
 	protected Optional<String> projection = Optional.empty();
+	protected Optional<Integer> limit = Optional.empty();
 
 	public abstract boolean isApplicableForLoad();
 
@@ -132,6 +133,7 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 				queryRequest.setSelect(Select.ALL_PROJECTED_ATTRIBUTES);
 			}
 
+			limit.ifPresent(queryRequest::setLimit);
 			applySortIfSpecified(queryRequest, new ArrayList<>(new HashSet<>(allowedSortProperties)));
 		}
 		return queryRequest;
@@ -693,6 +695,12 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 	@Override
 	public DynamoDBQueryCriteria<T, ID> withProjection(Optional<String> projection) {
 		this.projection = projection;
+		return this;
+	}
+
+	@Override
+	public DynamoDBQueryCriteria<T, ID> withLimit(Optional<Integer> limit) {
+		this.limit = limit;
 		return this;
 	}
 }

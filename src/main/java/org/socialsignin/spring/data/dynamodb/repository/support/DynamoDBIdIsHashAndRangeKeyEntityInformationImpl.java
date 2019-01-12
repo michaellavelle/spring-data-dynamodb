@@ -41,6 +41,7 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends Ref
 	private DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata;
 	private HashAndRangeKeyExtractor<ID, ?> hashAndRangeKeyExtractor;
 	private Optional<String> projection = Optional.empty();
+	private Optional<Integer> limit = Optional.empty();
 
 	public DynamoDBIdIsHashAndRangeKeyEntityInformationImpl(Class<T> domainClass,
 			DynamoDBHashAndRangeKeyExtractingEntityMetadata<T, ID> metadata) {
@@ -52,6 +53,11 @@ public class DynamoDBIdIsHashAndRangeKeyEntityInformationImpl<T, ID> extends Ref
 	@Override
 	public Optional<String> getProjection() {
 		return projection;
+	}
+
+	@Override
+	public Optional<Integer> getLimit() {
+		return limit;
 	}
 
 	@Override

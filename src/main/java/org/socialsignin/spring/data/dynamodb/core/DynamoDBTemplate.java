@@ -180,6 +180,15 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	@Override
 	public <T> PaginatedQueryList<T> query(Class<T> clazz, QueryRequest queryRequest) {
 		QueryResult queryResult = amazonDynamoDB.query(queryRequest);
+
+		// If a limit is set, deactivate lazy loading of (matching) items after the
+		// limit
+		// via
+		// com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList.atEndOfResults()
+		if (queryRequest.getLimit() != null) {
+			queryResult.setLastEvaluatedKey(null);
+		}
+
 		return new PaginatedQueryList<T>(dynamoDBMapper, clazz, amazonDynamoDB, queryRequest, queryResult,
 				dynamoDBMapperConfig.getPaginationLoadingStrategy(), dynamoDBMapperConfig);
 	}
