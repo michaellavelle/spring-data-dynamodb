@@ -15,14 +15,11 @@
  */
 package org.socialsignin.spring.data.dynamodb.repository.support;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
-import org.socialsignin.spring.data.dynamodb.core.DynamoDBTemplate;
 import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.socialsignin.spring.data.dynamodb.repository.util.DynamoDBMappingContextProcessor;
+import org.socialsignin.spring.data.dynamodb.repository.util.Entity2DynamoDBTableSynchronizer;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -41,53 +38,44 @@ import java.io.Serializable;
  */
 public class DynamoDBRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable>
 		extends
-			RepositoryFactoryBeanSupport<T, S, ID>
-		implements
-			ApplicationContextAware {
-
-	private DynamoDBMapperConfig dynamoDBMapperConfig;
-
-	private AmazonDynamoDB amazonDynamoDB;
+			RepositoryFactoryBeanSupport<T, S, ID> {
 
 	private DynamoDBOperations dynamoDBOperations;
-
-	private ApplicationContext applicationContext;
+	private Entity2DynamoDBTableSynchronizer<S, ID> tableSynchronizer;
+	private DynamoDBMappingContextProcessor<S, ID> dynamoDBMappingContextProcessor;
 
 	public DynamoDBRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
 		super(repositoryInterface);
 	}
 
-	public void setAmazonDynamoDB(AmazonDynamoDB amazonDynamoDB) {
-		this.amazonDynamoDB = amazonDynamoDB;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
-
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory() {
-		if (dynamoDBOperations == null) {
-			/**
-			 * The ApplicationContextAware within DynamoDBTemplate is not executed as
-			 * DynamoDBTemplate is not initialized as a bean
-			 */
-			DynamoDBTemplate dynamoDBTemplate = new DynamoDBTemplate(amazonDynamoDB, dynamoDBMapperConfig);
-			dynamoDBTemplate.setApplicationContext(applicationContext);
-			dynamoDBOperations = dynamoDBTemplate;
-		}
-		return new DynamoDBRepositoryFactory(dynamoDBOperations);
+		assert dynamoDBOperations != null;
+		assert tableSynchronizer != null;
+		assert dynamoDBMappingContextProcessor != null;
+		DynamoDBRepositoryFactory dynamoDBRepositoryFactory = new DynamoDBRepositoryFactory(dynamoDBOperations);
+		dynamoDBRepositoryFactory.addRepositoryProxyPostProcessor(tableSynchronizer);
+		dynamoDBRepositoryFactory.addRepositoryProxyPostProcessor(dynamoDBMappingContextProcessor);
+		return dynamoDBRepositoryFactory;
 	}
 
-	public void setDynamoDBMapperConfig(DynamoDBMapperConfig dynamoDBMapperConfig) {
-		this.dynamoDBMapperConfig = dynamoDBMapperConfig;
+	@Required
+	public void setDynamoDBMappingContextProcessor(
+			DynamoDBMappingContextProcessor<S, ID> dynamoDBMappingContextProcessor) {
+		this.dynamoDBMappingContextProcessor = dynamoDBMappingContextProcessor;
 	}
 
+	@Required
+	public void setEntity2DynamoDBTableSynchronizer(Entity2DynamoDBTableSynchronizer<S, ID> tableSynchronizer) {
+		this.tableSynchronizer = tableSynchronizer;
+	}
+
+	@Required
 	public void setDynamoDBOperations(DynamoDBOperations dynamoDBOperations) {
 		this.dynamoDBOperations = dynamoDBOperations;
 	}
 
+	@Required
 	public void setDynamoDBMappingContext(DynamoDBMappingContext dynamoDBMappingContext) {
 		setMappingContext(dynamoDBMappingContext);
 	}

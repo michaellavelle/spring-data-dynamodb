@@ -39,6 +39,7 @@ import org.socialsignin.spring.data.dynamodb.mapping.event.BeforeDeleteEvent;
 import org.socialsignin.spring.data.dynamodb.mapping.event.BeforeSaveEvent;
 import org.socialsignin.spring.data.dynamodb.mapping.event.DynamoDBMappingEvent;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
@@ -58,42 +59,6 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	private ApplicationEventPublisher eventPublisher;
 
 	/**
-	 * Convenient constructor to use the default
-	 * {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)}
-	 * 
-	 * @param amazonDynamoDB
-	 *            The AWS SDK instance to talk to DynamoDB
-	 * @param dynamoDBMapperConfig
-	 *            The config to use
-	 */
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig) {
-		this(amazonDynamoDB, dynamoDBMapperConfig, null);
-	}
-
-	/**
-	 * Convenient constructor to use the {@link DynamoDBMapperConfig#DEFAULT}
-	 * 
-	 * @param amazonDynamoDB
-	 *            The AWS SDK instance to talk to DynamoDB
-	 * @param dynamoDBMapper
-	 *            The Mapper to use
-	 */
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper) {
-		this(amazonDynamoDB, null, dynamoDBMapper);
-	}
-
-	/**
-	 * Convenient construcotr to thse the {@link DynamoDBMapperConfig#DEFAULT} and
-	 * default {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB)}
-	 * 
-	 * @param amazonDynamoDB
-	 *            The AWS SDK instance to talk to DynamoDB
-	 */
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB) {
-		this(amazonDynamoDB, null, null);
-	}
-
-	/**
 	 * Initializes a new {@code DynamoDBTemplate}. The following combinations are
 	 * valid:
 	 * 
@@ -106,49 +71,18 @@ public class DynamoDBTemplate implements DynamoDBOperations, ApplicationContextA
 	 *            can be {@code null} -
 	 *            {@link DynamoDBMapper#DynamoDBMapper(AmazonDynamoDB, DynamoDBMapperConfig)}
 	 *            is used if {@code null} is passed in
+	 * @param dynamoDBMapperConfig
 	 */
-	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig dynamoDBMapperConfig,
-			DynamoDBMapper dynamoDBMapper) {
+	@Autowired
+	public DynamoDBTemplate(AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper,
+			DynamoDBMapperConfig dynamoDBMapperConfig) {
 		Assert.notNull(amazonDynamoDB, "amazonDynamoDB must not be null!");
+		Assert.notNull(dynamoDBMapper, "dynamoDBMapper must not be null!");
+		Assert.notNull(dynamoDBMapperConfig, "dynamoDBMapperConfig must not be null!");
+
 		this.amazonDynamoDB = amazonDynamoDB;
-
-		if (dynamoDBMapperConfig == null) {
-			this.dynamoDBMapperConfig = DynamoDBMapperConfig.DEFAULT;
-		} else {
-
-			// #146, #81 #157
-			// Trying to fix half-initialized DynamoDBMapperConfigs here.
-			// The old documentation advised to start with an empty builder. Therefore we
-			// try here to set required fields to their defaults -
-			// As the documentation at
-			// https://github.com/derjust/spring-data-dynamodb/wiki/Alter-table-name-during-runtime
-			// (same as https://git.io/DynamoDBMapperConfig)
-			// now does: Start with #DEFAULT and add what's required
-			DynamoDBMapperConfig.Builder emptyBuilder = DynamoDBMapperConfig.builder(); // empty (!) builder
-
-			if (dynamoDBMapperConfig.getConversionSchema() == null) {
-				LOGGER.warn(
-						"No ConversionSchema set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
-				// DynamoDBMapperConfig#DEFAULT comes with a ConversionSchema
-				emptyBuilder.withConversionSchema(DynamoDBMapperConfig.DEFAULT.getConversionSchema());
-			}
-
-			if (dynamoDBMapperConfig.getTypeConverterFactory() == null) {
-				LOGGER.warn(
-						"No TypeConverterFactory set in the provided dynamoDBMapperConfig! Merging with DynamoDBMapperConfig.DEFAULT - Please see https://git.io/DynamoDBMapperConfig");
-				// DynamoDBMapperConfig#DEFAULT comes with a TypeConverterFactory
-				emptyBuilder.withTypeConverterFactory(DynamoDBMapperConfig.DEFAULT.getTypeConverterFactory());
-			}
-
-			// Deprecated but the only way how DynamoDBMapperConfig#merge is exposed
-			this.dynamoDBMapperConfig = new DynamoDBMapperConfig(dynamoDBMapperConfig, emptyBuilder.build());
-		}
-
-		if (dynamoDBMapper == null) {
-			this.dynamoDBMapper = new DynamoDBMapper(amazonDynamoDB, dynamoDBMapperConfig);
-		} else {
-			this.dynamoDBMapper = dynamoDBMapper;
-		}
+		this.dynamoDBMapper = dynamoDBMapper;
+		this.dynamoDBMapperConfig = dynamoDBMapperConfig;
 	}
 
 	@Override

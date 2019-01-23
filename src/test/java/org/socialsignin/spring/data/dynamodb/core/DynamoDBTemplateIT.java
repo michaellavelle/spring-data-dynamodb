@@ -16,14 +16,17 @@
 package org.socialsignin.spring.data.dynamodb.core;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
-import org.socialsignin.spring.data.dynamodb.utils.DynamoDBResource;
+import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.UUID;
@@ -32,17 +35,21 @@ import java.util.UUID;
  * Integration test that interacts with DynamoDB Local instance.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DynamoDBResource.class})
-@Ignore
+@ContextConfiguration(classes = {DynamoDBLocalResource.class})
+@TestPropertySource(properties = {"spring.data.dynamodb.entity2ddl.auto=create"})
 public class DynamoDBTemplateIT {
 
 	@Autowired
 	private AmazonDynamoDB amazonDynamoDB;
 	private DynamoDBTemplate dynamoDBTemplate;
+	@Autowired
+	private DynamoDBMapper mapper;
+	@Autowired
+	private DynamoDBMapperConfig mapperConfig;
 
 	@Before
 	public void setUp() {
-		this.dynamoDBTemplate = new DynamoDBTemplate(amazonDynamoDB);
+		this.dynamoDBTemplate = new DynamoDBTemplate(amazonDynamoDB, mapper, mapperConfig);
 	}
 
 	@Test

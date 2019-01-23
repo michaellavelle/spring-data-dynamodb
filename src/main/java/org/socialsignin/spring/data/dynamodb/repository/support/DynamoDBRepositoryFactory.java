@@ -30,7 +30,6 @@ import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
 import org.springframework.data.util.Version;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.StringTokenizer;
 
@@ -96,13 +95,12 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 
 	public DynamoDBRepositoryFactory(DynamoDBOperations dynamoDBOperations) {
 		this.dynamoDBOperations = dynamoDBOperations;
-
 	}
 
 	@Override
 	public <T, ID> DynamoDBEntityInformation<T, ID> getEntityInformation(final Class<T> domainClass) {
 
-		final DynamoDBEntityMetadataSupport<T, ID> metadata = new DynamoDBEntityMetadataSupport<T, ID>(domainClass);
+		final DynamoDBEntityMetadataSupport<T, ID> metadata = new DynamoDBEntityMetadataSupport<>(domainClass);
 		return metadata.getEntityInformation();
 	}
 
@@ -126,8 +124,7 @@ public class DynamoDBRepositoryFactory extends RepositoryFactorySupport {
 	 * @return the created {@link DynamoDBCrudRepository} instance
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	protected <T, ID extends Serializable> DynamoDBCrudRepository<?, ?> getDynamoDBRepository(
-			RepositoryMetadata metadata) {
+	protected <T, ID> DynamoDBCrudRepository<?, ?> getDynamoDBRepository(RepositoryMetadata metadata) {
 		return new SimpleDynamoDBPagingAndSortingRepository(getEntityInformation(metadata.getDomainType()),
 				dynamoDBOperations, getEnableScanPermissions(metadata));
 	}

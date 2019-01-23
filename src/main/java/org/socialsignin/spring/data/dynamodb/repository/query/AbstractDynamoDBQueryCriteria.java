@@ -180,8 +180,8 @@ public abstract class AbstractDynamoDBQueryCriteria<T, ID> implements DynamoDBQu
 				queryRequest.setScanIndexForward(order.getDirection().equals(Direction.ASC));
 				sortAlreadySet = true;
 			} else {
-				throw new UnsupportedOperationException(
-						"Sorting only possible by " + permittedPropertyNames + " for the criteria specified");
+				throw new UnsupportedOperationException("Sorting only possible by " + permittedPropertyNames
+						+ " for the criteria specified and not for " + order.getProperty());
 			}
 		}
 	}

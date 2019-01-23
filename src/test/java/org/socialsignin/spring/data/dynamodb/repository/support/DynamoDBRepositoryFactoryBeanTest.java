@@ -26,6 +26,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.socialsignin.spring.data.dynamodb.core.DynamoDBOperations;
 import org.socialsignin.spring.data.dynamodb.domain.sample.User;
 import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
+import org.socialsignin.spring.data.dynamodb.repository.util.DynamoDBMappingContextProcessor;
+import org.socialsignin.spring.data.dynamodb.repository.util.Entity2DynamoDBTableSynchronizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.repository.Repository;
 
@@ -45,6 +47,10 @@ public class DynamoDBRepositoryFactoryBeanTest {
 	private DynamoDBMapperConfig dynamoDBMapperConfig;
 	@Mock
 	private AmazonDynamoDB amazonDynamoDB;
+	@Mock
+	private Entity2DynamoDBTableSynchronizer<User, String> tableSynchronizer;
+	@Mock
+	private DynamoDBMappingContextProcessor<User, String> dynamoDBMappingContextProcessor;
 
 	private DynamoDBMappingContext dynamoDBMappingContext = new DynamoDBMappingContext();
 
@@ -57,9 +63,9 @@ public class DynamoDBRepositoryFactoryBeanTest {
 	@Before
 	public void setUp() {
 		underTest = spy(new DynamoDBRepositoryFactoryBean<>(UserRepository.class));
-		underTest.setApplicationContext(applicationContext);
-		underTest.setDynamoDBMapperConfig(dynamoDBMapperConfig);
 		underTest.setDynamoDBMappingContext(dynamoDBMappingContext);
+		underTest.setEntity2DynamoDBTableSynchronizer(tableSynchronizer);
+		underTest.setDynamoDBMappingContextProcessor(dynamoDBMappingContextProcessor);
 	}
 
 	@Test
@@ -86,7 +92,7 @@ public class DynamoDBRepositoryFactoryBeanTest {
 			assertTrue(true);
 		}
 
-		underTest.setAmazonDynamoDB(amazonDynamoDB);
+		underTest.setDynamoDBOperations(dynamoDBOperations);
 		underTest.afterPropertiesSet();
 
 		assertNotNull(underTest.getPersistentEntity());

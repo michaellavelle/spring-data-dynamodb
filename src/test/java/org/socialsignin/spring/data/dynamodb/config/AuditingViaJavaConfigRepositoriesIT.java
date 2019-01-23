@@ -15,34 +15,22 @@
  */
 package org.socialsignin.spring.data.dynamodb.config;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.socialsignin.spring.data.dynamodb.domain.sample.AuditableUser;
 import org.socialsignin.spring.data.dynamodb.domain.sample.AuditableUserRepository;
-import org.socialsignin.spring.data.dynamodb.mapping.DynamoDBMappingContext;
 import org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories;
 import org.socialsignin.spring.data.dynamodb.utils.DynamoDBLocalResource;
-import org.socialsignin.spring.data.dynamodb.utils.TableCreationListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Optional;
@@ -52,7 +40,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
 /**
  * Integration tests for auditing via Java config.
@@ -61,12 +48,8 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DynamoDBLocalResource.class, AuditingViaJavaConfigRepositoriesIT.TestAppConfig.class})
-@TestExecutionListeners(listeners = TableCreationListener.class, mergeMode = MERGE_WITH_DEFAULTS)
+@TestPropertySource(properties = {"spring.data.dynamodb.entity2ddl.auto=create"})
 public class AuditingViaJavaConfigRepositoriesIT {
-	@Rule
-	public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-	@Mock
-	private static AuditorAware<AuditableUser> auditorProviderClass;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuditingViaJavaConfigRepositoriesIT.class);
 
@@ -78,17 +61,8 @@ public class AuditingViaJavaConfigRepositoriesIT {
 		@SuppressWarnings("unchecked")
 		@Bean(name = "auditorProvider")
 		public AuditorAware<AuditableUser> auditorProvider() {
-			LOGGER.info("auditorProvider");
+			LOGGER.info("mocked auditorProvider provided");
 			return Mockito.mock(AuditorAware.class);
-		}
-
-		@Bean
-		public DynamoDBMappingContext dynamoDBMappingContext() {
-			DynamoDBMappingContext mappingContext = new DynamoDBMappingContext();
-			// Register entity
-			// TODO but this shouldn't be nessassary?!
-			mappingContext.getPersistentEntity(AuditableUser.class);
-			return mappingContext;
 		}
 	}
 
@@ -100,16 +74,8 @@ public class AuditingViaJavaConfigRepositoriesIT {
 
 	AuditableUser auditor;
 
-	@Autowired
-	private AmazonDynamoDB ddb;
-
 	@Before
 	public void setUp() throws InterruptedException {
-		CreateTableRequest ctr = new DynamoDBMapper(ddb).generateCreateTableRequest(AuditableUser.class);
-		ctr.withProvisionedThroughput(new ProvisionedThroughput(10L, 10L));
-		ddb.createTable(ctr);
-		// Thread.sleep(5 * 1000);
-
 		this.auditor = auditableUserRepository.save(new AuditableUser("auditor"));
 		assertThat(this.auditor, is(notNullValue()));
 
