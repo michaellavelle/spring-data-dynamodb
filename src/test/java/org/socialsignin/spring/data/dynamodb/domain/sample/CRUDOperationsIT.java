@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
@@ -123,10 +125,10 @@ public class CRUDOperationsIT {
 	}
 
 	@Test
-	public void testEmptyResult() {
+	public void testEmptyResult() throws InterruptedException, ExecutionException {
 
-		Optional<User> actual1 = userRepository.findByNameAndPostCode("does not", "exist");
-		assertFalse(actual1.isPresent());
+		Future<User> actual1 = userRepository.findByNameAndPostCode("does not", "exist");
+		assertNull(actual1.get());
 
 		User actual2 = userRepository.findByNameAndLeaveDate("does not exist", Instant.now());
 		assertNull(actual2);

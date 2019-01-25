@@ -32,10 +32,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests JDK8 features of spring-data
@@ -86,15 +87,21 @@ public class Jdk8IT {
 		user.setPostCode("postCode");
 		user = userRepository.save(user);
 
-		User actual;
-		// Future<User> result
-		actual = userRepository.findByName("testFuture").get();
-		// assertNotNull(result);
-		// User actual = result.get(1, TimeUnit.MINUTES);
+		Consumer<User> validate = (actual) -> {
+			assertNotNull(actual);
+			assertNotNull(actual.getId());
+			assertEquals("postCode", actual.getPostCode());
+		};
 
-		assertNotNull(actual);
-		assertNotNull(actual.getId());
-		assertEquals("postCode", actual.getPostCode());
+		Optional<User> actual1 = userRepository.findByName("testFuture");
+		assertNotNull(actual1);
+		assertTrue(actual1.isPresent());
+		validate.accept(actual1.get());
+
+		Future<User> actual2 = userRepository.findByNameAndPostCode("testFuture", "postCode");
+		assertNotNull(actual1);
+		assertTrue(actual2.isDone());
+		validate.accept(actual2.get());
 	}
 
 	@Test
