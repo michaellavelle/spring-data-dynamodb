@@ -29,6 +29,7 @@
       </action>
       <action dev="boostschicken" type="add" date="2018-10-28">
         Updated Mockito to improve test coverage
+      </action>
       <action dev="ryonday" issue="218" type="fix" date="2018-11-09">
         Update to Spring-Data 2.1.2.RELEASE and Spring Framework 5.1.2.RELEASE
       </action>
