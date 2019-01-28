@@ -23,7 +23,7 @@
     <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
-    <release version="5.1.0" date="" description="Spring Boot 2.1 and Spring Data Lovelace-SR1 support">
+    <release version="5.1.0" date="2019-01-28" description="Spring Boot 2.1 and Spring Data Lovelace-SR1 support">
       <action dev="boostschicken" type="add" date="2018-10-28">
         Updated all code to work with Spring Boot 2.1 and Lovelace-SR1
       </action>

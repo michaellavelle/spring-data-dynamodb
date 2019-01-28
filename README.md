@@ -37,7 +37,7 @@ Download the JAR though [Maven Central](http://mvnrepository.com/artifact/com.gi
 <dependency>
   <groupId>com.github.derjust</groupId>
   <artifactId>spring-data-dynamodb</artifactId>
-  <version>5.0.4</version>
+  <version>5.1.0</version>
 </dependency>
 ```
 
