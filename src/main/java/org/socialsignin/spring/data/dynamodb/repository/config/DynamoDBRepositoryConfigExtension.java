@@ -129,7 +129,16 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 						.computeIfAbsent(getBeanNameWithModulePrefix("DynamoDBTemplate-" + dynamoDBRef), ref -> {
 							BeanDefinitionBuilder dynamoDBTemplateBuilder = BeanDefinitionBuilder
 									.genericBeanDefinition(DynamoDBTemplate.class);
+							// AmazonDynamoDB amazonDynamoDB, DynamoDBMapper dynamoDBMapper,
+							// DynamoDBMapperConfig dynamoDBMapperConfig
 							dynamoDBTemplateBuilder.addConstructorArgReference(dynamoDBRef);
+							dynamoDBTemplateBuilder.addConstructorArgReference(this.dynamoDBMapperName);
+
+							if (StringUtils.hasText(dynamoDBMapperConfigRef)) {
+								dynamoDBTemplateBuilder.addConstructorArgReference(dynamoDBMapperConfigRef);
+							} else {
+								dynamoDBTemplateBuilder.addConstructorArgReference(this.dynamoDBMapperConfigName);
+							}
 
 							registry.registerBeanDefinition(ref, dynamoDBTemplateBuilder.getBeanDefinition());
 							return ref;
@@ -138,9 +147,6 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 
 			builder.addPropertyReference("dynamoDBOperations", dynamoDBOperationsRef);
 
-			if (StringUtils.hasText(dynamoDBMapperConfigRef)) {
-				builder.addPropertyReference("dynamoDBMapperConfig", dynamoDBMapperConfigRef);
-			}
 		}
 
 		if (!StringUtils.hasText(dynamoDBMappingContextRef)) {
@@ -184,6 +190,10 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 	}
 
 	private final Map<String, String> dynamoDBMappingContextProcessorCache = new ConcurrentHashMap<>();
+
+	private String dynamoDBMapperName;
+
+	private String dynamoDBMapperConfigName;
 	private String registerDynamoDBMappingContextProcessor(BeanDefinitionRegistry registry,
 			String dynamoDBMappingContextRef) {
 		assert registry != null;
@@ -226,15 +236,17 @@ public class DynamoDBRepositoryConfigExtension extends RepositoryConfigurationEx
 		// Store for later to be used by #postProcess, too
 		this.registry = registry;
 
+		this.dynamoDBMapperConfigName = getBeanNameWithModulePrefix("DynamoDBMapperConfig");
+		// TODO only if it doesn't exist
 		BeanDefinitionBuilder dynamoDBMapperConfigBuiilder = BeanDefinitionBuilder
 				.genericBeanDefinition(DynamoDBMapperConfigFactory.class);
-		registry.registerBeanDefinition(getBeanNameWithModulePrefix("DynamoDBMapperConfig"),
+		registry.registerBeanDefinition(this.dynamoDBMapperConfigName,
 				dynamoDBMapperConfigBuiilder.getBeanDefinition());
 
+		this.dynamoDBMapperName = getBeanNameWithModulePrefix("DynamoDBMapper");
 		BeanDefinitionBuilder dynamoDBMapperBuilder = BeanDefinitionBuilder
 				.genericBeanDefinition(DynamoDBMapperFactory.class);
-		registry.registerBeanDefinition(getBeanNameWithModulePrefix("DynamoDBMapper"),
-				dynamoDBMapperBuilder.getBeanDefinition());
+		registry.registerBeanDefinition(this.dynamoDBMapperName, dynamoDBMapperBuilder.getBeanDefinition());
 	}
 
 	protected String getBeanNameWithModulePrefix(String baseBeanName) {
