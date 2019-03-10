@@ -190,7 +190,7 @@ public class DynamoDBEntityWithHashAndRangeKeyCriteria<T, ID> extends AbstractDy
 			queryExpression.setSelect(Select.SPECIFIC_ATTRIBUTES);
 			queryExpression.setProjectionExpression(projection.get());
 		}
-
+		limit.ifPresent(queryExpression::setLimit);
 		return queryExpression;
 	}
 

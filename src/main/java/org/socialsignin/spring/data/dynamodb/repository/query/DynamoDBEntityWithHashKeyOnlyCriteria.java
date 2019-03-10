@@ -116,6 +116,7 @@ public class DynamoDBEntityWithHashKeyOnlyCriteria<T, ID> extends AbstractDynamo
 			scanExpression.setSelect(Select.SPECIFIC_ATTRIBUTES);
 			scanExpression.setProjectionExpression(projection.get());
 		}
+		limit.ifPresent(scanExpression::setLimit);
 		return scanExpression;
 	}
 

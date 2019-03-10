@@ -29,9 +29,9 @@ import java.util.Optional;
 public class DynamoDBQueryCreator<T, ID> extends AbstractDynamoDBQueryCreator<T, ID, T> {
 
 	public DynamoDBQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
-			DynamoDBEntityInformation<T, ID> entityMetadata, Optional<String> projection,
+			DynamoDBEntityInformation<T, ID> entityMetadata, Optional<String> projection, Optional<Integer> limit,
 			DynamoDBOperations dynamoDBOperations) {
-		super(tree, parameterAccessor, entityMetadata, projection, dynamoDBOperations);
+		super(tree, parameterAccessor, entityMetadata, projection, limit, dynamoDBOperations);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class DynamoDBQueryCreator<T, ID> extends AbstractDynamoDBQueryCreator<T,
 		} else {
 			criteria.withSort(sort);
 			criteria.withProjection(projection);
-
+			criteria.withLimit(limit);
 			return criteria.buildQuery(dynamoDBOperations);
 		}
 	}

@@ -83,6 +83,7 @@ public class CRUDOperationsIT {
 		String postCode = "postCode";
 		String user1 = "projection1" + ThreadLocalRandom.current().nextLong();
 		String user2 = "projection2" + ThreadLocalRandom.current().nextLong();
+		String user3 = "projection2" + ThreadLocalRandom.current().nextLong();
 
 		User u1 = new User();
 		u1.setId("Id1" + ThreadLocalRandom.current().nextLong());
@@ -90,6 +91,13 @@ public class CRUDOperationsIT {
 		u1.setLeaveDate(Instant.now());
 		u1.setPostCode(postCode);
 		u1.setNumberOfPlaylists(1);
+
+		User u3 = new User();
+		u3.setId("Id3" + ThreadLocalRandom.current().nextLong());
+		u3.setName(user3);
+		u3.setLeaveDate(Instant.now());
+		u3.setPostCode(postCode);
+		u3.setNumberOfPlaylists(1);
 
 		User u2 = new User();
 		u2.setId("Id2" + ThreadLocalRandom.current().nextLong());
@@ -100,11 +108,13 @@ public class CRUDOperationsIT {
 
 		userRepository.save(u1);
 		userRepository.save(u2);
+		userRepository.save(u3);
 
 		List<User> actualList = new ArrayList<>();
 		userRepository.findAll().forEach(actualList::add);
 
 		List<User> projectedActuals = userRepository.findByPostCode(postCode);
+		// 2 matches but should be limited to 1 by @Query
 		assertEquals(1, projectedActuals.size());
 		User projectedActual = projectedActuals.get(0);
 		assertNull("Attribute not projected", projectedActual.getName());
@@ -113,11 +123,11 @@ public class CRUDOperationsIT {
 		assertNull("Key not projected", projectedActual.getId());
 		assertNotNull("LeaveDate is projected", projectedActual.getLeaveDate());
 
-		List<User> fullActuals = userRepository.findByNameIn(Arrays.asList(user1, user2));
-		assertEquals(2, fullActuals.size());
+		List<User> fullActuals = userRepository.findByNameIn(Arrays.asList(user1, user2, user3));
+		assertEquals(3, fullActuals.size());
 		User fullActual = fullActuals.get(0);
-		assertThat(Arrays.asList(user1, user2), hasItems(fullActual.getName()));
-		assertThat(Arrays.asList(user1, user2), hasItems(fullActuals.get(1).getName()));
+		assertThat(Arrays.asList(user1, user2, user3), hasItems(fullActual.getName()));
+		assertThat(Arrays.asList(user1, user2, user3), hasItems(fullActuals.get(1).getName()));
 		assertNotNull(fullActual.getPostCode());
 		assertNotNull(fullActual.getNumberOfPlaylists());
 		assertNotNull(fullActual.getId());
