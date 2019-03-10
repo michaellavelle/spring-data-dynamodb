@@ -432,7 +432,7 @@
                 </executions>
                 <configuration>
                     <logViolationsToConsole>true</logViolationsToConsole>
-                    <configLocation>checkstyle.xml</configLocation>
+                    <configLocation>src/checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
 			<plugin>
