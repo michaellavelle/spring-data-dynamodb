@@ -139,18 +139,6 @@ public class PartTreeDynamoDBQueryUnitTest {
 			Mockito.when(mockEntityMetadata.isRangeKeyAware()).thenReturn(true);
 		}
 
-		try {
-			Field unwrappedReturnTypeField = mockDynamoDBQueryMethod.getClass() // org.socialsignin.spring.data.dynamodb.repository.query.DynamoDBQueryMethod
-					.getSuperclass() // org.springframework.data.repository.query.QueryMethod
-					.getDeclaredField("unwrappedReturnType");
-			unwrappedReturnTypeField.setAccessible(true); // It's final therefore unlocking the field
-			unwrappedReturnTypeField.set(mockDynamoDBQueryMethod, clazz);
-		} catch (Exception e) {
-			// There is little we can and want do if it fails - Aborting the whole test is
-			// fine
-			throw new RuntimeException(e);
-		}
-
 		Mockito.when(mockDynamoDBQueryMethod.getEntityType()).thenReturn(clazz);
 		Mockito.when(mockDynamoDBQueryMethod.getName()).thenReturn(repositoryMethodName);
 		Mockito.when(mockDynamoDBQueryMethod.getParameters()).thenReturn(mockParameters);

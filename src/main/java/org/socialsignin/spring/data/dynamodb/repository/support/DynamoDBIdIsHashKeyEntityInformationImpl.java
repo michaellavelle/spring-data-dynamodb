@@ -47,6 +47,7 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends FieldAndGet
 	private DynamoDBHashKeyExtractingEntityMetadata<T> metadata;
 	private HashKeyExtractor<ID, ID> hashKeyExtractor;
 	private Optional<String> projection = Optional.empty();
+	private Optional<Integer> limit = Optional.empty();
 
 	public DynamoDBIdIsHashKeyEntityInformationImpl(Class<T> domainClass,
 			DynamoDBHashKeyExtractingEntityMetadata<T> metadata) {
@@ -58,6 +59,11 @@ public class DynamoDBIdIsHashKeyEntityInformationImpl<T, ID> extends FieldAndGet
 	@Override
 	public Optional<String> getProjection() {
 		return projection;
+	}
+
+	@Override
+	public Optional<Integer> getLimit() {
+		return limit;
 	}
 
 	@Override

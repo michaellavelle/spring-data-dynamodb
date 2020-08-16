@@ -23,6 +23,14 @@
     <author email="zeeman@zeeman.de">derjust</author>
   </properties>
   <body>
+    <release version="5.1.1" description="Maintenance release">
+      <action dev="derjust" issue="235" type="fix" date="2019-03-10">
+        Upgrading to 5.1.0 results in the error Bean property 'dynamoDBMapperConfig' is not writable or has an invalid setter method
+      </action>
+      <action dev="boostschicken" issue="226" type="add" date="2019-03-10">
+        @Query annotation to support query limiting
+      </action>
+    </release>
     <release version="5.1.0" date="2019-01-28" description="Spring Boot 2.1 and Spring Data Lovelace-SR1 support">
       <action dev="boostschicken" type="add" date="2018-10-28">
         Updated all code to work with Spring Boot 2.1 and Lovelace-SR1

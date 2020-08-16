@@ -28,6 +28,8 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+import static org.socialsignin.spring.data.dynamodb.repository.QueryConstants.QUERY_LIMIT_UNLIMITED;
+
 /**
  * @author Michael Lavelle
  * @author Sebastian Just
@@ -38,6 +40,7 @@ public class DynamoDBQueryMethod<T, ID> extends QueryMethod {
 	private final boolean scanEnabledForRepository;
 	private final boolean scanCountEnabledForRepository;
 	private final Optional<String> projectionExpression;
+	private final Optional<Integer> limitResults;
 
 	public DynamoDBQueryMethod(Method method, RepositoryMetadata metadata, ProjectionFactory factory) {
 		super(method, metadata, factory);
@@ -54,8 +57,15 @@ public class DynamoDBQueryMethod<T, ID> extends QueryMethod {
 			} else {
 				this.projectionExpression = Optional.empty();
 			}
+			int limit = query.limit();
+			if (limit != QUERY_LIMIT_UNLIMITED) {
+				this.limitResults = Optional.of(query.limit());
+			} else {
+				this.limitResults = Optional.empty();
+			}
 		} else {
 			this.projectionExpression = Optional.empty();
+			this.limitResults = Optional.empty();
 		}
 	}
 
@@ -98,4 +108,7 @@ public class DynamoDBQueryMethod<T, ID> extends QueryMethod {
 		return this.projectionExpression;
 	}
 
+	public Optional<Integer> getLimitResults() {
+		return this.limitResults;
+	}
 }

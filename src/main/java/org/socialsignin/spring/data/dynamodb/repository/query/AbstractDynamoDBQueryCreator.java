@@ -46,21 +46,24 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID, R>
 	protected final DynamoDBEntityInformation<T, ID> entityMetadata;
 	protected final DynamoDBOperations dynamoDBOperations;
 	protected final Optional<String> projection;
+	protected final Optional<Integer> limit;
 
 	public AbstractDynamoDBQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata,
-			Optional<String> projection, DynamoDBOperations dynamoDBOperations) {
+			Optional<String> projection, Optional<Integer> limitResults, DynamoDBOperations dynamoDBOperations) {
 		super(tree);
 		this.entityMetadata = entityMetadata;
 		this.projection = projection;
+		this.limit = limitResults;
 		this.dynamoDBOperations = dynamoDBOperations;
 	}
 
 	public AbstractDynamoDBQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
 			DynamoDBEntityInformation<T, ID> entityMetadata, Optional<String> projection,
-			DynamoDBOperations dynamoDBOperations) {
+			Optional<Integer> limitResults, DynamoDBOperations dynamoDBOperations) {
 		super(tree, parameterAccessor);
 		this.entityMetadata = entityMetadata;
 		this.projection = projection;
+		this.limit = limitResults;
 		this.dynamoDBOperations = dynamoDBOperations;
 	}
 
@@ -89,7 +92,6 @@ public abstract class AbstractDynamoDBQueryCreator<T, ID, R>
 		}
 
 		switch (part.getType()) {
-
 			case IN :
 				Object in = iterator.next();
 				Assert.notNull(in, "Creating conditions on null parameters not supported: please specify a value for '"

@@ -32,13 +32,13 @@ public class DynamoDBCountQueryCreator<T, ID> extends AbstractDynamoDBQueryCreat
 
 	public DynamoDBCountQueryCreator(PartTree tree, DynamoDBEntityInformation<T, ID> entityMetadata,
 			DynamoDBOperations dynamoDBOperations, boolean pageQuery) {
-		super(tree, entityMetadata, Optional.empty(), dynamoDBOperations);
+		super(tree, entityMetadata, Optional.empty(), Optional.empty(), dynamoDBOperations);
 		this.pageQuery = pageQuery;
 	}
 
 	public DynamoDBCountQueryCreator(PartTree tree, ParameterAccessor parameterAccessor,
 			DynamoDBEntityInformation<T, ID> entityMetadata, DynamoDBOperations dynamoDBOperations, boolean pageQuery) {
-		super(tree, parameterAccessor, entityMetadata, Optional.empty(), dynamoDBOperations);
+		super(tree, parameterAccessor, entityMetadata, Optional.empty(), Optional.empty(), dynamoDBOperations);
 		this.pageQuery = pageQuery;
 
 	}

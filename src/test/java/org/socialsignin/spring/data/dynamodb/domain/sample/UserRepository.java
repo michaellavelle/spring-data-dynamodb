@@ -52,7 +52,7 @@ public interface UserRepository extends CrudRepository<User, String> {
 	@EnableScan
 	void deleteByIdAndName(String id, String name);
 
-	@Query(fields = "leaveDate")
+	@Query(fields = "leaveDate", limit = 1)
 	List<User> findByPostCode(String postCode);
 
 	@EnableScan

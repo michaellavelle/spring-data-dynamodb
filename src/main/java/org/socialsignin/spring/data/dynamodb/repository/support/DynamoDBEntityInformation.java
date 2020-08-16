@@ -50,4 +50,6 @@ public interface DynamoDBEntityInformation<T, ID>
 	}
 
 	Optional<String> getProjection();
+
+	Optional<Integer> getLimit();
 }
