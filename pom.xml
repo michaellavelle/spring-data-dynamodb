@@ -783,16 +783,12 @@
             <id>website</id>
             <url>https://derjust.github.io/spring-data-dynamodb/</url>
         </site>
-	<snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
+	 <repository>
+          	<id>github</id>
+          	<name>GitHub michaellavelle Apache Maven Packages</name>
+          	<url>https://maven.pkg.github.com/michaellavelle/spring-data-dynamodb</url>
+       	 </repository>
     </distributionManagement>
-
     <issueManagement>
     	<system>GitHub</system>
     	<url>https://github.com/derjust/spring-data-dynamodb/issues</url>
