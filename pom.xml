@@ -546,7 +546,7 @@
     <repositories>
         <repository>
             <id>spring-libs-snapshot</id>
-            <url>http://repo.springsource.org/libs-snapshot</url>
+            <url>https://repo.springsource.org/libs-snapshot</url>
         </repository>
         <repository>
             <id>dynamodb-local-oregon</id>
@@ -558,7 +558,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>com.springsource.repository.bundles.release</id>
-            <url>http://repository.springsource.com/maven/bundles/release</url>
+            <url>https://repository.springsource.com/maven/bundles/release</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
